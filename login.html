@@ -1,18 +1,174 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>\
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>Quiz Odyssey</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            background-image: url('/img/Rectangle\ 57.png');
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
 
-body{
-    background-image: image(i);
-}
+        }
+
+        .login-parent-con {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            
+        }
+
+        .mainlog-con {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            color: #6b46c1;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .subtitle {
+            color: #987750;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .input-main-con {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .input-con {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .input-con label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .input-con input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-con input:focus {
+            border-color: #6b46c1;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #32CD32;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #16a34a;
+        }
+
+        .links-container {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .links-container a {
+            text-decoration: none;
+        }
+
+        .forgot-password {
+            color: #dc2626;
+        }
+
+        .create-account {
+            color: #6b46c1;
+        }
+
+        .dots-container {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #e5d0ff;
+            border-radius: 50%;
+        }
     </style>
 </head>
+<body>
 
-<body >
+<div class="login-parent-con">
+        <div class="mainlog-con">
+            <h1>Quiz Odyssey</h1>
+            <div class="subtitle">Lorem Ipsum dolor sit tagline here</div>
+
+            <div class="input-main-con">
+                <div class="input-con">
+                    <label>Username</label>
+                    <input type="text" placeholder="Enter Username">
+                </div>
+                <div class="input-con">
+                    <label>Password</label>
+                    <input type="password" placeholder="Enter Password">
+                </div>
+
+                <button>Start Adventure!</button>
+
+                <div class="links-container">
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                    <a href="#" class="create-account">Create Account</a>
+                </div>
+            </div>
+
+            <div class="dots-container">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
     
 </body>
 </html>
