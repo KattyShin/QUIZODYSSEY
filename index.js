@@ -8,7 +8,7 @@ const c = canvas.getContext("2d");
 
 canvas.width = 1350;
 canvas.height = 576;
-c.fillStyle = "white";
+// c.fillStyle = "white";
 c.fillRect(0, 0, canvas.width, canvas.height);
 
 const collisionsMap = [];
@@ -37,7 +37,7 @@ console.log(quiz3Map);
 
 const boundaries = [];
 const offset = {
-  x: 1,
+  x: 0,
   y: -650,
 };
 
@@ -295,18 +295,18 @@ function rectangularCollision({ rectangle1, rectangle2 }) {
   );
 }
 
-const dragleImage = new Image()
-dragleImage.src = "./img/draggleSprite.png"
-const dragle = new Sprite({
-  position: {
-    x: 850,
-    y: 120,
-  },
-  image: dragleImage,
-  frames: {
-    max: 1
-  }
-})
+// const dragleImage = new Image()
+// dragleImage.src = "./img/draggleSprite.png"
+// const dragle = new Sprite({
+//   position: {
+//     x: 850,
+//     y: 120,
+//   },
+//   image: dragleImage,
+//   frames: {
+//     max: 1
+//   }
+// })
 
 function animate() {
   window.requestAnimationFrame(animate);
