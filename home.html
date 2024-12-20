@@ -33,7 +33,7 @@
             color: white;
             padding-right: 20px;
             padding-left: 20px;
-            
+
         }
 
         .menu-icon {
@@ -62,6 +62,10 @@
             cursor: pointer;
             font-size: 0.7rem;
             border: 1px solid white;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            gap: 0.5rem;
         }
 
         .quiz-title-card {
@@ -122,6 +126,144 @@
             /*2196F3*/
             color: white;
         }
+
+        .settings-div {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .settings-div button {
+            padding: 10px;
+        }
+
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #D4854C;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal:target {
+            display: block;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            text-decoration: none;
+            font-size: 24px;
+            color: #666;
+        }
+
+
+        .input-field {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+
+        .upload-area {
+            width: 100%;
+            height: 120px;
+            background-color: #D4854C;
+            /* Orange/copper color from the image */
+            border: 2px dashed #fff;
+            /* White dashed border */
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .fa-upload {
+            font-size: 40px;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .upload-area p {
+            color: #fff;
+            margin: 0;
+            font-family: monospace;
+            font-size: 16px;
+        }
+
+        .upload-area:hover {
+            background-color: #A25824;
+
+        }
+
+        .radio-group {
+            margin: 15px 0;
+        }
+
+        .radio-option {
+            margin: 8px 0;
+        }
+
+        .button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+
+        .modal-footer {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .cancel-btn {
+            background-color: #f1f1f1;
+            margin-right: 10px;
+        }
+
+        .create-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+    .settings-div{
+            position: relative;
+            z-index: 1050;
+        }
+
     </style>
 </head>
 
@@ -138,29 +280,93 @@
     </nav>
 
 
-
-    <!-- SIDE BAR OFF CANVAS -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+<!-- Sidebar Offcanvas -->
+<div style="background-color: #D4854C;" class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample"
+    aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas-header">
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <i class="fa-solid fa-user" style="margin-right: 8px; font-size: 20px;"></i>
+            <h5 style="margin: 0;">Katty</h5>
         </div>
-        <div class="offcanvas-body">
-            <div>
-
-                <button>Account</button>
-                <button>Setting</button>
-
-            </div>
-
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="settings-div">
+            <button>Account</button>
+            <button onclick="openSettingsModal()">Setting</button>
         </div>
     </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settings-modal" class="modal settings-modal" tabindex="-1">
+    <div class="modal-content">
+        <a href="#" class="close-btn" onclick="closeSettingsModal()">&times;</a>
+        <h2>Settings</h2>
+        <div>
+            <label for="setting-option">Option:</label>
+            <input type="text" id="setting-option" class="input-field" placeholder="Enter setting value">
+        </div>
+        <div class="modal-footer">
+            <button class="button cancel-btn" onclick="closeSettingsModal()">Cancel</button>
+            <button class="button create-btn" onclick="saveSettings()">Save</button>
+        </div>
+    </div>
+</div>
+
+
 
 
     <div class="home-parent-con">
+
+
+
         <div class="header">
-            <button class="create-new-btn">Create New</button>
+            <button class="create-new-btn" onclick="location.href='#upload-modal'"><i style="font-size: 15px;"
+                    class="fa-solid fa-circle-plus"></i>Create New</button>
         </div>
+        <!-- Start Game Button -->
+
+        <!-- Modal -->
+        <div id="upload-modal" class="modal modalSettings">
+            <div class="modal-content">
+                <a href="#" class="close-btn">&times;</a>
+
+                <h2>Create New</h2>
+
+                <input type="text" class="input-field" placeholder="Add Title">
+
+                <div class="upload-area">
+                    <input type="file" class="file-input" id="fileInput">
+                    <i class="fa-solid fa-upload"></i>
+                    <p>Upload File</p>
+                    <p class="file-name" id="fileName">No file chosen</p>
+                </div>
+                <div class="radio-group">
+                    <p>Choose the type of question:</p>
+                    <div class="radio-option">
+                        <input type="radio" id="true-false" name="question-type">
+                        <label for="true-false">True or False</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="enumeration" name="question-type">
+                        <label for="enumeration">Enumeration</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="multiple-choice" name="question-type">
+                        <label for="multiple-choice">Multiple Choice</label>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="button cancel-btn" onclick="location.href='#'">Cancel</button>
+                    <button class="button create-btn" id="start-game-btn">Start Game</button>
+                </div>
+            </div>
+        </div>
+
+
+
 
         <!-- Quiz Card 1 -->
         <div class="quiz-title-card">
@@ -222,6 +428,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/88979c2f8f.js" crossorigin="anonymous"></script>
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function () {
+            const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
+            document.getElementById('fileName').textContent = fileName;
+        });
+
+
+        // SETTINGS
+        function openSettingsModal() {
+            document.getElementById('settings-modal').style.display = 'block';
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').style.display = 'none';
+        }
+
+        function saveSettings() {
+            const settingValue = document.getElementById('setting-option').value;
+            alert(`Setting saved: ${settingValue}`);
+            closeSettingsModal();
+        }
+
+    </script>
+
 
 </body>
 
