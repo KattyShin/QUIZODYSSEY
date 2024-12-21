@@ -32,10 +32,10 @@ def chatbot_response(user_input):
     sentiment_score = sentiment['score']
     
     # Basic response logic
-    if "hello" in processed_input:
-        response = "Hello! How can I assist you today?"
-    elif "bye" in processed_input:
-        response = "Goodbye! Have a great day!"
+    if "hi" in processed_input:
+        response = "Hi langga ni kaon ara?"
+    elif "wala" in processed_input:
+        response = "Kaon na langga ayaw sig code kay MABOANG naka ana"
     elif "name" in processed_input:
         response = "I'm an AI-powered chatbot. What's your name?"
     elif "weather" in processed_input:

@@ -855,8 +855,8 @@ function animate() {
   }
 }
 animate();
-
 let lastKey = "";
+
 // Modify the window keydown event listener
 window.addEventListener("keydown", (e) => {
   const activeElement = document.activeElement;
@@ -871,18 +871,22 @@ window.addEventListener("keydown", (e) => {
   if (!isDialogOpen) {
     switch (e.key) {
       case "w":
+      case "W":
         keys.w.pressed = true;
         lastKey = "w";
         break;
       case "a":
+      case "A":
         keys.a.pressed = true;
         lastKey = "a";
         break;
       case "s":
+      case "S":
         keys.s.pressed = true;
         lastKey = "s";
         break;
       case "d":
+      case "D":
         keys.d.pressed = true;
         lastKey = "d";
         break;
@@ -893,19 +897,24 @@ window.addEventListener("keydown", (e) => {
 window.addEventListener("keyup", (e) => {
   switch (e.key) {
     case "w":
+    case "W":
       keys.w.pressed = false;
       break;
     case "a":
+    case "A":
       keys.a.pressed = false;
       break;
     case "s":
+    case "S":
       keys.s.pressed = false;
       break;
     case "d":
+    case "D":
       keys.d.pressed = false;
       break;
   }
 });
+
 
 // let clicked = false;
 // addKeyPressListener("click", () => {
@@ -914,6 +923,9 @@ window.addEventListener("keyup", (e) => {
 //     clicked = true;
 //   }
 // });
+
+
+
 
 class Chatbot {
   constructor() {
