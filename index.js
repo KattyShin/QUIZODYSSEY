@@ -1,10 +1,6 @@
-
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 // console.log(quiz1Data);
-
-
-
 
 canvas.width = 1350;
 canvas.height = 576;
@@ -34,6 +30,12 @@ for (let i = 0; i < quiz3Data.length; i += 70) {
   quiz3Map.push(quiz3Data.slice(i, 70 + i));
 }
 console.log(quiz3Map);
+
+const npcHome1Map = [];
+for (let i = 0; i < npcHome1Data.length; i += 70) {
+  npcHome1Map.push(npcHome1Data.slice(i, 70 + i));
+}
+console.log("npcHome1Map");
 
 const boundaries = [];
 const offset = {
@@ -103,6 +105,22 @@ quiz3Map.forEach((row, i) => {
 });
 console.log(quiz3);
 
+const npcHome1 = [];
+npcHome1Map.forEach((row, i) => {
+  row.forEach((symbol, j) => {
+    if (symbol === 1025)
+      npcHome1.push(
+        new Boundary({
+          position: {
+            x: j * Boundary.width + offset.x,
+            y: i * Boundary.height + offset.y,
+          },
+        })
+      );
+  });
+});
+console.log(npcHome1);
+
 const image = new Image();
 image.src = "./img/Pellet Town.png";
 
@@ -169,6 +187,8 @@ const keys = {
   },
 };
 
+//MODAL
+
 // Add the style element for collision indicator
 const style = document.createElement("style");
 style.textContent = `
@@ -193,31 +213,42 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Add collision indicator variable
-let collisionIndicators = {};
 
-// Add the updatecollisionIndicators function
-function updateCollisionIndicator(show, playerPosition, quizId) {
+// First define separate objects for F and T indicators
+const collisionIndicators = {
+  F: {},
+  T: {},
+};
+
+// Updated unified collision indicator function
+function updateCollisionIndicator(show, playerPosition, id, type) {
   if (show) {
-    if (!collisionIndicators[quizId]) {
-      collisionIndicators = document.createElement("div");
-      collisionIndicators.className = "collision-indicator";
-      collisionIndicators.textContent = "Press F";
-      collisionIndicators.id = `collision-indicator-${quizId}`;
-      document.body.appendChild(collisionIndicators);
-      collisionIndicators[quizId] = collisionIndicators;
+    if (!collisionIndicators[type][id]) {
+      const indicator = document.createElement("div");
+      indicator.className = "collision-indicator";
+      indicator.textContent = `Press ${type}`;
+      indicator.id = `collision-indicator-${id}-${type}`;
+      document.body.appendChild(indicator);
+      collisionIndicators[type][id] = indicator;
     }
-    const canvasRect = canvas.getBoundingClientRect();
-    collisionIndicators[quizId].style.left = `${
-      canvasRect.left + playerPosition.x + player.width / 2
-    }px`;
-    collisionIndicators[quizId].style.top = `${
-      canvasRect.top + playerPosition.y - 20
-    }px`;
-  } else if (collisionIndicators[quizId]) {
-    collisionIndicators[quizId].remove();
-    delete collisionIndicators[quizId];
+
+    if (collisionIndicators[type][id]) {
+      const canvasRect = canvas.getBoundingClientRect();
+      const indicator = collisionIndicators[type][id];
+      indicator.style.left = `${
+        canvasRect.left + playerPosition.x + player.width / 2
+      }px`;
+      indicator.style.top = `${canvasRect.top + playerPosition.y - 20}px`;
+      indicator.style.display = "block";
+    }
+  } else {
+    if (collisionIndicators[type][id]) {
+      collisionIndicators[type][id].remove();
+      delete collisionIndicators[type][id];
+    }
   }
 }
+
 // In your main game file (index.js)
 // Add this at the top with your other variables
 let playerLastPosition = {
@@ -225,22 +256,31 @@ let playerLastPosition = {
   y: offset.y,
 };
 
-
 const activeListeners = {
   quiz1: null,
   quiz2: null,
-  quiz3: null
+  quiz3: null,
+  npcHome1: null,
 };
 
 // Modify the addKeyPressListener function
-function addKeyPressListener(quizId, url) {
-  if (activeListeners[quizId]) {
-    document.removeEventListener("keydown", activeListeners[quizId]);
-    activeListeners[quizId] = null;
+function addKeyPressListener(id, url) {
+  if (activeListeners[id]) {
+    document.removeEventListener("keydown", activeListeners[id]);
+    activeListeners[id] = null;
   }
   const listener = (e) => {
+    // Prevent redirection if the user is typing in an input or textarea
+    const activeElement = document.activeElement;
+    if (
+      activeElement.tagName === "INPUT" ||
+      activeElement.tagName === "TEXTAREA"
+    ) {
+      return;
+    }
+
     if (e.key === "f" || e.key === "F") {
-      console.log(`Start Quiz ${quizId} triggered by F`);
+      console.log(`Start Quiz ${id} triggered by F`);
       // Save the current position before navigating
       playerLastPosition = {
         x: background.position.x,
@@ -256,9 +296,62 @@ function addKeyPressListener(quizId, url) {
     }
   };
   // Store the listener reference
-  activeListeners[quizId] = listener;
+  activeListeners[id] = listener;
   document.addEventListener("keydown", listener);
 }
+
+
+let isDialogOpen = false;
+
+
+// Modify the addKeyPressListenerForNpC function
+function addKeyPressListenerForNpC(id, divId) {
+  if (activeListeners[id]) {
+    document.removeEventListener("keydown", activeListeners[id]);
+    activeListeners[id] = null;
+  }
+
+  const listener = (e) => {
+    const activeElement = document.activeElement;
+    if (
+      activeElement.tagName === "INPUT" ||
+      activeElement.tagName === "TEXTAREA"
+    ) {
+      return;
+    }
+
+    if (e.key === "t" || e.key === "T") {
+      console.log(`T key pressed to toggle ${divId}`);
+
+      const npcHome1Bot = document.getElementById(divId);
+      if (npcHome1Bot) {
+        // Toggle visibility and update dialog state
+        const newDisplayState = npcHome1Bot.style.display === "none" ? "block" : "none";
+        npcHome1Bot.style.display = newDisplayState;
+        isDialogOpen = newDisplayState === "block";
+        
+        // Reset movement keys when dialog opens
+        if (isDialogOpen) {
+          keys.w.pressed = false;
+          keys.a.pressed = false;
+          keys.s.pressed = false;
+          keys.d.pressed = false;
+        }
+
+         // Clear input fields when dialog closes
+         const inputElements = npcHome1Bot.querySelectorAll("input");
+         inputElements.forEach(input => {
+           input.value = ""; // Clear input value
+         });
+      }
+      updateCollisionIndicator(true, player.position, id, "T");
+    }
+  };
+
+  activeListeners[id] = listener;
+  document.addEventListener("keydown", listener);
+}
+
 
 // Add this to your window.onload or at the start of your game code
 window.onload = () => {
@@ -275,7 +368,12 @@ window.onload = () => {
   }
 };
 
-let collisionDetected = { quiz1: false, quiz2: false, quiz3: false };
+let collisionDetected = {
+  quiz1: false,
+  quiz2: false,
+  quiz3: false,
+  npcHome1: false,
+};
 
 const movables = [
   background,
@@ -284,6 +382,7 @@ const movables = [
   ...quiz1,
   ...quiz2,
   ...quiz3,
+  ...npcHome1,
 ];
 
 function rectangularCollision({ rectangle1, rectangle2 }) {
@@ -295,18 +394,44 @@ function rectangularCollision({ rectangle1, rectangle2 }) {
   );
 }
 
-// const dragleImage = new Image()
-// dragleImage.src = "./img/draggleSprite.png"
-// const dragle = new Sprite({
-//   position: {
-//     x: 850,
-//     y: 120,
-//   },
-//   image: dragleImage,
-//   frames: {
-//     max: 1
-//   }
-// })
+
+// Update the no-collision handlers
+function updateNoCollisionHandlers() {
+  if (!collisionDetected.quiz1) {
+    updateCollisionIndicator(false, null, "quiz1", "F");
+    if (activeListeners.quiz1) {
+      document.removeEventListener("keydown", activeListeners.quiz1);
+      activeListeners.quiz1 = null;
+    }
+  }
+
+  if (!collisionDetected.quiz2) {
+    updateCollisionIndicator(false, null, "quiz2", "F");
+    if (activeListeners.quiz2) {
+      document.removeEventListener("keydown", activeListeners.quiz2);
+      activeListeners.quiz2 = null;
+    }
+  }
+
+  if (!collisionDetected.quiz3) {
+    updateCollisionIndicator(false, null, "quiz3", "F");
+    if (activeListeners.quiz3) {
+      document.removeEventListener("keydown", activeListeners.quiz3);
+      activeListeners.quiz3 = null;
+    }
+  }
+
+  if (!collisionDetected.npcHome1) {
+    updateCollisionIndicator(false, null, "npcHome1", "T");
+    if (activeListeners.npcHome1) {
+      document.removeEventListener("keydown", activeListeners.npcHome1);
+      activeListeners.npcHome1 = null;     
+    }
+  }
+}
+
+
+
 
 function animate() {
   window.requestAnimationFrame(animate);
@@ -324,9 +449,12 @@ function animate() {
   quiz3.forEach((quiz) => {
     quiz.draw();
   });
-  
+  npcHome1.forEach((npc1) => {
+    npc1.draw();
+  });
+
   // dragle.draw();
-  
+
   player.draw();
   foreground.draw();
 
@@ -354,7 +482,8 @@ function animate() {
           x: canvas.width / 2 - 192 / 4 / 2,
           y: canvas.height / 2 - 68 / 2,
         },
-        "quiz1"
+        "quiz1",
+        "F"
       );
       addKeyPressListener("quiz1", "quiz1.html");
     }
@@ -380,7 +509,8 @@ function animate() {
           x: canvas.width / 2 - 192 / 4 / 2,
           y: canvas.height / 2 - 68 / 2,
         },
-        "quiz2"
+        "quiz2",
+        "F"
       );
       addKeyPressListener("quiz2", "quiz2.html");
     }
@@ -406,42 +536,42 @@ function animate() {
           x: canvas.width / 2 - 192 / 4 / 2,
           y: canvas.height / 2 - 68 / 2,
         },
-        "quiz3"
+        "quiz3",
+        "F"
       );
       addKeyPressListener("quiz3", "quiz3.html");
     }
   });
 
- // Update the no-collision handlers
-if (!collisionDetected.quiz1) {
-  updateCollisionIndicator(false, null, "quiz1");
-  // Remove the listener when there's no collision
-  if (activeListeners.quiz1) {
-    document.removeEventListener("keydown", activeListeners.quiz1);
-    activeListeners.quiz1 = null;
-  }
-}
+  npcHome1.forEach((npc) => {
+    if (
+      rectangularCollision({
+        rectangle1: player,
+        rectangle2: {
+          ...npc,
+          position: {
+            x: npc.position.x,
+            y: npc.position.y + 3,
+          },
+        },
+      })
+    ) {
+      collisionDetected.npcHome1 = true;
+      updateCollisionIndicator(
+        true,
+        {
+          x: canvas.width / 2 - 192 / 4 / 2,
+          y: canvas.height / 2 - 68 / 2,
+        },
+        "npcHome1",
+        "T" // Add this parameter to show "Press T"
+      );
 
-  // Update the no-collision handlers
-if (!collisionDetected.quiz2) {
-  updateCollisionIndicator(false, null, "quiz2");
-  // Remove the listener when there's no collision
-  if (activeListeners.quiz2) {
-    document.removeEventListener("keydown", activeListeners.quiz2);
-    activeListeners.quiz2 = null;
-  }
-}
-
- // Update the no-collision handlers
-if (!collisionDetected.quiz3) {
-  updateCollisionIndicator(false, null, "quiz3");
-  // Remove the listener when there's no collision
-  if (activeListeners.quiz3) {
-    document.removeEventListener("keydown", activeListeners.quiz3);
-    activeListeners.quiz3 = null;
-  }
-}
-
+      addKeyPressListenerForNpC("npcHome1", "npcHome1Bot");
+    }
+  });
+updateNoCollisionHandlers() 
+ 
 
   let moving = true;
   player.moving = false;
@@ -551,28 +681,39 @@ if (!collisionDetected.quiz3) {
 animate();
 
 let lastKey = "";
+// Modify the window keydown event listener
 window.addEventListener("keydown", (e) => {
-  switch (e.key) {
-    case "w":
-      keys.w.pressed = true;
-      lastKey = "w";
-      break;
-    case "a":
-      keys.a.pressed = true;
-      lastKey = "a";
-      break;
-    case "s":
-      keys.s.pressed = true;
-      lastKey = "s";
-      break;
-    case "d":
-      keys.d.pressed = true;
-      lastKey = "d";
-      break;
+  const activeElement = document.activeElement;
+  if (activeElement.tagName === "TEXTAREA" || activeElement.tagName === "INPUT") {
+    return;
+  }
+  
+  // Only process movement keys if dialog is not open
+  if (!isDialogOpen) {
+    switch (e.key) {
+      case "w":
+        keys.w.pressed = true;
+        lastKey = "w";
+        break;
+      case "a":
+        keys.a.pressed = true;
+        lastKey = "a";
+        break;
+      case "s":
+        keys.s.pressed = true;
+        lastKey = "s";
+        break;
+      case "d":
+        keys.d.pressed = true;
+        lastKey = "d";
+        break;
+    }
   }
 });
 
 window.addEventListener("keyup", (e) => {
+
+  
   switch (e.key) {
     case "w":
       keys.w.pressed = false;
@@ -589,10 +730,10 @@ window.addEventListener("keyup", (e) => {
   }
 });
 
-let clicked = false
-addKeyPressListener('click', ()=>{
-  if(!clicked){
-    audio.Map.play()
-    clicked=true
-  }
-})
+// let clicked = false;
+// addKeyPressListener("click", () => {
+//   if (!clicked) {
+//     audio.Map.play();
+//     clicked = true;
+//   }
+// });

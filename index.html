@@ -1,38 +1,138 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        body {
+            background-color: black;
+            margin: 0;
+            font-family: monospace;
+        }
+
+        .dialog-overlay {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 800px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .dialog-container {
+            background-color: white;
+            border: 2px solid #000;
+            padding: 20px;
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .dialog-text {
+            color: black;
+            font-size: 16px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .dialog-link {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            padding: 8px;
+            font-family: monospace;
+            border: 1px solid #333;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .send-button {
+            padding: 8px 16px;
+            font-family: monospace;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .close-button-npc1 {
+            padding: 8px 16px;
+            font-family: monospace;
+            color: blue;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .send-button:hover {
+            background-color: #444;
+        }
+    </style>
 </head>
-<style>
-    body {
-        background-color: black;
-        margin: 0;
-    }
-</style>
 
 <body>
-    <div style="width: full; margin-top: 14px;  display: flex; justify-content: center; align-items: center;">
-
-        <div style="position: absolute; background-color: brown;">
-
-        </div>
+    <div style="width: full; margin-top: 14px; display: flex; justify-content: center; align-items: center;">
         <canvas>
         </canvas>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"
-        integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <script src="/data/audio.js"></script>
 
-        <script src="/data/quiz1.js"></script>
+    <!-- Dialog overlay -->
+    <div class="dialog-overlay" id="npcHome1Bot">
+        <div class="dialog-container">
+            <p class="dialog-text">Magpasko na Daghang Projects</p>
+
+            <div class="input-container">
+                <input type="text" class="chat-input" placeholder="Type your message..."> <button
+                    class="send-button">Send</button>
+
+            </div>
+
+            <div class="button-container">
+<label for="">Toggle T to Close</label>            </div>
+        </div>
+    </div>
+
+    <!-- Your existing scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="/data/audio.js"></script>
+    <script src="/data/quiz1.js"></script>
     <script src="/data/quiz2.js"></script>
     <script src="/data/quiz3.js"></script>
+    <script src="/data/npcHome1.js"></script>
     <script src="/data/collision.js"></script>
     <script src="classes.js"></script>
     <script src="index.js"></script>
 
+
+
+
+   
 </body>
 
-</html>w
+</html>
