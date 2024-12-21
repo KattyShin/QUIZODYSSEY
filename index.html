@@ -92,9 +92,6 @@
             }
         }
 
-
-
-
         .custom-modal-content {
             background-color: #8B4513;
             border: 4px solid #F7C396;
@@ -115,51 +112,167 @@
             margin-bottom: 25px;
         }
 
-        .exit-btn {
+
+
+
+
+
+        .success-message {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .success-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            background: #8B4513;
+            z-index: 2000;
+            padding: 30px;
+            
+        }
+
+        .success-message.show {
+            opacity: 1;
+        }
+
+        .success-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .success-message h5 {
+            margin-top: 15px;
+            color: white;
+            font-size: clamp(14px, 3vw, 20px);
+        }
+
+        .success-message p {
+            color: white;
+            font-size: clamp(8px, 2vw, 12px);
+        }
+
+        .fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .exit-btn,
+        .claim-pass1 {
             background-color: #26C236;
             color: white;
             border: 2px solid white;
             font-size: 15px;
-           width:  200px;
-           padding: 15px;
+            width: 200px;
+            padding: 15px;
         }
 
-         .exit-btn:hover, .continue-btn:hover{
+        .exit-btn:hover,
+        .continue-btn:hover {
             background-color: #D4854C;
             color: white;
         }
-
 
         .continue-btn {
             background-color: #5D655E;
             color: white;
             border: 2px solid white;
             font-size: 15px;
-            width:  200px;
+            width: 200px;
         }
 
-       
+        /* Updated Chest Overlay Styles */
+        .chest-overlay {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background-color: #D4854C;
+            border: 5px solid #F7C396;
+            border-radius: 8px;
+            padding: 20px 5px 0px 10px;
+            text-align: center;
+            z-index: 10000;
+            display: none;
+        }
 
+        /* Header styles */
+        .chest-overlay h5 {
+            font-size: clamp(14px, 3vw, 20px);
+            margin-bottom: 10px;
+            color: wheat;
+        }
 
+        /* Paragraph styles */
+        .chest-overlay p {
+            font-size: clamp(8px, 2vw, 12px);
+            margin-bottom: 20px;
+            color: white;
+        }
 
-        /* Your existing styles */
+        /* Claim container styles */
+        .claim-pass1-con {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+        }
+
+        /* Chest image styles */
+        .chest-claim-img {
+            width: clamp(80px, 20vw, 110px);
+            height: auto;
+        }
+
+        /* Button styles */
+        .claim-pass1 {
+            background-color: #26C236;
+            color: white;
+            border: 2px solid white;
+            font-size: clamp(12px, 2.5vw, 15px);
+            width: clamp(150px, 50%, 200px);
+            padding: clamp(10px, 2vw, 15px);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .claim-pass1:hover {
+            background-color: #1ea52c;
+        }
+
+        .claim-pass1:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Dialog Overlay Styles */
         .dialog-overlay {
             position: fixed;
-            bottom: 40px;
+            display: none;
             left: 50%;
-            transform: translateX(-50%);
+            bottom: 40px;
+            transform: translate(-50%);
             width: 90%;
             max-width: 800px;
             background-color: #D4854C;
             border: 5px solid #F7C396;
             border-radius: 8px;
-            display: none;
             z-index: 10000;
         }
 
         .dialog-header {
             padding: 15px;
             border-bottom: 1px solid #8B4513;
+            color: wheat;
         }
 
         .dialog-header h1 {
@@ -205,15 +318,9 @@
 
         .close-chatBot {
             text-align: right;
-            padding: 5px 15px;
-            font-size: 13px;
-        }
-
-        .input-container {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            box-sizing: border-box;
+            padding: 10px 15px;
+            font-size: 10px;
+            color: #333;
         }
 
         .chat-input {
@@ -231,12 +338,6 @@
             border: 1px solid #333;
         }
 
-        .button-container {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
         .send-button {
             padding: 8px 16px;
             font-family: monospace;
@@ -251,32 +352,65 @@
         .send-button:hover {
             background-color: #444;
         }
+
+        /* Media Queries */
+        @media screen and (max-width: 768px) {
+            .chest-overlay {
+                padding: 15px;
+                width: 95%;
+            }
+
+            .dialog-overlay {
+                width: 95%;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .chest-overlay {
+                padding: 10px;
+                border-width: 3px;
+            }
+
+            .claim-pass1-con {
+                gap: 10px;
+            }
+
+            .dialog-overlay {
+                border-width: 3px;
+            }
+
+            .messages-container {
+                height: 200px;
+            }
+        }
+
+        @media screen and (max-width: 320px) {
+
+            .chest-overlay,
+            .dialog-overlay {
+                width: 98%;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- New Game Stats Element -->
+    <!-- Game Stats Element -->
     <div class="game-stats">
         <div class="stat-item">
-
             <div>
                 <span class="score">Score:</span> <span>3/6</span>
             </div>
             <div>
                 <span class="hint">Hints: </span><span>6</span>
-
             </div>
         </div>
-
         <div class="stat-item">
-
-            <!-- Button trigger modal -->
             <button type="button" class="close-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                <span>x</span> </button>
+                <span>x</span>
+            </button>
         </div>
-
     </div>
-
 
     <!-- Modal -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -295,7 +429,7 @@
                             Exit
                         </button>
                         <button type="button" class="btn px-4 continue-btn" data-bs-dismiss="modal">
-                           Continue
+                            Continue
                         </button>
                     </div>
                 </div>
@@ -303,14 +437,12 @@
         </div>
     </div>
 
-
-
-
-    <div style="width: full;  display: flex; justify-content: center; align-items: center;">
+    <div style="width: full; display: flex; justify-content: center; align-items: center;">
         <canvas>
         </canvas>
     </div>
 
+    <!-- Dialog Overlay -->
     <div class="dialog-overlay" id="npcHome1Bot">
         <div class="dialog-header">
             <h1>Magpasko na Daghang Projects</h1>
@@ -325,11 +457,36 @@
         <div class="close-chatBot">Toggle T to Close</div>
     </div>
 
-    <!-- Your existing scripts -->
+    <!-- Chest Overlay -->
+    <div class="chest-overlay" id="chest1Div">
+        <div class="chest-content">
+            <h5>Congratulations! You have earned 1 Free Pass!</h5><br>
+            <p style="font-size: 10;">Use this pass to skip a question and move to the next one.</p>
+            <div class="claim-pass1-con">
+                <img class="chest-claim-img" src="img/chest.png" alt="">
+                <button class="claim-pass1" onclick="handleClaim()">Claim</button>
+            </div>
+        </div>
+
+        <div class="close-chatBot">Toggle T to Close</div>
+    </div>
+
+    <div class="success-message" style="display: none;">
+        <div class="success-content">
+            <i class="fas fa-check-circle" style="font-size: 40px; color: #26C236;"></i>
+            <h5>Successfully Claimed!</h5>
+            <p>Your free pass has been added.</p>
+        </div>
+    </div>
+
+
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <script src="/data/audio.js"></script>
     <script src="/data/quiz.js"></script>
     <script src="/data/oceanScenery.js"></script>
+    <script src="/data/chests.js"></script>
+    <script src="/data/chestNearby.js"></script>
     <script src="/data/npcHome1.js"></script>
     <script src="/data/home3Nearby.js"></script>
     <script src="/data/collision.js"></script>

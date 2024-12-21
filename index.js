@@ -2,17 +2,17 @@ const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-c.fillRect(0, 0, canvas.width, canvas.height); 
+c.fillRect(0, 0, canvas.width, canvas.height);
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  c.fillRect(0, 0, canvas.width, canvas.height); 
+  c.fillRect(0, 0, canvas.width, canvas.height);
 }
 window.addEventListener("resize", resizeCanvas);
 
+const collisionsMap = [];
 
 //-------GET COLLISION PART------------
-const collisionsMap = [];
 for (let i = 0; i < collisions.length; i += 70) {
   collisionsMap.push(collisions.slice(i, 70 + i));
 }
@@ -46,12 +46,20 @@ for (let i = 0; i < oceanSceneryData.length; i += 70) {
   oceanSceneryMap.push(oceanSceneryData.slice(i, 70 + i));
 }
 
-
 const home3NearbyMap = [];
 for (let i = 0; i < home3NearbyData.length; i += 70) {
   home3NearbyMap.push(home3NearbyData.slice(i, 70 + i));
 }
 
+const chestNearbyMap = [];
+for (let i = 0; i < chestNearbyData.length; i += 70) {
+  chestNearbyMap.push(chestNearbyData.slice(i, 70 + i));
+}
+
+const chest1Map = [];
+for (let i = 0; i < chest1Data.length; i += 70) {
+  chest1Map.push(chest1Data.slice(i, 70 + i));
+}
 
 // CHECK CLASSES.JS FOR CLASS CREATION
 //--STOP THE PLAYUER IN COLLISON AREA----------------------------------------------------------------------------------------
@@ -59,9 +67,8 @@ for (let i = 0; i < home3NearbyData.length; i += 70) {
 const boundaries = [];
 const offset = {
   x: 0,
-  y: -550,
+  y: -595,
 };
-
 collisionsMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
     if (symbol === 1025)
@@ -169,9 +176,35 @@ home3NearbyMap.forEach((row, i) => {
   });
 });
 
+const chestNearby = [];
+chestNearbyMap.forEach((row, i) => {
+  row.forEach((symbol, j) => {
+    if (symbol === 1025)
+      chestNearby.push(
+        new Boundary({
+          position: {
+            x: j * Boundary.width + offset.x,
+            y: i * Boundary.height + offset.y,
+          },
+        })
+      );
+  });
+});
 
-
-
+const chest1 = [];
+chest1Map.forEach((row, i) => {
+  row.forEach((symbol, j) => {
+    if (symbol === 1025)
+      chest1.push(
+        new Boundary({
+          position: {
+            x: j * Boundary.width + offset.x,
+            y: i * Boundary.height + offset.y,
+          },
+        })
+      );
+  });
+});
 
 const image = new Image();
 image.src = "./img/Pellet Town.png";
@@ -190,8 +223,6 @@ playerLeftImage.src = "./img/playerLeft.png";
 
 const playerRightImage = new Image();
 playerRightImage.src = "./img/playerRight.png";
-
-
 
 const player = new Sprite({
   position: {
@@ -266,12 +297,14 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-
 const collisionIndicators = {
   F: {},
   T: {},
   oceanScene: {},
-  home3Nearby:{},
+  home3Nearby: {},
+  chestNearby: {},
+  chest1: {},
+
 };
 
 //----IF COLIDE SHOW INDICATOR--------------------------------------------------------------------------------------
@@ -307,12 +340,29 @@ function updateCollisionIndicator(show, playerPosition, id, type) {
     if (!collisionIndicators[type][id] && type == "home3Nearby") {
       const indicator = document.createElement("div");
       indicator.className = "collision-indicator";
-      indicator.textContent = `There's a house Nearby, Maybe this i Stage 3`;
+      indicator.textContent = `On, Look....There's a House Nearby`;
       indicator.id = `collision-indicator-${id}-${type}`;
       document.body.appendChild(indicator);
       collisionIndicators[type][id] = indicator;
     }
 
+    if (!collisionIndicators[type][id] && type == "chestNearby") {
+      const indicator = document.createElement("div");
+      indicator.className = "collision-indicator";
+      indicator.textContent = `halah naay chest`;
+      indicator.id = `collision-indicator-${id}-${type}`;
+      document.body.appendChild(indicator);
+      collisionIndicators[type][id] = indicator;
+    }
+
+    if (!collisionIndicators[type][id] && type == "chest1") {
+      const indicator = document.createElement("div");
+      indicator.className = "collision-indicator";
+      indicator.textContent = `Press E`;
+      indicator.id = `collision-indicator-${id}-${type}`;
+      document.body.appendChild(indicator);
+      collisionIndicators[type][id] = indicator;
+    }
 
     if (collisionIndicators[type][id]) {
       const canvasRect = canvas.getBoundingClientRect();
@@ -343,6 +393,8 @@ const activeListeners = {
   npcHome1: null,
   oceanScenery: null,
   home3Nearby: null,
+  chestNearby: null,
+  chest1: null,
 };
 
 // ----KEY PRESS F
@@ -424,18 +476,30 @@ function addKeyPressListenerForNpC(id, divId) {
         inputElements.forEach((input) => {
           input.value = ""; // Clear input value
         });
-
-        updateCollisionIndicator(
-          true,
-          {
-            x: canvas.width / 2 - 192 / 4 / 2,
-            y: canvas.height / 2 - 68 / 2,
-          },
-          "quiz3",
-          "F"
-        );
       }
       updateCollisionIndicator(true, player.position, id, "T");
+    }
+
+    if (e.key === "e" || e.key === "E") {
+      console.log(`T key pressed to toggle ${divId}`);
+
+      const chest1Div = document.getElementById(divId);
+      if (chest1Div) {
+        // Toggle visibility and update dialog state
+        const newDisplayState =
+          chest1Div.style.display === "none" ? "block" : "none";
+        chest1Div.style.display = newDisplayState;
+        chest1Div = newDisplayState === "block";
+
+        // Reset movement keys when dialog opens
+        if (isDialogOpen) {
+          keys.w.pressed = false;
+          keys.a.pressed = false;
+          keys.s.pressed = false;
+          keys.d.pressed = false;
+        }
+      }
+      updateCollisionIndicator(true, player.position, id, "chest1");
     }
   };
 
@@ -458,7 +522,6 @@ window.onload = () => {
   }
 };
 
-
 let collisionDetected = {
   quiz1: false,
   quiz2: false,
@@ -466,11 +529,9 @@ let collisionDetected = {
   npcHome1: false,
   oceanScenery: false,
   home3Nearby: false,
-
+  chestNearby: false,
+  chest1: false,
 };
-
-
-
 
 const movables = [
   background,
@@ -482,6 +543,8 @@ const movables = [
   ...npcHome1,
   ...oceanScenery,
   ...home3Nearby,
+  ...chestNearby,
+  ...chest1,
 ];
 
 // GET POSITION SA TILE------------------------------------------
@@ -542,8 +605,21 @@ function updateNoCollisionHandlers() {
       activeListeners.home3Nearby = null;
     }
   }
+  if (!collisionDetected.chestNearby) {
+    updateCollisionIndicator(false, null, "chestNearby", "chestNearby");
+    if (activeListeners.chestNearby) {
+      document.removeEventListener("keydown", activeListeners.chestNearby);
+      activeListeners.chestNearby = null;
+    }
+  }
+  if (!collisionDetected.chest1) {
+    updateCollisionIndicator(false, null, "chest1", "chest1");
+    if (activeListeners.chest1) {
+      document.removeEventListener("keydown", activeListeners.chest1);
+      activeListeners.chest1 = null;
+    }
+  }
 }
-
 
 //-----ANIMATE-------------------------------------------------------------------------------------
 
@@ -572,7 +648,12 @@ function animate() {
   home3Nearby.forEach((home3Near) => {
     home3Near.draw();
   });
-
+  chestNearby.forEach((chestNear) => {
+    chestNear.draw();
+  });
+  chest1.forEach((chest) => {
+    chest.draw();
+  });
 
   // dragle.draw();
 
@@ -744,6 +825,60 @@ function animate() {
     }
   });
 
+  chestNearby.forEach((chestNear) => {
+    if (
+      rectangularCollision({
+        rectangle1: player,
+        rectangle2: {
+          ...chestNear,
+          position: {
+            x: chestNear.position.x,
+            y: chestNear.position.y + 3,
+          },
+        },
+      })
+    ) {
+      collisionDetected.chestNearby = true;
+      updateCollisionIndicator(
+        true,
+        {
+          x: canvas.width / 2 - 192 / 4 / 2,
+          y: canvas.height / 2 - 68 / 2,
+        },
+        "chestNearby",
+        "chestNearby"
+      );
+    }
+  });
+
+  chest1.forEach((chest) => {
+    if (
+      rectangularCollision({
+        rectangle1: player,
+        rectangle2: {
+          ...chest,
+          position: {
+            x: chest.position.x,
+            y: chest.position.y + 3,
+          },
+        },
+      })
+    ) {
+      collisionDetected.chest1 = true;
+      updateCollisionIndicator(
+        true,
+        {
+          x: canvas.width / 2 - 192 / 4 / 2,
+          y: canvas.height / 2 - 68 / 2,
+        },
+        "chest1",
+        "chest1" // Add this parameter to show "Press T"
+      );
+
+      addKeyPressListenerForNpC("chest1", "chest1Div");
+    }
+  });
+
   updateNoCollisionHandlers();
 
   let moving = true;
@@ -853,9 +988,6 @@ function animate() {
 }
 animate();
 
-
-
-
 //-----MOVEMENTS-------------------------------------------------------------------------------------
 
 let lastKey = "";
@@ -917,7 +1049,6 @@ window.addEventListener("keyup", (e) => {
   }
 });
 
-
 // let clicked = false;
 // addKeyPressListener("click", () => {
 //   if (!clicked) {
@@ -926,85 +1057,126 @@ window.addEventListener("keyup", (e) => {
 //   }
 // });
 
-
 //------------------------------------------------------------------------------------------
 
 class Chatbot {
   constructor() {
-      this.dialogOverlay = document.getElementById('npcHome1Bot');
-      this.messagesContainer = document.getElementById('messagesContainer');
-      this.chatInput = this.dialogOverlay.querySelector('.chat-input');
-      this.sendButton = this.dialogOverlay.querySelector('.send-button');
-      
-      this.setupEventListeners();
+    this.dialogOverlay = document.getElementById("npcHome1Bot");
+    this.messagesContainer = document.getElementById("messagesContainer");
+    this.chatInput = this.dialogOverlay.querySelector(".chat-input");
+    this.sendButton = this.dialogOverlay.querySelector(".send-button");
+
+    this.setupEventListeners();
   }
 
   setupEventListeners() {
-      this.sendButton.addEventListener('click', () => this.sendMessage());
-      this.chatInput.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') {
-              this.sendMessage();
-          }
-      });
+    this.sendButton.addEventListener("click", () => this.sendMessage());
+    this.chatInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        this.sendMessage();
+      }
+    });
   }
 
   async sendMessage() {
-      const message = this.chatInput.value.trim();
-      if (!message) return;
+    const message = this.chatInput.value.trim();
+    if (!message) return;
 
-      // Add user message
-      this.appendMessage(message, 'user');
-      this.chatInput.value = '';
+    // Add user message
+    this.appendMessage(message, "user");
+    this.chatInput.value = "";
 
-      try {
-          // Make API call to Flask backend
-          const response = await fetch('http://localhost:5000/chat', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ message: message })
-          });
+    try {
+      // Make API call to Flask backend
+      const response = await fetch("http://localhost:5000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: message }),
+      });
 
-          if (!response.ok) {
-              throw new Error('Network response was not ok');
-          }
-
-          const data = await response.json();
-          
-          // Display bot response
-          this.appendMessage(data.response, 'bot');
-
-      } catch (error) {
-          console.error('Error:', error);
-          this.appendMessage('Sorry, I encountered an error. Please try again.', 'bot');
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
+
+      const data = await response.json();
+
+      // Display bot response
+      this.appendMessage(data.response, "bot");
+    } catch (error) {
+      console.error("Error:", error);
+      this.appendMessage(
+        "Sorry, I encountered an error. Please try again.",
+        "bot"
+      );
+    }
   }
 
   appendMessage(text, sender) {
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message');
-      messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-      messageDiv.textContent = text;
-      
-      this.messagesContainer.appendChild(messageDiv);
-      this.scrollToBottom();
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message");
+    messageDiv.classList.add(
+      sender === "user" ? "user-message" : "bot-message"
+    );
+    messageDiv.textContent = text;
+
+    this.messagesContainer.appendChild(messageDiv);
+    this.scrollToBottom();
   }
 
   scrollToBottom() {
-      this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+    this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
   }
 }
 
 // Initialize the chatbot when the page loads
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   const chatbot = new Chatbot();
 });
 
-
 // ------------------------------------------------------------------------------------------
 // INDEX HTML EXIT GAME BUTTON
-const exitGameBtn = document.querySelector('.exit-btn')
-exitGameBtn.addEventListener('click', ()=>{
-  window.location ='home.html'
-})
+const exitGameBtn = document.querySelector(".exit-btn");
+exitGameBtn.addEventListener("click", () => {
+  window.location = "home.html";
+});
+function handleClaim() {
+    const successMessage = document.querySelector('.success-message');
+    const chestOverlay = document.getElementById('chest1Div');
+    const claimButton = document.querySelector('.claim-pass1');
+    
+
+    chestOverlay.style.display = 'none';
+
+    // Disable the claim button
+    claimButton.disabled = true;
+    claimButton.style.backgroundColor = '#5D655E'; // Visual feedback for disabled state
+    
+    // Show success message
+    successMessage.style.display = 'block';
+    
+    // Add small delay before showing the success message animation
+    setTimeout(() => {
+        successMessage.classList.add('show');
+    }, 50);
+    
+    // After 3 seconds, hide everything
+    setTimeout(() => {
+        // Hide success message
+        successMessage.classList.remove('show');
+        
+        // Hide chest overlay
+        chestOverlay.style.display = 'none';
+        
+        // After animations complete, reset everything
+        setTimeout(() => {
+            successMessage.style.display = 'none';
+            chestOverlay.style.display = 'none';
+            
+            // Reset button state
+            claimButton.disabled = false;
+            claimButton.style.backgroundColor = '#26C236';
+        }, 300);
+    }, 3000);
+}

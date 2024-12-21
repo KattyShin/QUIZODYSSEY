@@ -33,7 +33,7 @@ def chatbot_response(user_input):
     
     # Basic response logic
     if "hi" in processed_input:
-        response = "Hi langga ni kaon ara?"
+        response = "Hi langga ni kaon naka ara?"
     elif "wala" in processed_input:
         response = "Kaon na langga ayaw sig code kay MABOANG naka ana"
     elif "name" in processed_input:
