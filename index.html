@@ -200,9 +200,12 @@
             padding: 20px 5px 0px 10px;
             text-align: center;
             z-index: 10000;
-            display: none;
         }
 
+        #chest1Div, #chest2Div,#chest3Div{
+            display: none;
+
+        }
         /* Header styles */
         .chest-overlay h5 {
             font-size: clamp(14px, 3vw, 20px);
@@ -457,7 +460,7 @@
         <div class="close-chatBot">Toggle T to Close</div>
     </div>
 
-    <!-- Chest Overlay -->
+    <!-- Chest Overlay 1-->
     <div class="chest-overlay" id="chest1Div">
         <div class="chest-content">
             <h5>Congratulations! You have earned 1 Free Pass!</h5><br>
@@ -478,6 +481,39 @@
             <p>Your free pass has been added.</p>
         </div>
     </div>
+
+<!-- Chest Overlay 2-->
+<div class="chest-overlay" id="chest2Div">
+    <div class="chest-content">
+        <p style="font-size: 10;">Use this pass to skip a question and move to the next one.</p>
+        <div class="claim-pass1-con">
+            <img class="chest-claim-img" src="img/chest.png" alt="">
+            <button class="claim-pass1" onclick="handleClaim()">Claim</button>
+        </div>
+    </div>
+
+    <div class="close-chatBot">Toggle T to Close</div>
+</div>
+
+
+
+<!-- Chest Overlay 3-->
+<div class="chest-overlay" id="chest3Div">
+    <div class="chest-content">
+        <h1>sdkljsdslda</h1>
+        <h5>Congratulations! You have earned 1 Free Pass!</h5><br>
+        <p style="font-size: 10;">Use this pass to skip a question and move to the next one.</p>
+        <div class="claim-pass1-con">
+            <img class="chest-claim-img" src="img/chest.png" alt="">
+            <button class="claim-pass1" onclick="handleClaim()">Claim</button>
+        </div>
+    </div>
+
+    <div class="close-chatBot">Toggle T to Close</div>
+</div>
+
+
+
 
 
     <!-- Scripts -->

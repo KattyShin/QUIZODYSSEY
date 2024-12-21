@@ -61,6 +61,16 @@ for (let i = 0; i < chest1Data.length; i += 70) {
   chest1Map.push(chest1Data.slice(i, 70 + i));
 }
 
+const chest2Map = [];
+for (let i = 0; i < chest2Data.length; i += 70) {
+  chest2Map.push(chest2Data.slice(i, 70 + i));
+}
+
+const chest3Map = [];
+for (let i = 0; i < chest3Data.length; i += 70) {
+  chest3Map.push(chest3Data.slice(i, 70 + i));
+}
+
 // CHECK CLASSES.JS FOR CLASS CREATION
 //--STOP THE PLAYUER IN COLLISON AREA----------------------------------------------------------------------------------------
 
@@ -205,6 +215,35 @@ chest1Map.forEach((row, i) => {
       );
   });
 });
+const chest2 = [];
+chest2Map.forEach((row, i) => {
+  row.forEach((symbol, j) => {
+    if (symbol === 1025)
+      chest2.push(
+        new Boundary({
+          position: {
+            x: j * Boundary.width + offset.x,
+            y: i * Boundary.height + offset.y,
+          },
+        })
+      );
+  });
+});
+
+const chest3 = [];
+chest3Map.forEach((row, i) => {
+  row.forEach((symbol, j) => {
+    if (symbol === 1025)
+      chest3.push(
+        new Boundary({
+          position: {
+            x: j * Boundary.width + offset.x,
+            y: i * Boundary.height + offset.y,
+          },
+        })
+      );
+  });
+});
 
 const image = new Image();
 image.src = "./img/Pellet Town.png";
@@ -285,7 +324,7 @@ style.textContent = `
   border-radius: 5px;
   font-size: 11px;
   pointer-events: none;
-  transform: translate(-50%, -100%);
+  transform: translate(-60%, -100%);
   animation: float 1s infinite ease-in-out;
   z-index: 1000;
 }
@@ -304,7 +343,8 @@ const collisionIndicators = {
   home3Nearby: {},
   chestNearby: {},
   chest1: {},
-
+  chest2: {},
+  chest3: {},
 };
 
 //----IF COLIDE SHOW INDICATOR--------------------------------------------------------------------------------------
@@ -363,6 +403,23 @@ function updateCollisionIndicator(show, playerPosition, id, type) {
       document.body.appendChild(indicator);
       collisionIndicators[type][id] = indicator;
     }
+    if (!collisionIndicators[type][id] && type == "chest2") {
+      const indicator = document.createElement("div");
+      indicator.className = "collision-indicator";
+      indicator.textContent = `Press E`;
+      indicator.id = `collision-indicator-${id}-${type}`;
+      document.body.appendChild(indicator);
+      collisionIndicators[type][id] = indicator;
+    }
+
+    if (!collisionIndicators[type][id] && type == "chest3") {
+      const indicator = document.createElement("div");
+      indicator.className = "collision-indicator";
+      indicator.textContent = `Press E`;
+      indicator.id = `collision-indicator-${id}-${type}`;
+      document.body.appendChild(indicator);
+      collisionIndicators[type][id] = indicator;
+    }
 
     if (collisionIndicators[type][id]) {
       const canvasRect = canvas.getBoundingClientRect();
@@ -395,6 +452,8 @@ const activeListeners = {
   home3Nearby: null,
   chestNearby: null,
   chest1: null,
+  chest2: null,
+  chest3: null,
 };
 
 // ----KEY PRESS F
@@ -435,8 +494,6 @@ function addKeyPressListener(id, url) {
 }
 
 let isDialogOpen = false;
-
-// -----KEYPRESS FOR NPC
 function addKeyPressListenerForNpC(id, divId) {
   if (activeListeners[id]) {
     document.removeEventListener("keydown", activeListeners[id]);
@@ -452,60 +509,70 @@ function addKeyPressListenerForNpC(id, divId) {
       return;
     }
 
+    // Handle 'T' key press for NPC dialog
     if (e.key === "t" || e.key === "T") {
       console.log(`T key pressed to toggle ${divId}`);
-
       const npcHome1Bot = document.getElementById(divId);
       if (npcHome1Bot) {
-        // Toggle visibility and update dialog state
         const newDisplayState =
           npcHome1Bot.style.display === "none" ? "block" : "none";
         npcHome1Bot.style.display = newDisplayState;
         isDialogOpen = newDisplayState === "block";
 
-        // Reset movement keys when dialog opens
         if (isDialogOpen) {
-          keys.w.pressed = false;
-          keys.a.pressed = false;
-          keys.s.pressed = false;
-          keys.d.pressed = false;
+          resetMovementKeys();
         }
 
         // Clear input fields when dialog closes
         const inputElements = npcHome1Bot.querySelectorAll("input");
         inputElements.forEach((input) => {
-          input.value = ""; // Clear input value
+          input.value = "";
         });
+        
+        updateCollisionIndicator(true, player.position, id, "T");
       }
-      updateCollisionIndicator(true, player.position, id, "T");
     }
 
+    // Handle 'E' key press for chests
     if (e.key === "e" || e.key === "E") {
-      console.log(`T key pressed to toggle ${divId}`);
+      console.log(`E key pressed to toggle ${divId}`);
+      
+      // Handle all chests
+      const chestIds = ["chest1Div", "chest2Div", "chest3Div"];
+      let isAnyChestOpen = false;
 
-      const chest1Div = document.getElementById(divId);
-      if (chest1Div) {
-        // Toggle visibility and update dialog state
-        const newDisplayState =
-          chest1Div.style.display === "none" ? "block" : "none";
-        chest1Div.style.display = newDisplayState;
-        chest1Div = newDisplayState === "block";
-
-        // Reset movement keys when dialog opens
-        if (isDialogOpen) {
-          keys.w.pressed = false;
-          keys.a.pressed = false;
-          keys.s.pressed = false;
-          keys.d.pressed = false;
+      chestIds.forEach(chestId => {
+        const chestDiv = document.getElementById(chestId);
+        if (chestDiv && chestId === divId) {
+          const newDisplayState = chestDiv.style.display === "none" ? "block" : "none";
+          chestDiv.style.display = newDisplayState;
+          isAnyChestOpen = isAnyChestOpen || newDisplayState === "block";
+          
+          // Update collision indicator for specific chest
+          updateCollisionIndicator(true, player.position, id, chestId.replace("Div", ""));
         }
+      });
+
+      // Reset movement keys if any chest is open
+      if (isAnyChestOpen) {
+        resetMovementKeys();
       }
-      updateCollisionIndicator(true, player.position, id, "chest1");
     }
   };
 
-  activeListeners[id] = listener;
+  // Helper function to reset movement keys
+  function resetMovementKeys() {
+    keys.w.pressed = false;
+    keys.a.pressed = false;
+    keys.s.pressed = false;
+    keys.d.pressed = false;
+  }
+
+  // Add the event listener and store it
   document.addEventListener("keydown", listener);
+  activeListeners[id] = listener;
 }
+
 
 //------STORE LAST POSITION OF THE PLAYER---------------------------------------
 window.onload = () => {
@@ -531,6 +598,8 @@ let collisionDetected = {
   home3Nearby: false,
   chestNearby: false,
   chest1: false,
+  chest2: false,
+  chest3: false,
 };
 
 const movables = [
@@ -545,6 +614,8 @@ const movables = [
   ...home3Nearby,
   ...chestNearby,
   ...chest1,
+  ...chest2,
+  ...chest3,
 ];
 
 // GET POSITION SA TILE------------------------------------------
@@ -619,6 +690,20 @@ function updateNoCollisionHandlers() {
       activeListeners.chest1 = null;
     }
   }
+  if (!collisionDetected.chest2) {
+    updateCollisionIndicator(false, null, "chest2", "chest2");
+    if (activeListeners.chest2) {
+      document.removeEventListener("keydown", activeListeners.chest2);
+      activeListeners.chest2 = null;
+    }
+  }
+  if (!collisionDetected.chest3) {
+    updateCollisionIndicator(false, null, "chest3", "chest3");
+    if (activeListeners.chest3) {
+      document.removeEventListener("keydown", activeListeners.chest3);
+      activeListeners.chest3 = null;
+    }
+  }
 }
 
 //-----ANIMATE-------------------------------------------------------------------------------------
@@ -652,6 +737,13 @@ function animate() {
     chestNear.draw();
   });
   chest1.forEach((chest) => {
+    chest.draw();
+  });
+  chest2.forEach((chest) => {
+    chest.draw();
+  });
+
+  chest3.forEach((chest) => {
     chest.draw();
   });
 
@@ -879,6 +971,61 @@ function animate() {
     }
   });
 
+  chest2.forEach((chest) => {
+    if (
+      rectangularCollision({
+        rectangle1: player,
+        rectangle2: {
+          ...chest,
+          position: {
+            x: chest.position.x,
+            y: chest.position.y + 3,
+          },
+        },
+      })
+    ) {
+      collisionDetected.chest2 = true;
+      updateCollisionIndicator(
+        true,
+        {
+          x: canvas.width / 2 - 192 / 4 / 2,
+          y: canvas.height / 2 - 68 / 2,
+        },
+        "chest2",
+        "chest2" // Add this parameter to show "Press T"
+      );
+
+      addKeyPressListenerForNpC("chest2", "chest2Div");
+    }
+  });
+
+  chest3.forEach((chest) => {
+    if (
+      rectangularCollision({
+        rectangle1: player,
+        rectangle2: {
+          ...chest,
+          position: {
+            x: chest.position.x,
+            y: chest.position.y + 3,
+          },
+        },
+      })
+    ) {
+      collisionDetected.chest3 = true;
+      updateCollisionIndicator(
+        true,
+        {
+          x: canvas.width / 2 - 192 / 4 / 2,
+          y: canvas.height / 2 - 68 / 2,
+        },
+        "chest3",
+        "chest3" // Add this parameter to show "Press T"
+      );
+// alert("Sdadds")
+      addKeyPressListenerForNpC("chest3", "chest3Div");
+    }
+  });
   updateNoCollisionHandlers();
 
   let moving = true;
@@ -1142,41 +1289,134 @@ exitGameBtn.addEventListener("click", () => {
   window.location = "home.html";
 });
 function handleClaim() {
-    const successMessage = document.querySelector('.success-message');
-    const chestOverlay = document.getElementById('chest1Div');
-    const claimButton = document.querySelector('.claim-pass1');
-    
+  const successMessage = document.querySelector(".success-message");
+  const chestOverlay = document.getElementById("chest1Div");
+  const chest2Overlay = document.getElementById("chest2Div");
+  const chest3Overlay = document.getElementById("chest3Div");
 
-    chestOverlay.style.display = 'none';
+  const claimButton = document.querySelector(".claim-pass1");
 
-    // Disable the claim button
-    claimButton.disabled = true;
-    claimButton.style.backgroundColor = '#5D655E'; // Visual feedback for disabled state
-    
-    // Show success message
-    successMessage.style.display = 'block';
-    
-    // Add small delay before showing the success message animation
+  chestOverlay.style.display = "none";
+  chest2Overlay.style.display = "none";
+  chest3Overlay.style.display = "none";
+
+  // Disable the claim button
+  claimButton.disabled = true;
+  claimButton.style.backgroundColor = "#5D655E"; // Visual feedback for disabled state
+
+  // Show success message
+  successMessage.style.display = "block";
+
+  // Add small delay before showing the success message animation
+  setTimeout(() => {
+    successMessage.classList.add("show");
+  }, 50);
+
+  // After 3 seconds, hide everything
+  setTimeout(() => {
+    // Hide success message
+    successMessage.classList.remove("show");
+
+    // Hide chest overlay
+    chestOverlay.style.display = "none";
+    chest2Overlay.style.display = "none";
+    chest3Overlay.style.display = "none";
+
+    // After animations complete, reset everything
     setTimeout(() => {
-        successMessage.classList.add('show');
-    }, 50);
-    
-    // After 3 seconds, hide everything
-    setTimeout(() => {
-        // Hide success message
-        successMessage.classList.remove('show');
-        
-        // Hide chest overlay
-        chestOverlay.style.display = 'none';
-        
-        // After animations complete, reset everything
-        setTimeout(() => {
-            successMessage.style.display = 'none';
-            chestOverlay.style.display = 'none';
-            
-            // Reset button state
-            claimButton.disabled = false;
-            claimButton.style.backgroundColor = '#26C236';
-        }, 300);
-    }, 3000);
+      successMessage.style.display = "none";
+      chestOverlay.style.display = "none";
+      chest2Overlay.style.display = "none";
+      chest3Overlay.style.display = "none";
+
+      // Reset button state
+      claimButton.disabled = false;
+      claimButton.style.backgroundColor = "#26C236";
+    }, 300);
+  }, 3000);
 }
+
+
+
+
+function handleClaim2() {
+  const successMessage = document.querySelector(".success-message");
+  const chest2Overlay = document.getElementById("chest2Div");
+  const claimButton = document.querySelector(".claim-pass1");
+
+  chest2Overlay.style.display = "none";
+
+  // Disable the claim button
+  claimButton.disabled = true;
+  claimButton.style.backgroundColor = "#5D655E"; // Visual feedback for disabled state
+
+  // Show success message
+  successMessage.style.display = "block";
+
+  // Add small delay before showing the success message animation
+  setTimeout(() => {
+    successMessage.classList.add("show");
+  }, 50);
+
+  // After 3 seconds, hide everything
+  setTimeout(() => {
+    // Hide success message
+    successMessage.classList.remove("show");
+
+    // Hide chest overlay
+    chest2Overlay.style.display = "none";
+
+    // After animations complete, reset everything
+    setTimeout(() => {
+      successMessage.style.display = "none";
+      chest2Overlay.style.display = "none";
+
+      // Reset button state
+      claimButton.disabled = false;
+      claimButton.style.backgroundColor = "#26C236";
+    }, 300);
+  }, 3000);
+}
+
+
+function handleClaim3() {
+  const successMessage = document.querySelector(".success-message");
+  const chest3Overlay = document.getElementById("chest3Div");
+
+  const claimButton = document.querySelector(".claim-pass1");
+
+  chest3Overlay.style.display = "none";
+
+  // Disable the claim button
+  claimButton.disabled = true;
+  claimButton.style.backgroundColor = "#5D655E"; // Visual feedback for disabled state
+
+  // Show success message
+  successMessage.style.display = "block";
+
+  // Add small delay before showing the success message animation
+  setTimeout(() => {
+    successMessage.classList.add("show");
+  }, 50);
+
+  // After 3 seconds, hide everything
+  setTimeout(() => {
+    // Hide success message
+    successMessage.classList.remove("show");
+
+    
+    chest3Overlay.style.display = "none";
+
+    // After animations complete, reset everything
+    setTimeout(() => {
+      successMessage.style.display = "none";
+
+      chest3Overlay.style.display = "none";
+      // Reset button state
+      claimButton.disabled = false;
+      claimButton.style.backgroundColor = "#26C236";
+    }, 300);
+  }, 3000);
+}
+
+
