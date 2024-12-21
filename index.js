@@ -1,21 +1,17 @@
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
-
-// Set the canvas to fullscreen initially
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-c.fillRect(0, 0, canvas.width, canvas.height); // Optional: Clear canvas
-
-// Optional: Resize the canvas when the window is resized
+c.fillRect(0, 0, canvas.width, canvas.height); 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  c.fillRect(0, 0, canvas.width, canvas.height); // Optional: Clear canvas
+  c.fillRect(0, 0, canvas.width, canvas.height); 
 }
-
-// Add event listener to handle resizing
 window.addEventListener("resize", resizeCanvas);
 
+
+//-------GET COLLISION PART------------
 const collisionsMap = [];
 for (let i = 0; i < collisions.length; i += 70) {
   collisionsMap.push(collisions.slice(i, 70 + i));
@@ -57,12 +53,13 @@ for (let i = 0; i < home3NearbyData.length; i += 70) {
 }
 
 
-
+// CHECK CLASSES.JS FOR CLASS CREATION
+//--STOP THE PLAYUER IN COLLISON AREA----------------------------------------------------------------------------------------
 
 const boundaries = [];
 const offset = {
   x: 0,
-  y: -650,
+  y: -550,
 };
 
 collisionsMap.forEach((row, i) => {
@@ -176,7 +173,6 @@ home3NearbyMap.forEach((row, i) => {
 
 
 
-
 const image = new Image();
 image.src = "./img/Pellet Town.png";
 
@@ -214,10 +210,6 @@ const player = new Sprite({
   },
 });
 
-
-
-
-
 const background = new Sprite({
   position: {
     x: offset.x,
@@ -234,6 +226,8 @@ const foreground = new Sprite({
   image: foregroundImage,
 });
 
+//------------------------------------------------------------------------------------------
+
 const keys = {
   w: {
     pressed: false,
@@ -249,17 +243,16 @@ const keys = {
   },
 };
 
-// POP UP MODAL
-// Add the style element for collision indicator
+// INDICATOR MODAL
 const style = document.createElement("style");
 style.textContent = `
 .collision-indicator {
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
-  padding: 5px 10px;
+  padding: 10px 10px;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 11px;
   pointer-events: none;
   transform: translate(-50%, -100%);
   animation: float 1s infinite ease-in-out;
@@ -273,9 +266,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Add collision indicator variable
 
-// First define separate objects for F and T indicators
 const collisionIndicators = {
   F: {},
   T: {},
@@ -283,7 +274,7 @@ const collisionIndicators = {
   home3Nearby:{},
 };
 
-// Updated unified collision indicator function
+//----IF COLIDE SHOW INDICATOR--------------------------------------------------------------------------------------
 function updateCollisionIndicator(show, playerPosition, id, type) {
   if (show) {
     if (!collisionIndicators[type][id] && type == "F") {
@@ -340,8 +331,6 @@ function updateCollisionIndicator(show, playerPosition, id, type) {
   }
 }
 
-// In your main game file (index.js)
-// Add this at the top with your other variables
 let playerLastPosition = {
   x: offset.x,
   y: offset.y,
@@ -356,7 +345,7 @@ const activeListeners = {
   home3Nearby: null,
 };
 
-// Modify the addKeyPressListener function
+// ----KEY PRESS F
 function addKeyPressListener(id, url) {
   if (activeListeners[id]) {
     document.removeEventListener("keydown", activeListeners[id]);
@@ -395,7 +384,7 @@ function addKeyPressListener(id, url) {
 
 let isDialogOpen = false;
 
-// Modify the addKeyPressListenerForNpC function
+// -----KEYPRESS FOR NPC
 function addKeyPressListenerForNpC(id, divId) {
   if (activeListeners[id]) {
     document.removeEventListener("keydown", activeListeners[id]);
@@ -454,7 +443,7 @@ function addKeyPressListenerForNpC(id, divId) {
   document.addEventListener("keydown", listener);
 }
 
-// Add this to your window.onload or at the start of your game code
+//------STORE LAST POSITION OF THE PLAYER---------------------------------------
 window.onload = () => {
   const savedPosition = localStorage.getItem("playerLastPosition");
   if (savedPosition) {
@@ -469,6 +458,7 @@ window.onload = () => {
   }
 };
 
+
 let collisionDetected = {
   quiz1: false,
   quiz2: false,
@@ -478,6 +468,9 @@ let collisionDetected = {
   home3Nearby: false,
 
 };
+
+
+
 
 const movables = [
   background,
@@ -491,6 +484,7 @@ const movables = [
   ...home3Nearby,
 ];
 
+// GET POSITION SA TILE------------------------------------------
 function rectangularCollision({ rectangle1, rectangle2 }) {
   return (
     rectangle1.position.x + rectangle1.width > rectangle2.position.x &&
@@ -500,7 +494,7 @@ function rectangularCollision({ rectangle1, rectangle2 }) {
   );
 }
 
-// Update the no-collision handlers
+// -------------------no-collision handlers----------------------------------
 function updateNoCollisionHandlers() {
   if (!collisionDetected.quiz1) {
     updateCollisionIndicator(false, null, "quiz1", "F");
@@ -549,6 +543,9 @@ function updateNoCollisionHandlers() {
     }
   }
 }
+
+
+//-----ANIMATE-------------------------------------------------------------------------------------
 
 function animate() {
   window.requestAnimationFrame(animate);
@@ -855,8 +852,13 @@ function animate() {
   }
 }
 animate();
-let lastKey = "";
 
+
+
+
+//-----MOVEMENTS-------------------------------------------------------------------------------------
+
+let lastKey = "";
 // Modify the window keydown event listener
 window.addEventListener("keydown", (e) => {
   const activeElement = document.activeElement;
@@ -925,7 +927,7 @@ window.addEventListener("keyup", (e) => {
 // });
 
 
-
+//------------------------------------------------------------------------------------------
 
 class Chatbot {
   constructor() {
@@ -998,3 +1000,11 @@ class Chatbot {
 document.addEventListener('DOMContentLoaded', () => {
   const chatbot = new Chatbot();
 });
+
+
+// ------------------------------------------------------------------------------------------
+// INDEX HTML EXIT GAME BUTTON
+const exitGameBtn = document.querySelector('.exit-btn')
+exitGameBtn.addEventListener('click', ()=>{
+  window.location ='home.html'
+})
