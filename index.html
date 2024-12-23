@@ -132,7 +132,7 @@
             background: #8B4513;
             z-index: 2000;
             padding: 30px;
-            
+
         }
 
         .success-message.show {
@@ -202,10 +202,13 @@
             z-index: 10000;
         }
 
-        #chest1Div, #chest2Div,#chest3Div{
+        #chest1Div,
+        #chest2Div,
+        #chest3Div {
             display: none;
 
         }
+
         /* Header styles */
         .chest-overlay h5 {
             font-size: clamp(14px, 3vw, 20px);
@@ -428,7 +431,7 @@
                         Are you sure you want to exit this Game?
                     </p>
                     <div class="d-flex justify-content-center gap-3">
-                        <button type="button" class="btn px-4 exit-btn">
+                        <button type="button" class="btn px-4 exit-btn" onclick="exitGame()" >
                             Exit
                         </button>
                         <button type="button" class="btn px-4 continue-btn" data-bs-dismiss="modal">
@@ -482,56 +485,64 @@
         </div>
     </div>
 
-<!-- Chest Overlay 2-->
-<div class="chest-overlay" id="chest2Div">
-    <div class="chest-content">
-        <p style="font-size: 10;">Use this pass to skip a question and move to the next one.</p>
-        <div class="claim-pass1-con">
-            <img class="chest-claim-img" src="img/chest.png" alt="">
-            <button class="claim-pass1" onclick="handleClaim()">Claim</button>
+    <!-- Chest Overlay 2-->
+    <div class="chest-overlay" id="chest2Div">
+        <div class="chest-content">
+            <p style="font-size: 10;">Use this pass to skip a question and move to the next one.</p>
+            <div class="claim-pass1-con">
+                <img class="chest-claim-img" src="img/chest.png" alt="">
+                <button class="claim-pass1" onclick="handleClaim()">Claim</button>
+            </div>
         </div>
+
+        <div class="close-chatBot">Toggle T to Close</div>
     </div>
 
-    <div class="close-chatBot">Toggle T to Close</div>
-</div>
 
 
-
-<!-- Chest Overlay 3-->
-<div class="chest-overlay" id="chest3Div">
-    <div class="chest-content">
-        <h1>sdkljsdslda</h1>
-        <h5>Congratulations! You have earned 1 Free Pass!</h5><br>
-        <p style="font-size: 10;">Use this pass to skip a question and move to the next one.</p>
-        <div class="claim-pass1-con">
-            <img class="chest-claim-img" src="img/chest.png" alt="">
-            <button class="claim-pass1" onclick="handleClaim()">Claim</button>
+    <!-- Chest Overlay 3-->
+    <div class="chest-overlay" id="chest3Div">
+        <div class="chest-content">
+            <h1>sdkljsdslda</h1>
+            <h5>Congratulations! You have earned 1 Free Pass!</h5><br>
+            <p style="font-size: 10;">Use this pass to skip a question and move to the next one.</p>
+            <div class="claim-pass1-con">
+                <img class="chest-claim-img" src="img/chest.png" alt="">
+                <button class="claim-pass1" onclick="handleClaim()">Claim</button>
+            </div>
         </div>
+
+        <div class="close-chatBot">Toggle T to Close</div>
     </div>
 
-    <div class="close-chatBot">Toggle T to Close</div>
-</div>
-
-
-
-
-
-    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-    <script src="/data/audio.js"></script>
-    <script src="/data/quiz.js"></script>
-    <script src="/data/oceanScenery.js"></script>
-    <script src="/data/chests.js"></script>
-    <script src="/data/chestNearby.js"></script>
-    <script src="/data/npcHome1.js"></script>
-    <script src="/data/home3Nearby.js"></script>
-    <script src="/data/collision.js"></script>
+    <script src="/public/data/audio.js"></script>
+    <script src="/public/data//quiz.js"></script>
+    <script src="/public/data//oceanScenery.js"></script>
+    <script src="/public/data//chests.js"></script>
+    <script src="/public/data//chestNearby.js"></script>
+    <script src="/public/data//npcHome1.js"></script>
+    <script src="/public/data//home3Nearby.js"></script>
+    <script src="/public/data//collision.js"></script>
     <script src="classes.js"></script>
-    <script src="index.js"></script>
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+
     <script src="https://kit.fontawesome.com/88979c2f8f.js" crossorigin="anonymous"></script>
+    <script src="index.js"></script>
+    <script>
+
+        function exitGame() {
+            window.location.href='home.html'
+
+        }
+
+    </script>
+
 </body>
 
 </html>
