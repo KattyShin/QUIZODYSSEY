@@ -38,6 +38,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             text-align: center;
+            width: 520px;
         }
 
         h1 {
@@ -132,14 +133,26 @@
             background-color: #e5d0ff;
             border-radius: 50%;
         }
+
+        .back-btn{
+            font-size: 30px; 
+            font-family: 'Press Start 2P', monospace; 
+            color : #3B2F2F; 
+            text-decoration: none; 
+            position: absolute; 
+            left: 44.5rem; 
+            top: 7.5rem;
+        }
     </style>
 </head>
 <body>
 
 <div class="login-parent-con">
-        <div class="mainlog-con">
+
+        <!-- Login -->
+        <div class="mainlog-con" id = "login">
             <h1>Quiz Odyssey</h1>
-            <div class="subtitle">Lorem Ipsum dolor sit tagline here</div>
+            <div class="subtitle">Journey Through Knowledge, One Quiz!</div>
 
             <div class="input-main-con">
                 <div class="input-con">
@@ -155,7 +168,7 @@
 
                 <div class="links-container">
                     <a href="#" class="forgot-password">Forgot Password?</a>
-                    <a href="#" class="create-account">Create Account</a>
+                    <a href="#" class="create-account" onclick = "showSignUpModal()">Create Account</a>
                 </div>
             </div>
 
@@ -168,7 +181,60 @@
                 <div class="dot"></div>
             </div>
         </div>
+
+
+        <!-- Create Account -->
+        <div class="mainlog-con"  tabindex="-1" style = "height: 630px; display: none;" id = "signup">
+            <a href="#" class="back-btn" onclick="exitSignUp()" >&#8592;</a>
+            <h1>Sign Up</h1>
+
+            <div class="input-main-con"  style = "padding: 0.2rem; font-size: 15px;">
+
+                <!-- Name -->
+                <div style="display: flex; gap: 10px; padding-top: 5px;">
+                    <div class="input-con">
+                        <label>Firstname</label>
+                        <input type="text" placeholder="Enter Firstname">
+                    </div>
+                    <div class="input-con">
+                        <label>Lastname</label>
+                        <input type="text" placeholder="Enter Lastname">
+                    </div>
+                </div>
+
+                <div class="input-con">
+                    <label>Email</label>
+                    <input type="text" placeholder="Enter Email">
+                </div>
+                <div class="input-con">
+                    <label>Username</label>
+                    <input type="text" placeholder="Enter Username">
+                </div>
+                <div class="input-con">
+                    <label>Password</label>
+                    <input type="password" placeholder="Enter Password">
+                </div>
+                <div class="input-con">
+                    <label>Confirm Password</label>
+                    <input type="password" placeholder="Confirm Password">
+                </div>
+
+                <button>Sign Up</button>
+            </div>
+        </div>
     </div>
+
+    <script>
+         function showSignUpModal() {
+            document.getElementById("signup").style.display = "block";
+            document.getElementById("login").style.display = "none";
+        }
+
+        function exitSignUp() {
+            document.getElementById("signup").style.display = "none";
+            document.getElementById("login").style.display = "block";
+        }
+    </script>
     
 </body>
 </html>
