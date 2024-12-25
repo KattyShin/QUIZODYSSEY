@@ -168,12 +168,14 @@
                 <button onclick="startAdventure()">Start Adventure!</button>
 
                 <div class="links-container">
-<<<<<<< HEAD
 
-=======
                     <a href="forgotPassword.html" class="forgot-password">Forgot Password?</a>
                     <a href="createAccount.html" >Create Account</a>
->>>>>>> 948d42e1ef54efbbf3bc98772bd5d25b8fa7a2bd
+
+
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                    <a href="#" class="create-account" onclick="showCreateAccount()">Create Account</a>
+
                 </div>
             </div>
 
@@ -188,15 +190,17 @@
         </div>
 
 
-        <!-- Create Account -->
-        <div class="mainlog-con"  tabindex="-1" style = "height: 630px; display: none;" id = "signup">
-            <a href="#" class="back-btn" onclick="exitSignUp()" >&#8592;</a>
+
+        <div class="mainlog-con"  tabindex="-1" style = "height: 620px; display: none;" id = "signup">
+            <a href="#" class="back-btn" onclick="showLogin()" >&#8592;</a>
+
             <h1>Sign Up</h1>
 
             <div class="input-main-con"  style = "padding: 0.2rem; font-size: 15px;">
 
                 <!-- Name -->
-                <div style="display: flex; gap: 10px; padding-top: 5px;">
+                <div style="display: flex; gap: 10px;">
+
                     <div class="input-con">
                         <label>Firstname</label>
                         <input type="text" placeholder="Enter Firstname">
@@ -227,14 +231,23 @@
                 <button>Sign Up</button>
             </div>
         </div>
-    </div>
 
-    <script>
-<<<<<<< HEAD
-=======
         function startAdventure(){
             window.location.href= 'home.html'
->>>>>>> 948d42e1ef54efbbf3bc98772bd5d25b8fa7a2bd
+
+        
+
+
+    <script>
+        
+        function showCreateAccount(){
+            document.getElementById('signup').style.display = 'block';
+            document.getElementById('login').style.display = 'none';
+        }
+
+        function showLogin(){
+            document.getElementById('signup').style.display = 'none';
+            document.getElementById('login').style.display = 'block';
         }
     </script>
     
