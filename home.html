@@ -229,7 +229,6 @@
             border: 4px solid #F7C396;
             border-radius: 10px;
             width: 700px;
-            height: 550px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -239,7 +238,7 @@
 
         .close-btn {
             position: absolute;
-            right: 20px;
+            left: 20px;
             top: 15px;
             text-decoration: none;
             font-size: 24px;
@@ -247,8 +246,19 @@
             z-index: 10; 
         }
 
+        .check-btn {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            text-decoration: none;
+            font-size: 24px;
+            color: #fff;
+            z-index: 10;
+        }
 
-        .input-field {
+
+
+        .input-field, .textarea-field {
             width: 100%;
             padding: 8px;
             margin: 10px 0;
@@ -259,7 +269,7 @@
             color:white;
         }
 
-        .input-field::placeholder{
+        .input-field::placeholder, .textarea-field::placeholder{
             color: white;
             font-family: "Outfit";
             font-size: 18px;
@@ -287,46 +297,20 @@
             color: white;
         }
 
-        .file-input {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .fa-upload {
-            font-size: 40px;
-            color: #fff;
-            margin-bottom: 8px;
-        }
-
-        .upload-area p {
-            color: #fff;
-            margin: 0;
-            font-family: "Outfit";
-            font-size: 20px;
-        }
-
-        .upload-area:hover {
-            background-color: #A25824;
-
-        }
-
-        .checkbox-group {
-            width: 375px;
-            height: 300px;
+        .radio-group {
+            width: 650px;
+            height: 100px;
             margin: 20px 0;
             border: 4px solid rgba(255, 255, 255, 0.45);;
             border-radius: 10px;
             font-family: "Outfit";
         }
 
-        .checkbox-group .checkbox-option {
+        .radio-group .radio-option {
             margin: 8px 2rem;
         }
 
-        .checkbox-group .checkbox-option label{
+        .radio-group .radio-option label{
             font-family: "Outfit";
             color:white;
         }
@@ -518,50 +502,65 @@
 
 
         <div class="header">
-            <button class="create-new-btn" onclick="location.href='#upload-modal'"><i
+            <button class="create-new-btn" onclick="showUploadModal()"><i
                 class="fa-solid fa-circle-plus create-icon"></i>Create New</button>
         </div>
         <!-- Start Game Button -->
 
-        <!-- Modal -->
+    
 
-        <div id="upload-modal" class="modal modalSettings">
-            <div class="uploadmodal-content">
+        <!-- Create New Quiz -->
+        <div id="upload-modal" class="modal modalSettings" style = "display: none;">
+                <div class="uploadmodal-content" style = "height: 360px;">
 
                 <h2 style = "color: white; width: 100%; justify-content: center; text-align: center;">Create New</h2>
 
-                <input type="text" class="input-field" placeholder="Add Title">
-
-                <div style = "display: flex; gap: 15px; align-items: flex-start;">
-                <div class="upload-area">
-                    <input type="file" class="file-input" id="fileInput">
-                    <i class="fa-solid fa-upload"></i>
-                    <p>Upload File</p>
-                    <p class="file-name" id="fileName">No file chosen</p>
-                </div>
-                <div class="checkbox-group">
-                    <p style = "font-family: 'Outfit'; margin: 1rem 2rem; color: white; font-size: 19px;">Choose the type of question:</p>
-                    <div class="checkbox-option">
-                        <input type="checkbox" id="true-false" name="question-type">
-                        <label for="true-false">True or False</label>
-                    </div>
-                    <div class="checkbox-option">
-                        <input type="checkbox" id="enumeration" name="question-type">
-                        <label for="enumeration">Enumeration</label>
-                    </div>
-                    <div class="checkbox-option">
-                        <input type="checkbox" id="multiple-choice" name="question-type">
-                        <label for="multiple-choice">Multiple Choice</label>
-                    </div>
-                </div>
-                </div>
-
+                <input id = "title" type="text" class="input-field" placeholder="Add Title">
+                <textarea id="description" rows="4" cols="70" class = "textarea-field" placeholder="Add Description Optional"></textarea>
                 <div class="modal-footer">
-                    <button class="button cancel-btn" onclick="location.href='#'">Cancel</button>
-                    <button class="button create-btn" id="start-game-btn">Start Game</button>
+                    <button class="button cancel-btn" onclick="closeCreateNew()">Cancel</button>
+                    <button class="button create-btn" id="start-game-btn" onclick = "addQuizItems()">Add Items</button>
                 </div>
+                </div>
+
             </div>
         </div>
+
+
+
+        <!-- Add Item -->
+        <div id="add-item" class="modal modalSettings">
+            <div class="uploadmodal-content" style = "height: 550px; padding-top: 3rem;">
+                <a href="#" class="check-btn" onclick="submitAddItem()">&#10003;</a>
+                <a href="#" class="close-btn" onclick="cancelCreateNew()">&times;</a>
+
+            <textarea id="question" rows="4" cols="30" class = "textarea-field" placeholder="Add Question"></textarea>
+            <textarea id="answer" rows="4" cols="30" class = "textarea-field" placeholder="Add Answer"></textarea>
+
+            <div class="radio-group">
+                <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Choose thetype of question:</p>
+                <div style = "display: flex; gap: 10px; font-size: 16px;">
+                    <div class="radio-option">
+                        <input type="radio" id="true-false" name="question-type" value = "True or False">
+                        <label for="true-false">True or False</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="identification" name="question-type" value = "Identification">
+                        <label for="identification">Identification</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="multiple-choice" name="question-type" value = "Multiple Choice">
+                        <label for="identification">Multiple Choice</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="button create-btn" id="start-game-btn">Add Another Item</button>
+            </div>
+
+        </div>
+    </div>
 
 
 
@@ -679,11 +678,6 @@
     <!-- Bootstrap JS (required for Offcanvas) -->
 
     <script>
-        document.getElementById('fileInput').addEventListener('change', function () {
-            const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
-            document.getElementById('fileName').textContent = fileName;
-        });
-
 
         // SETTINGS
         function openSettingsModal() {
@@ -716,6 +710,29 @@
             document.getElementById('sidebar-overlay').style.display = 'none';
             document.getElementById('side-menu').style.display = 'none';
 
+        }
+
+        function showUploadModal(){
+            document.getElementById('upload-modal').style.display = 'block';
+        }
+
+        function addQuizItems(){
+            
+            document.getElementById('add-item').style.display = 'block';
+            document.getElementById('upload-modal').style.display = 'none';
+
+        }
+
+        function closeCreateNew(){
+            document.getElementById('upload-modal').style.display = 'none';
+
+        }
+
+        function cancelCreateNew(){
+            const confirmCancel = window.confirm("Are you sure you want to exit? Quiz will not be saved.")
+            if(confirmCancel){
+                document.getElementById('add-item').style.display = 'none';
+            }
         }
 
     </script>
