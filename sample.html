@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-image: url('/img/libBG2.gif');
+            background-size: fit;
+            min-height: 100vh;
+            display: flex; 
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Press Start 2P';
+            color: white;
+        }
+
+        .quiz-container {
+            width: 100%; 
+            max-width: 800px;
+            background: #8B4513;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            border: 5px solid #F7C396;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #66300c;
+            border-radius: 5px;
+        }
+
+        .header div {
+            font-size: 0.7em;
+        }
+
+        .question-container {
+            background: #f7c39631;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            font-size: 1.0em;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            font-family: "VT323", serif;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f7c39631;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .option:hover {
+            background: #66300c3b;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .option label {
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #ecf0f1;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn, .pass-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #26C236;
+            color: white;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            transition: background 0.3s;
+            border: 2px solid white;
+        }
+
+        .btn:hover {
+            background: #219a52;
+        }
+
+        .btn:disabled {
+            background: #808080;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .exit-btn button {
+            font-family: 'Press Start 2P';
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .pass-btn {
+            background-color: transparent;
+            border: none;
+        }
+
+        .pass-btn:hover {
+            background-color: transparent;
+            color: #ecf0f1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            background-color: #ff4444;
+            color: white;
+            border-radius: 5px;
+            display: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: #8B4513;
+            margin: 15% auto;
+            padding: 30px;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            text-align: center;
+            border: 5px solid #F7C396;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #F7C396;
+        }
+
+        .modal-body {
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .modal-stats {
+            background: #66300c;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            background: #26C236;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Press Start 2P';
+            font-size: 0.8em;
+            margin-top: 20px;
+        }
+
+        .modal-btn:hover {
+            background: #219a52;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="header">
+            <div class="exit-btn"><button onclick="exitQuiz()">EXIT</button></div>
+            <div>TOTAL QUESTIONS: <span id="total-questions">0</span></div>
+        </div>
+
+        <div class="question-container">
+            <div class="question" id="question-text"></div>
+
+            <form class="options" id="options-form">
+                <!-- Options will be dynamically inserted here -->
+            </form>
+
+            <div class="buttons">
+                <div>
+                    <div class="pass-btn">PASS <span id="passes-left">3/3</span></div>
+                </div>
+
+                <div>
+                    <button class="btn" type="button" onclick="previousQuestion()" id="prev-btn">PREVIOUS</button>
+                    <button class="btn" type="button" onclick="nextQuestion()" id="next-btn">NEXT</button>
+                    <button class="btn" type="button" onclick="passQuestion()" id="pass-btn">PASS</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="results-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">Quiz Complete!</div>
+            <div class="modal-body">
+                <div class="modal-stats">
+                    <p>Score: <span id="final-score">0/0</span></p>
+                    <p>Passes Used: <span id="passes-used">0/3</span></p>
+                </div>
+            </div>
+            <button class="modal-btn" onclick="restartQuiz()">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+
+
+
+    </script>
+</body>
+</html>
