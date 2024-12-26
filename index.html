@@ -1,585 +1,428 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
+    <title>Quiz Odyssey</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Press Start 2P';
         }
 
         body {
-            background-color: black;
-            margin: 0;
+            background-image: url('/img/Rectangle 57.png');
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+
         }
 
-        /* Game Stats Container */
-        .game-stats {
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
+        .login-parent-con {
             width: 100%;
-            padding: 10px;
+            max-width: 400px;
+            padding: 20px;
+            
+        }
+
+        .mainlog-con {
+            border: 5px solid #F7C396;
+            background: #D4854C;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 520px;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            color: #8B4513;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .subtitle {
+            color: white;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .input-main-con {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .input-con {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .input-con label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .input-con input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #D4854C;
+            border-radius: 4px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-con input:focus {
+            border-color: #D4854C;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid white;
+            background-color: #26C236;
+            color: white;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #16a34a;
+        }
+
+        .links-container {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            color: white;
-            z-index: 1000;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
+            font-size: 0.9rem;
         }
 
-        .stat-item {
+        .links-container a {
+            text-decoration: none;
+        }
+
+        .forgot-password {
+            color: #b32121;
+        }
+
+        .create-account {
+            color: #532cac;
+        }
+
+        .dots-container {
+            margin-top: 2rem;
             display: flex;
-            align-items: center;
-            gap: 150px;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
-        /* Score and text styling */
-        .game-stats span {
-            font-size: clamp(12px, 2.5vw, 20px);
-            white-space: nowrap;
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #e5d0ff;
+            border-radius: 50%;
         }
 
-        .hint {
-            color: #00ffff;
-        }
-
-        .score {
-            color: #e91818;
-        }
-
-        .close-btn {
-            border: none;
-            background-color: transparent;
-            color: white;
-            padding: 5px;
-            cursor: pointer;
-            font-size: clamp(12px, 2.5vw, 20px);
-        }
-
-        @media screen and (max-width: 768px) {
-            .game-stats {
-                padding: 8px;
-            }
-
-            .stat-item {
-                gap: 60px;
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            .game-stats {
-                padding: 5px;
-            }
-
-            .stat-item {
-                gap: 50px;
-            }
-
-            .close-btn {
-                padding: 3px;
-            }
-        }
-
-        .custom-modal-content {
-            background-color: #8B4513;
-            border: 4px solid #F7C396;
-            border-radius: 10px;
-            padding: 30px;
-        }
-
-        .custom-modal-title {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 20px;
-            color: white;
-            margin-bottom: 45px;
-        }
-
-        .custom-modal-text {
-            font-size: 12px;
-            color: white;
-            margin-bottom: 25px;
-        }
-
-
-
-
-
-
-        .success-message {
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        .success-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            text-align: center;
-            opacity: 0;
-            background: #8B4513;
-            z-index: 2000;
-            padding: 30px;
-
-        }
-
-        .success-message.show {
-            opacity: 1;
-        }
-
-        .success-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .success-message h5 {
-            margin-top: 15px;
-            color: white;
-            font-size: clamp(14px, 3vw, 20px);
-        }
-
-        .success-message p {
-            color: white;
-            font-size: clamp(8px, 2vw, 12px);
-        }
-
-        .fade-out {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .exit-btn,
-        .claim-pass1 {
-            background-color: #26C236;
-            color: white;
-            border: 2px solid white;
-            font-size: 15px;
-            width: 200px;
-            padding: 15px;
-        }
-
-        .exit-btn:hover,
-        .continue-btn:hover {
-            background-color: #D4854C;
-            color: white;
-        }
-
-        .continue-btn {
-            background-color: #5D655E;
-            color: white;
-            border: 2px solid white;
-            font-size: 15px;
-            width: 200px;
-        }
-
-        /* Updated Chest Overlay Styles */
-        .chest-overlay {
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 500px;
-            background-color: #D4854C;
-            border: 5px solid #F7C396;
-            border-radius: 8px;
-            padding: 20px 5px 0px 10px;
-            text-align: center;
-            z-index: 10000;
-        }
-
-        #chest1Div,
-        #chest2Div,
-        #chest3Div {
-            display: none;
-
-        }
-
-        /* Header styles */
-        .chest-overlay h5 {
-            font-size: clamp(14px, 3vw, 20px);
-            margin-bottom: 10px;
-            color: wheat;
-        }
-
-        /* Paragraph styles */
-        .chest-overlay p {
-            font-size: clamp(8px, 2vw, 12px);
-            margin-bottom: 20px;
-            color: white;
-        }
-
-        /* Claim container styles */
-        .claim-pass1-con {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            padding: 10px;
-        }
-
-        /* Chest image styles */
-        .chest-claim-img {
-            width: clamp(80px, 20vw, 110px);
-            height: auto;
-        }
-
-        /* Button styles */
-        .claim-pass1 {
-            background-color: #26C236;
-            color: white;
-            border: 2px solid white;
-            font-size: clamp(12px, 2.5vw, 15px);
-            width: clamp(150px, 50%, 200px);
-            padding: clamp(10px, 2vw, 15px);
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .claim-pass1:hover {
-            background-color: #1ea52c;
-        }
-
-        .claim-pass1:disabled {
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        /* Dialog Overlay Styles */
-        .dialog-overlay {
-            position: fixed;
-            display: none;
-            left: 50%;
-            bottom: 40px;
-            transform: translate(-50%);
-            width: 90%;
-            max-width: 800px;
-            background-color: #D4854C;
-            border: 5px solid #F7C396;
-            border-radius: 8px;
-            z-index: 10000;
-        }
-
-        .dialog-header {
-            padding: 15px;
-            border-bottom: 1px solid #8B4513;
-            color: wheat;
-        }
-
-        .dialog-header h1 {
-            margin: 0;
-            font-size: 15px;
-        }
-
-        .messages-container {
-            height: 250px;
-            overflow-y: auto;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .message {
-            max-width: 70%;
-            padding: 10px;
-            border-radius: 15px;
-            margin: 5px 0;
-            font-size: 12px;
-        }
-
-        .bot-message {
-            align-self: flex-start;
-            background-color: #F7C396;
-            color: black;
-        }
-
-        .user-message {
-            align-self: flex-end;
-            background-color: #8B4513;
-            color: white;
-        }
-
-        .input-container {
-            padding: 15px;
-            border-top: 1px solid #ddd;
-            display: flex;
-            gap: 10px;
-        }
-
-        .close-chatBot {
-            text-align: right;
-            padding: 10px 15px;
-            font-size: 10px;
-            color: #333;
-        }
-
-        .chat-input {
-            flex-grow: 1;
-            padding: 8px;
-            font-family: monospace;
-            border: 1px solid #333;
-            border-radius: 4px;
-            font-size: 14px;
-            background-color: #FFE5B4;
-        }
-
-        .chat-input:focus {
-            outline: none;
-            border: 1px solid #333;
-        }
-
-        .send-button {
-            padding: 8px 16px;
-            font-family: monospace;
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .send-button:hover {
-            background-color: #444;
-        }
-
-        /* Media Queries */
-        @media screen and (max-width: 768px) {
-            .chest-overlay {
-                padding: 15px;
-                width: 95%;
-            }
-
-            .dialog-overlay {
-                width: 95%;
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            .chest-overlay {
-                padding: 10px;
-                border-width: 3px;
-            }
-
-            .claim-pass1-con {
-                gap: 10px;
-            }
-
-            .dialog-overlay {
-                border-width: 3px;
-            }
-
-            .messages-container {
-                height: 200px;
-            }
-        }
-
-        @media screen and (max-width: 320px) {
-
-            .chest-overlay,
-            .dialog-overlay {
-                width: 98%;
-            }
+        .back-btn{
+            font-size: 30px; 
+            font-family: 'Press Start 2P', monospace; 
+            color : white; 
+            text-decoration: none; 
+            position: absolute; 
+            left: 44.5rem; 
         }
     </style>
 </head>
-
 <body>
-    <!-- Game Stats Element -->
-    <div class="game-stats">
-        <div class="stat-item">
-            <div>
-                <span class="score">Score:</span> <span>3/6</span>
-            </div>
-            <div>
-                <span class="hint">Hints: </span><span>6</span>
-            </div>
-        </div>
-        <div class="stat-item">
-            <button type="button" class="close-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                <span>x</span>
-            </button>
-        </div>
-    </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content custom-modal-content">
-                <div class="modal-body text-center py-4">
-                    <h2 class="custom-modal-title">
-                        Confirm Logout
-                    </h2>
-                    <p class="custom-modal-text">
-                        Are you sure you want to exit this Game?
-                    </p>
-                    <div class="d-flex justify-content-center gap-3">
-                        <button type="button" class="btn px-4 exit-btn" onclick="exitGame()">
-                            Exit
-                        </button>
-                        <button type="button" class="btn px-4 continue-btn" data-bs-dismiss="modal">
-                            Continue
-                        </button>
-                    </div>
+<div class="login-parent-con">
+
+        <!-- Login -->
+        <div class="mainlog-con" id = "login">
+            <h1>Quiz Odyssey</h1>
+            <div class="subtitle">Journey Through Knowledge, One Quiz!</div>
+
+            <div class="input-main-con">
+                <div class="input-con">
+                    <label>Username</label>
+                    <input type="text" placeholder="Enter Username" id = "loginusername">
+                </div>
+                <div class="input-con">
+                    <label>Password</label>
+                    <input type="password" placeholder="Enter Password" id = "loginpassword">
+                </div>
+
+                <button type = "submit" id = "start-adventure">Start Adventure!</button>
+
+                <div class="links-container">
+
+                    <a href="#" class="forgot-password" onclick = "showForgotPass()">Forgot Password?</a>
+                    <a href="#" class="create-account" onclick="showCreateAccount()">Create Account</a>
+
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div style="width: full; display: flex; justify-content: center; align-items: center;">
-        <canvas>
-        </canvas>
-    </div>
-
-    <!-- Dialog Overlay -->
-    <div class="dialog-overlay" id="npcHome1Bot">
-        <div class="dialog-header">
-            <h1>Magpasko na Daghang Projects</h1>
-        </div>
-        <div class="messages-container" id="messagesContainer">
-            <!-- Messages will be added here dynamically -->
-        </div>
-        <div class="input-container">
-            <input type="text" class="chat-input" placeholder="Type your message...">
-            <button class="send-button">Send</button>
-        </div>
-        <div class="close-chatBot">Toggle T to Close</div>
-    </div>
-
-    <!-- Chest Overlay 1-->
-    <div class="chest-overlay" id="chest1Div">
-        <div class="chest-content">
-            <h5>Congratulations! You have earned 1 Free Pass!</h5><br>
-            <p style="font-size: 10;">Use this pass to skip a question and move to the next one.</p>
-            <div class="claim-pass1-con">
-                <img class="chest-claim-img" src="img/chest.png" alt="">
-                <button class="claim-pass1" onclick="handleClaim()">Claim</button>
+            <div class="dots-container">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
             </div>
         </div>
 
-        <div class="close-chatBot">Toggle T to Close</div>
-    </div>
 
-    <div class="success-message" style="display: none;">
-        <div class="success-content">
-            <i class="fas fa-check-circle" style="font-size: 40px; color: #26C236;"></i>
-            <h5>Successfully Claimed!</h5>
-            <p>Your free pass has been added.</p>
-        </div>
-    </div>
 
-    <!-- Chest Overlay 2-->
-    <div class="chest-overlay" id="chest2Div">
-        <div class="chest-content">
-            <p style="font-size: 10;">Use this pass to skip a question and move to the next one.</p>
-            <div class="claim-pass1-con">
-                <img class="chest-claim-img" src="img/chest.png" alt="">
-                <button class="claim-pass1" onclick="handleClaim()">Claim</button>
+        <!-- Create Account -->
+        <div class="mainlog-con"  tabindex="-1" style = "height: 630px; display: none;" id = "signup">
+            <a href="#" class="back-btn" style ="top: 7.5rem;" onclick="closeForgotPass()" >&#8592;</a>
+
+            <h1>Sign Up</h1>
+
+            <div class="input-main-con"  style = "padding: 0.2rem; font-size: 15px;">
+
+                <!-- Name -->
+                <div style="display: flex; gap: 10px;">
+
+                    <div class="input-con">
+                        <label>Firstname</label>
+                        <input id = "firstname" type="text" placeholder="Enter Firstname">
+                    </div>
+                    <div class="input-con">
+                        <label>Lastname</label>
+                        <input id = "lastname" type="text" placeholder="Enter Lastname">
+                    </div>
+                </div>
+
+                <div class="input-con">
+                    <label>Email</label>
+                    <input id = "email" type="text" placeholder="Enter Email">
+                </div>
+                <div class="input-con">
+                    <label>Username</label>
+                    <input id = "username" type="text" placeholder="Enter Username">
+                </div>
+                <div class="input-con">
+                    <label>Password</label>
+                    <input id = "password" type="password" placeholder="Enter Password">
+                </div>
+                <div class="input-con">
+                    <label>Confirm Password</label>
+                    <input id = "confpass" type="password" placeholder="Confirm Password">
+                </div>
+
+                <button type = "submit" id="submit">Sign Up</button>
             </div>
         </div>
 
-        <div class="close-chatBot">Toggle T to Close</div>
-    </div>
 
 
+        <!-- Forgot Password-->
+        <div class="mainlog-con"  tabindex="-1" style = "height: 530px; display: none;" id = "forgotpass">
+            <a href="#" class="back-btn" style = "top: 10rem" onclick="showLogin()" >&#8592;</a>
 
-    <!-- Chest Overlay 3-->
-    <div class="chest-overlay" id="chest3Div">
-        <div class="chest-content">
-            <h1>sdkljsdslda</h1>
-            <h5>Congratulations! You have earned 1 Free Pass!</h5><br>
-            <p style="font-size: 10;">Use this pass to skip a question and move to the next one.</p>
-            <div class="claim-pass1-con">
-                <img class="chest-claim-img" src="img/chest.png" alt="">
-                <button class="claim-pass1" onclick="handleClaim()">Claim</button>
+            <h1>Forgot Password</h1>
+
+            <div class="input-main-con"  style = "padding-top: 2rem; font-size: 15px;">
+                <div class="input-con">
+                    <label>Email</label>
+                    <input type="text" placeholder="Enter Email">
+                </div>
+                <button onclick = "showForgotPass2()">Enter</button>
             </div>
         </div>
 
-        <div class="close-chatBot">Toggle T to Close</div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-    <script src="/public/data/audio.js"></script>
-    <script src="/public/data//quiz.js"></script>
-    <script src="/public/data//oceanScenery.js"></script>
-    <script src="/public/data//chests.js"></script>
-    <script src="/public/data//chestNearby.js"></script>
-    <script src="/public/data//npcHome1.js"></script>
-    <script src="/public/data//home3Nearby.js"></script>
-    <script src="/public/data//collision.js"></script>
-    <script src="classes.js"></script>
 
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+         <!-- Forgot Password2-->
+         <div class="mainlog-con"  tabindex="-1" style = "height: 530px; display: none;" id = "forgotpass2">
+            <a href="#" class="back-btn" style = "top: 10rem" onclick="showLogin()" >&#8592;</a>
 
-    <script src="https://kit.fontawesome.com/88979c2f8f.js" crossorigin="anonymous"></script>
-    <script src="js.js"></script>
-    <script>
-        const natural = require('natural');
-        const tokenizer = new natural.WordTokenizer();
+            <h1>Forgot Password</h1>
 
-        const responses = {
-            "hello": "Hi there! How can I help you today?",
-            "how are you": "I'm just a bot, but I'm doing great! How about you?",
-            "bye": "Goodbye! Have a great day!"
-        };
+            <div class="input-main-con"  style = "padding-top: 2rem; font-size: 15px;">
+                <div class="input-con">
+                    <label>Verification Code</label>
+                    <input type="text" placeholder="Enter Code">
+                </div>
+                <button onclick="showForgotpass3()">Submit</button>
+            </div>
+        </div>
 
-        function getResponse(message) {
-            const tokens = tokenizer.tokenize(message.toLowerCase());
-            for (const token of tokens) {
-                if (responses[token]) {
-                    return responses[token];
+         <!-- Forgot Password3-->
+         <div class="mainlog-con"  tabindex="-1" style = "height: 530px; display: none;" id = "forgotpass3">
+            <a href="#" class="back-btn" style = "top: 10rem" onclick="showLogin()" >&#8592;</a>
+
+            <h1>Forgot Password</h1>
+
+            <div class="input-main-con"  style = "padding-top: 2rem; font-size: 15px;">
+                <div class="input-con">
+                    <label>New Password</label>
+                    <input type="password" placeholder="Enter New Password">
+                </div>
+                <div class="input-con">
+                    <label>Confirm Password</label>
+                    <input type="password" placeholder="Confirm New Password">
+                </div>
+                <button>Save</button>
+            </div>
+        </div>
+
+
+    <script type="module">
+            // firebase connection
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+            import { getDatabase, ref, set, get, child, onValue} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+            
+
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+              apiKey: "AIzaSyB6k4C7cjGFck7RK7jZhp8gs6bxQeg6Ftw",
+              authDomain: "quizodyssey-38041.firebaseapp.com",
+              databaseURL: "https://quizodyssey-38041-default-rtdb.firebaseio.com",
+              projectId: "quizodyssey-38041",
+              storageBucket: "quizodyssey-38041.firebasestorage.app",
+              messagingSenderId: "841753791601",
+              appId: "1:841753791601:web:99bb91a64958b2eda0dfd0"
+            };
+          
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app);
+            
+
+
+            // Sign Up
+            document.getElementById('submit').addEventListener('click', function(e){
+                e.preventDefault()
+
+                const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+                var firstname = document.getElementById('firstname').value;
+                var lastname = document.getElementById('lastname').value;
+                var email = document.getElementById('email').value;
+                var username = document.getElementById('username').value;
+                var password = document.getElementById('password').value;
+                var confpass = document.getElementById('confpass').value;
+
+
+                if(!firstname || !lastname || !email || !username || !password){
+                    alert("Please fill in all the fields.");
+                    return;
                 }
+                else if(!emailRegex.test(email)){
+                    alert("Please enter a valid email.")
+                    return;
+                }
+                else if(confpass != password){
+                    alert("Passwords don't match, please try again.")
+                    return
+                }
+                else{
+                    set(ref(db, 'user/' + document.getElementById('username').value),
+                    {
+                        firstname: firstname,
+                        lastname: lastname,
+                        email: email,
+                        password: password
+                        
+                    });
+                    alert('Account Created!')
+                    showLogin()
+                    
+                }
+            })
+    
+
+        // functions for navigation
+    
+        window.showCreateAccount = function () {
+        hideAllModals();
+        document.getElementById('signup').style.display = 'block';
+        }
+
+        window.showLogin = function () {
+            hideAllModals();
+            document.getElementById('login').style.display = 'block';
+        }
+
+        window.showForgotPass = function () {
+            hideAllModals();
+            document.getElementById('forgotpass').style.display = 'block';
+        }
+
+        window.closeForgotPass = function () {
+            hideAllModals();
+            document.getElementById('login').style.display = 'block';
+        }
+
+        window.hideAllModals = function () {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('signup').style.display = 'none';
+            document.getElementById('forgotpass').style.display = 'none';
+            document.getElementById('forgotpass2').style.display = 'none';
+            document.getElementById('forgotpass3').style.display = 'none';
+        }
+
+        window.showForgotPass2 = function (){
+            hideAllModals();
+            document.getElementById('forgotpass2').style.display = 'block';
+        }
+
+        window.showForgotpass3 = function (){
+            hideAllModals();
+            document.getElementById('forgotpass3').style.display = 'block';
+        }
+
+
+        // Login to Account
+        document.getElementById('start-adventure').addEventListener('click', function(e){
+            e.preventDefault()
+            var username = document.getElementById('loginusername').value;
+            var password = document.getElementById('loginpassword').value;
+
+            if(!username || !password){
+                alert('Please fill in the fields.')
+                return;
             }
-            return "I'm sorry, I don't understand that.";
-        }
+            
+            const userRef = ref(db, 'user/' + username);
+            onValue(userRef, (snapshot) => {
+                const data = snapshot.val();
+                
 
-        document.querySelector('.send-button').addEventListener('click', () => {
-            const input = document.querySelector('.chat-input');
-            const message = input.value;
-            if (message.trim() !== "") {
-                addMessageToChat("user-message", message);
-                const response = getResponse(message);
-                addMessageToChat("bot-message", response);
-                input.value = "";
-            }
-        });
-
-        function addMessageToChat(className, message) {
-            const messagesContainer = document.getElementById('messagesContainer');
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${className}`;
-            messageElement.textContent = message;
-            messagesContainer.appendChild(messageElement);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-        function exitGame() {
-            window.location.href = 'home.html'
-
-        }
+                if(!data){
+                    alert("Account not found, please create an account first.");
+                    return;
+                } else if (data.password != password) {
+                    alert('Incorrect password. Please try again.');
+                    return;
+                } else {
+                    alert(`Login Successful! Welcome, ${data.firstname} ${data.lastname}!`);
+                    //using session storage to use data in home.html file
+                    sessionStorage.setItem('username', username);
+                    sessionStorage.setItem('firstname', data.firstname);
+                    sessionStorage.setItem('lastname', data.lastname);
+                    //connect to home page
+                    window.location.href = 'home.html';
+                }
+            });
+        })
 
     </script>
-
+    
 </body>
-
 </html>

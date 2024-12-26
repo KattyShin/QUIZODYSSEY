@@ -519,7 +519,7 @@
                 <textarea id="description" rows="4" cols="70" class = "textarea-field" placeholder="Add Description Optional"></textarea>
                 <div class="modal-footer">
                     <button class="button cancel-btn" onclick="closeCreateNew()">Cancel</button>
-                    <button class="button create-btn" id="start-game-btn" onclick = "addQuizItems()">Add Items</button>
+                    <button class="button create-btn" id = "add-quiz-items">Add Items</button>
                 </div>
                 </div>
 
@@ -531,7 +531,7 @@
         <!-- Add Item -->
         <div id="add-item" class="modal modalSettings">
             <div class="uploadmodal-content" style = "height: 550px; padding-top: 3rem;">
-                <a href="#" class="check-btn" onclick="submitAddItem()">&#10003;</a>
+                <a href="#" class="check-btn" id = "save-quiz">&#10003;</a>
                 <a href="#" class="close-btn" onclick="cancelCreateNew()">&times;</a>
 
             <textarea id="question" rows="4" cols="30" class = "textarea-field" placeholder="Add Question"></textarea>
@@ -751,7 +751,6 @@
         window.addQuizItems = function(){
             document.getElementById('add-item').style.display = 'block';
             document.getElementById('upload-modal').style.display = 'none';
-
         }
 
         window.closeCreateNew = function (){
@@ -765,14 +764,123 @@
             }
         }
 
-        // document.getElementById('add-another-item').addEventListener('click', function(e){
-        //     e.preventDefault()
+
+        let quizdetails = {}
+        let itemId = 0; 
+        let quizItems = []
+        document.getElementById('add-quiz-items').addEventListener('click', async function(e) {
+            e.preventDefault();
+
+            let description = null;
+            let title = document.getElementById('title').value;
+            description = document.getElementById('description').value;
+
+            if (!title) {
+                alert('Please add a title.');
+                return;
+            }
+
+            const userQuizzesRef = ref(db, `user/${username}/quizzes`);
+
+                // Retrieve existing quizzes for the username
+                const snapshot = await get(userQuizzesRef);
+
+                // Find the highest existing quiz ID
+                let nextQuizId = 0; // Default ID if no quizzes exist
+                if (snapshot.exists()) {
+                    const quizzes = snapshot.val();
+                    const quizIds = Object.keys(quizzes).map(id => parseInt(id, 10));
+                    nextQuizId = Math.max(...quizIds) + 1; // Increment the highest ID
+                }
+
+                quizdetails = {
+                    nextQuizId, title, description
+                }
+                alert(`${nextQuizId} ${title} ${description}`)
+            addQuizItems()
+            
+        });
 
 
+        document.getElementById('add-new-item').addEventListener('click', function(e){
+            e.preventDefault()
+            
+            let question = document.getElementById('question').value;
+            let answer = document.getElementById('title').value;
+            let type = document.querySelector('input[name = "question-type"]:checked');
+
+            if (!question || !answer || !type) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            // Create a temporary item object
+            itemId = quizItems.length + 1; // Simple way to increment IDs
+            let quizItem = {
+                id: itemId,
+                question: question,
+                answer: answer,
+                type: type
+            };
+
+            quizItems.push(quizItem);
+
+            document.getElementById('question').value = '';
+            document.getElementById('answer').value = '';
+            document.querySelector('input[name="question-type"]:checked').checked = false;
+        })
 
 
-        // })
+        document.getElementById('save-quiz').addEventListener('click', async function(e){
+            e.preventDefault()
 
+            let question = document.getElementById('question').value;
+            let answer = document.getElementById('title').value;
+            let type = document.querySelector('input[name = "question-type"]:checked');
+
+            if (!question || !answer || !type) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            // Create a temporary item object
+            itemId = quizItems.length + 1; // Simple way to increment IDs
+            let quizItem = {
+                id: itemId,
+                question: question,
+                answer: answer,
+                type: type
+            };
+
+            quizItems.push(quizItem);
+
+            try {
+            // Save quiz data along with questions in Firebase
+            const quizRef = ref(db, `user/${username}/quizzes/${quizdetails.nextQuizId}`);
+            await set(quizRef, {
+                nextQuizId: quizdetails.nextQuizId,
+                title: quizdetails.title,
+                description:quizdetails. description,
+                quizItems: quizItems
+            });
+
+            alert('Quiz and questions saved successfully!');
+            console.log('Quiz data saved:', quizItems);
+
+            // Reset everything
+            itemId = 0
+            quizItems = [];  
+            quizdetails = {}
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+
+            document.getElementById('add-item').style.display = 'none';
+
+            } catch (error) {
+                console.error('Error saving quiz:', error);
+                alert('Failed to save quiz. Please try again.');
+            }
+         })
     </script>
 
 
