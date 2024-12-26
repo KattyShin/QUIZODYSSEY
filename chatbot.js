@@ -30,8 +30,8 @@ class Chatbot {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                credentials: "omit",
-                body: JSON.stringify({ message })
+                body: JSON.stringify({ message }),
+                credentials: "omit" // Ensure that credentials are not being sent if CORS does not allow it
             });
     
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);

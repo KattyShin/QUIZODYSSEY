@@ -9,17 +9,10 @@ import os
 
 app = Flask(__name__)
 
-# Updated CORS configuration
-CORS(app, 
-     resources={r"/chat": {
-         "origins": ["https://quizodyssey.onrender.com"],
-         "methods": ["POST", "OPTIONS"],
-         "allow_headers": ["Content-Type"],
-         "max_age": 3600,
-         "supports_credentials": False
-     }})
+# Explicitly allow requests from specific origin
+CORS(app, resources={r"/chat": {"origins": "https://quizodyssey.onrender.com"}})
 
-# Your existing NLTK and pipeline setup code remains the same
+# Setup NLTK and sentiment analysis (same as before)
 nltk.data.path.append('./nltk_data')
 try:
     nltk.data.find('tokenizers/punkt')
@@ -37,7 +30,6 @@ except Exception as e:
     app.logger.error(f"Failed to initialize sentiment pipeline: {e}")
     sentiment_analysis = None
 
-# Your existing preprocessing and response functions remain the same
 def preprocess_input(user_input):
     tokens = word_tokenize(user_input.lower())
     tokens = [word for word in tokens if word not in string.punctuation]
@@ -77,6 +69,7 @@ def chatbot_response(user_input):
         "sentiment": sentiment_label,
         "confidence": sentiment_score
     }
+
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
     if request.method == 'OPTIONS':
@@ -85,19 +78,19 @@ def chat():
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
         return response, 200
-    
+
     try:
         data = request.json
         user_message = data.get('message', '')
-        
+
         if not user_message or not isinstance(user_message, str):
             return jsonify({"error": "Invalid input"}), 400
-            
+
         response_data = chatbot_response(user_message)
         response = jsonify(response_data)
         response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
         return response
-        
+
     except Exception as e:
         app.logger.error(f"Error: {str(e)}")
         return jsonify({"error": "An internal error occurred"}), 500
