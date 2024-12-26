@@ -28,6 +28,7 @@
         .login-parent-con {
             width: 100%;
             max-width: 400px;
+            padding: 20px;
             
         }
 
@@ -280,7 +281,6 @@
                 <button>Save</button>
             </div>
         </div>
-        
 
 
     <script type="module">
@@ -337,7 +337,6 @@
                         firstname: firstname,
                         lastname: lastname,
                         email: email,
-                        username: username,
                         password: password
                         
                     });
@@ -404,21 +403,21 @@
             onValue(userRef, (snapshot) => {
                 const data = snapshot.val();
                 
-                if (data && data.password === password) {
+
+                if(!data){
+                    alert("Account not found, please create an account first.");
+                    return;
+                } else if (data.password != password) {
+                    alert('Incorrect password. Please try again.');
+                    return;
+                } else {
                     alert(`Login Successful! Welcome, ${data.firstname} ${data.lastname}!`);
                     //using session storage to use data in home.html file
                     sessionStorage.setItem('username', username);
                     sessionStorage.setItem('firstname', data.firstname);
                     sessionStorage.setItem('lastname', data.lastname);
-
                     //connect to home page
                     window.location.href = 'home.html';
-                } else if (data.password != password) {
-                    alert('Incorrect password. Please try again.');
-                    return;
-                } else {
-                    alert("Account not found, please create an account first.");
-                    return;
                 }
             });
         })
