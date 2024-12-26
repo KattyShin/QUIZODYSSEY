@@ -10,7 +10,7 @@ import os
 app = Flask(__name__)
 
 # Allow requests only from your frontend URL
-CORS(app, resources={r"/*": {"origins": "https://quizodyssey.onrender.com"}})
+CORS(app, resources={r"/*": {"origins": "https://quizodyssey.onrender.com", "allow_headers": ["Content-Type"]}})
 
 # Ensure necessary NLTK data is downloaded
 nltk.data.path.append('./nltk_data')  # Add a local path for NLTK data
@@ -74,8 +74,16 @@ def chatbot_response(user_input):
         "confidence": sentiment_score
     }
 
-@app.route('/chat', methods=['POST'])
+@app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
+    if request.method == 'OPTIONS':
+        # This is the preflight request
+        response = jsonify({'message': 'Preflight request successful'})
+        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
+        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        return response
+
     try:
         data = request.json
         user_message = data.get('message', '')
