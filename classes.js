@@ -14,7 +14,7 @@ class Sprite {
   }
 
   draw() {
-    drawImage(
+    c.drawImage(
       this.image,
       this.frames.val * this.width,
       0,
