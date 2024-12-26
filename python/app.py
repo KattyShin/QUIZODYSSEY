@@ -20,14 +20,16 @@ except LookupError:
     nltk.download('punkt', quiet=True)
 
 try:
-    nltk.data.find('tokenizers/punkt_tab/english')
+    nltk.data.find('corpora/stopwords')
 except LookupError:
-    nltk.download('punkt_tab', quiet=True)
-
-nltk.download('stopwords', quiet=True)  # Download 'stopwords' if not already available
+    nltk.download('stopwords', quiet=True)
 
 # Initialize sentiment analysis pipeline
-sentiment_analysis = pipeline("sentiment-analysis")
+try:
+    sentiment_analysis = pipeline("sentiment-analysis")
+except Exception as e:
+    app.logger.error(f"Failed to initialize sentiment pipeline: {e}", exc_info=True)
+    sentiment_analysis = None
 
 def preprocess_input(user_input):
     tokens = word_tokenize(user_input.lower())
@@ -37,6 +39,13 @@ def preprocess_input(user_input):
     return filtered_tokens
 
 def chatbot_response(user_input):
+    if sentiment_analysis is None:
+        return {
+            "response": "Sorry, sentiment analysis is temporarily unavailable.",
+            "sentiment": "UNKNOWN",
+            "confidence": 0.0,
+        }
+
     processed_input = preprocess_input(user_input)
 
     # Get sentiment analysis
@@ -67,14 +76,19 @@ def chatbot_response(user_input):
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    data = request.json
-    user_message = data.get('message', '')
+    try:
+        data = request.json
+        user_message = data.get('message', '')
 
-    if not user_message:
-        return jsonify({"error": "No message provided"}), 400
+        if not user_message or not isinstance(user_message, str):
+            return jsonify({"error": "Invalid input. Please provide a valid message."}), 400
 
-    response_data = chatbot_response(user_message)
-    return jsonify(response_data)
+        response_data = chatbot_response(user_message)
+        return jsonify(response_data)
+
+    except Exception as e:
+        app.logger.error(f"Unhandled exception: {e}", exc_info=True)
+        return jsonify({"error": "An internal error occurred. Please try again later."}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
