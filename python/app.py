@@ -14,7 +14,16 @@ CORS(app, resources={r"/*": {"origins": "https://quizodyssey.onrender.com"}})
 
 # Ensure necessary NLTK data is downloaded
 nltk.data.path.append('./nltk_data')  # Add a local path for NLTK data
-nltk.download('punkt', quiet=True)  # Download 'punkt' if not already available
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt', quiet=True)
+
+try:
+    nltk.data.find('tokenizers/punkt_tab/english')
+except LookupError:
+    nltk.download('punkt_tab', quiet=True)
+
 nltk.download('stopwords', quiet=True)  # Download 'stopwords' if not already available
 
 # Initialize sentiment analysis pipeline
