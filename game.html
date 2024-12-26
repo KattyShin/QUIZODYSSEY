@@ -448,6 +448,8 @@
         </canvas>
     </div>
 
+
+
     <!-- Dialog Overlay -->
     <div class="dialog-overlay" id="npcHome1Bot">
         <div class="dialog-header">
@@ -525,6 +527,8 @@
     <script src="/data//home3Nearby.js"></script>
     <script src="/data//collision.js"></script>
     <script src="classes.js"></script>
+    <script src="chatbot.js"></script>
+    <script src="game.js"></script>
 
 
 
@@ -533,52 +537,7 @@
         crossorigin="anonymous"></script>
 
     <script src="https://kit.fontawesome.com/88979c2f8f.js" crossorigin="anonymous"></script>
-    <script src="games.js"></script>
-    <script>
-        const natural = require('natural');
-        const tokenizer = new natural.WordTokenizer();
 
-        const responses = {
-            "hello": "Hi there! How can I help you today?",
-            "how are you": "I'm just a bot, but I'm doing great! How about you?",
-            "bye": "Goodbye! Have a great day!"
-        };
-
-        function getResponse(message) {
-            const tokens = tokenizer.tokenize(message.toLowerCase());
-            for (const token of tokens) {
-                if (responses[token]) {
-                    return responses[token];
-                }
-            }
-            return "I'm sorry, I don't understand that.";
-        }
-
-        document.querySelector('.send-button').addEventListener('click', () => {
-            const input = document.querySelector('.chat-input');
-            const message = input.value;
-            if (message.trim() !== "") {
-                addMessageToChat("user-message", message);
-                const response = getResponse(message);
-                addMessageToChat("bot-message", response);
-                input.value = "";
-            }
-        });
-
-        function addMessageToChat(className, message) {
-            const messagesContainer = document.getElementById('messagesContainer');
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${className}`;
-            messageElement.textContent = message;
-            messagesContainer.appendChild(messageElement);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-        function exitGame() {
-            window.location.href = 'home.html'
-
-        }
-
-    </script>
 
 </body>
 
