@@ -12,12 +12,13 @@ app = Flask(__name__)
 # Allow requests only from your frontend URL
 CORS(app, resources={r"/*": {"origins": "https://quizodyssey.onrender.com"}})
 
+# Ensure necessary NLTK data is downloaded
+nltk.data.path.append('./nltk_data')  # Add a local path for NLTK data
+nltk.download('punkt', quiet=True)  # Download 'punkt' if not already available
+nltk.download('stopwords', quiet=True)  # Download 'stopwords' if not already available
+
 # Initialize sentiment analysis pipeline
 sentiment_analysis = pipeline("sentiment-analysis")
-
-# Download necessary NLTK data (uncomment if running first time)
-# nltk.download('punkt')
-# nltk.download('stopwords')
 
 def preprocess_input(user_input):
     tokens = word_tokenize(user_input.lower())
@@ -50,9 +51,9 @@ def chatbot_response(user_input):
             response = "I sense some concern in your message. How can I help make things better?"
 
     return {
-    "response": response,
-    "sentiment": sentiment_label,
-    "confidence": sentiment_score
+        "response": response,
+        "sentiment": sentiment_label,
+        "confidence": sentiment_score
     }
 
 @app.route('/chat', methods=['POST'])
