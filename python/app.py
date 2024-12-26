@@ -7,9 +7,10 @@ from transformers import pipeline
 import string
 import os
 
-
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+
+# Allow requests only from your frontend URL
+CORS(app, resources={r"/*": {"origins": "https://quizodyssey.onrender.com"}})
 
 # Initialize sentiment analysis pipeline
 sentiment_analysis = pipeline("sentiment-analysis")
