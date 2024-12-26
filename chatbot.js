@@ -1,10 +1,10 @@
+// chatbot.js
 class Chatbot {
     constructor() {
         this.dialogOverlay = document.getElementById("npcHome1Bot");
         this.messagesContainer = document.getElementById("messagesContainer");
         this.chatInput = this.dialogOverlay.querySelector(".chat-input");
         this.sendButton = this.dialogOverlay.querySelector(".send-button");
-
         this.setupEventListeners();
     }
 
@@ -20,39 +20,40 @@ class Chatbot {
     async sendMessage() {
         const message = this.chatInput.value.trim();
         if (!message) return;
-    
-        this.appendMessage(message, "user");
-        this.chatInput.value = "";
-    
+
         try {
+            this.appendMessage(message, "user");
+            this.chatInput.value = "";
+            this.sendButton.disabled = true;
+
             const response = await fetch("https://python-quizodyssey.onrender.com/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ message }),
-                credentials: "omit" // Ensure that credentials are not being sent if CORS does not allow it
+                credentials: "omit"
             });
-    
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+            }
+
             const data = await response.json();
             this.appendMessage(data.response, "bot");
         } catch (error) {
             console.error("Error:", error);
             this.appendMessage("Sorry, I encountered an error. Please try again.", "bot");
+        } finally {
+            this.sendButton.disabled = false;
         }
     }
-    
 
     appendMessage(text, sender) {
         const messageDiv = document.createElement("div");
-        messageDiv.classList.add("message");
-        messageDiv.classList.add(
-            sender === "user" ? "user-message" : "bot-message"
-        );
+        messageDiv.classList.add("message", `${sender}-message`);
         messageDiv.textContent = text;
-
         this.messagesContainer.appendChild(messageDiv);
         this.scrollToBottom();
     }
@@ -62,7 +63,6 @@ class Chatbot {
     }
 }
 
-// Initialize the chatbot when the page loads
 document.addEventListener("DOMContentLoaded", () => {
     const chatbot = new Chatbot();
 });
