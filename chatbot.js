@@ -20,13 +20,13 @@ class Chatbot {
     async sendMessage() {
         const message = this.chatInput.value.trim();
         if (!message) return;
-
+    
         // Add user message
         this.appendMessage(message, "user");
         this.chatInput.value = "";
-
+    
         try {
-            // Make API call to Flask backend
+            console.log("Sending message:", message);  // Log the message being sent
             const response = await fetch("https://python-quizodyssey.onrender.com/chat", {
                 method: "POST",
                 headers: {
@@ -34,14 +34,16 @@ class Chatbot {
                 },
                 body: JSON.stringify({ message }),
             });
-
+    
             if (!response.ok) {
                 const errorText = await response.text();
+                console.error("Server response error:", errorText);  // Log error response
                 throw new Error(`Server Error: ${errorText}`);
             }
-
+    
             const data = await response.json();
-
+            console.log("Received response:", data);  // Log the response data
+    
             // Display bot response
             this.appendMessage(data.response, "bot");
         } catch (error) {
@@ -52,6 +54,7 @@ class Chatbot {
             );
         }
     }
+    
 
     appendMessage(text, sender) {
         const messageDiv = document.createElement("div");
