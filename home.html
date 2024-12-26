@@ -766,7 +766,6 @@
 
 
         let quizdetails = {}
-        let itemId = 0; 
         let quizItems = []
         document.getElementById('add-quiz-items').addEventListener('click', async function(e) {
             e.preventDefault();
@@ -807,7 +806,7 @@
             
             let question = document.getElementById('question').value;
             let answer = document.getElementById('title').value;
-            let type = document.querySelector('input[name = "question-type"]:checked');
+            let type = document.querySelector('input[name="question-type"]:checked').value;
 
             if (!question || !answer || !type) {
                 alert("Please fill in all fields.");
@@ -815,15 +814,15 @@
             }
 
             // Create a temporary item object
-            itemId = quizItems.length + 1; // Simple way to increment IDs
             let quizItem = {
-                id: itemId,
+                // id: itemId,
                 question: question,
                 answer: answer,
                 type: type
             };
 
             quizItems.push(quizItem);
+            alert(`${question} ${type} ${answer}`)
 
             document.getElementById('question').value = '';
             document.getElementById('answer').value = '';
@@ -836,7 +835,7 @@
 
             let question = document.getElementById('question').value;
             let answer = document.getElementById('title').value;
-            let type = document.querySelector('input[name = "question-type"]:checked');
+            let type = document.querySelector('input[name="question-type"]:checked').value;
 
             if (!question || !answer || !type) {
                 alert("Please fill in all fields.");
@@ -844,15 +843,15 @@
             }
 
             // Create a temporary item object
-            itemId = quizItems.length + 1; // Simple way to increment IDs
             let quizItem = {
-                id: itemId,
+                // id: itemId,
                 question: question,
                 answer: answer,
                 type: type
             };
 
             quizItems.push(quizItem);
+            alert(`${question} ${type} ${answer}`)
 
             try {
             // Save quiz data along with questions in Firebase
@@ -868,7 +867,6 @@
             console.log('Quiz data saved:', quizItems);
 
             // Reset everything
-            itemId = 0
             quizItems = [];  
             quizdetails = {}
             document.getElementById('title').value = '';
