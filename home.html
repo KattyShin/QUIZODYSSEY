@@ -450,7 +450,7 @@
             </button>
         </div>
         <div style="font-size: 20px;">
-            <label for="" style="font-family: 'VT323'; font-size: 30px; margin-right: 2rem; margin-top: 2px;">Welcome! Katty</label>
+            <label for="" style="font-family: 'VT323'; font-size: 30px; margin-top: 2px;" id = 'welcome-msg' >Welcome! Katty</label>
         </div>
     </nav>
 
@@ -464,7 +464,7 @@
         <div style="border-radius: 50%; border: 2px solid white; padding: 8px; margin-right: 1rem;">
             <i class="fa-solid fa-user" style="margin-right: 4px; margin-left: 4px;font-size: 20px; color: white;"></i>
         </div>
-        <h5>Katty</h5>
+        <h5 id = 'user-fullname'>Katty</h5>
     </div>
 
 </div>
@@ -556,7 +556,7 @@
             </div>
 
             <div class="modal-footer">
-                <button class="button create-btn" id="start-game-btn">Add Another Item</button>
+                <button class="button create-btn" id="add-new-item">Add Another Item</button>
             </div>
 
         </div>
@@ -677,63 +677,101 @@
     <script src="https://kit.fontawesome.com/88979c2f8f.js" crossorigin="anonymous"></script>
     <!-- Bootstrap JS (required for Offcanvas) -->
 
-    <script>
+    <script type = "module">
+        // firebase connection
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getDatabase, ref, set, get, child, onValue} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+        
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6k4C7cjGFck7RK7jZhp8gs6bxQeg6Ftw",
+            authDomain: "quizodyssey-38041.firebaseapp.com",
+            databaseURL: "https://quizodyssey-38041-default-rtdb.firebaseio.com",
+            projectId: "quizodyssey-38041",
+            storageBucket: "quizodyssey-38041.firebasestorage.app",
+            messagingSenderId: "841753791601",
+            appId: "1:841753791601:web:99bb91a64958b2eda0dfd0"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+        const username = sessionStorage.getItem('username');
+        const firstname = sessionStorage.getItem('firstname');
+        const lastname = sessionStorage.getItem('lastname');
+
+        if(username){
+            document.getElementById('welcome-msg').textContent = `Welcome, ${firstname}!`;
+            document.getElementById('user-fullname').textContent = `${firstname} ${lastname}`;
+        }
+
 
         // SETTINGS
-        function openSettingsModal() {
+        window.openSettingsModal = function () {
             document.getElementById('settings-modal').style.display = 'block';
             document.getElementById('side-menu').style.display = 'none';
             document.getElementById('sidebar-overlay').style.display = 'none';
         }
 
-        function closeSettingsModal() {
+        window.closeSettingsModal = function () {
             document.getElementById('settings-modal').style.display = 'none';
         }
 
-        function openManageAcc(){
+        window.openManageAcc = function (){
             document.getElementById('manageAccount').style.display = 'flex';
             document.getElementById('side-menu').style.display = 'none';
             document.getElementById('sidebar-overlay').style.display = 'none';
         }
 
-        function closeManageAcc(){
+        window.closeManageAcc = function (){
             document.getElementById('manageAccount').style.display = 'none';
             
         }
 
-        function toggleMenu() {
+        window.toggleMenu = function () {
             document.getElementById('side-menu').style.display = 'block';
             document.getElementById('sidebar-overlay').style.display = 'block';
-        }
+        };
 
-        function closeSidebar(){
+
+
+        window.closeSidebar = function (){
             document.getElementById('sidebar-overlay').style.display = 'none';
             document.getElementById('side-menu').style.display = 'none';
 
         }
 
-        function showUploadModal(){
+        window.showUploadModal = function (){
             document.getElementById('upload-modal').style.display = 'block';
         }
 
-        function addQuizItems(){
-            
+
+        window.addQuizItems = function(){
             document.getElementById('add-item').style.display = 'block';
             document.getElementById('upload-modal').style.display = 'none';
 
         }
 
-        function closeCreateNew(){
+        window.closeCreateNew = function (){
             document.getElementById('upload-modal').style.display = 'none';
-
         }
 
-        function cancelCreateNew(){
+        window.cancelCreateNew = function (){
             const confirmCancel = window.confirm("Are you sure you want to exit? Quiz will not be saved.")
             if(confirmCancel){
                 document.getElementById('add-item').style.display = 'none';
             }
         }
+
+        // document.getElementById('add-another-item').addEventListener('click', function(e){
+        //     e.preventDefault()
+
+
+
+
+        // })
 
     </script>
 
