@@ -1,4 +1,3 @@
-# Python Backend (app.py)
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import nltk
@@ -10,14 +9,17 @@ import os
 
 app = Flask(__name__)
 
-CORS(app, resources={
-    r"/chat": {
-        "origins": ["https://quizodyssey.onrender.com"],
-        "methods": ["POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"]
-    }
-})
+# Updated CORS configuration
+CORS(app, 
+     resources={r"/chat": {
+         "origins": ["https://quizodyssey.onrender.com"],
+         "methods": ["POST", "OPTIONS"],
+         "allow_headers": ["Content-Type"],
+         "max_age": 3600,
+         "supports_credentials": False
+     }})
 
+# Your existing NLTK and pipeline setup code remains the same
 nltk.data.path.append('./nltk_data')
 try:
     nltk.data.find('tokenizers/punkt')
@@ -32,9 +34,10 @@ except LookupError:
 try:
     sentiment_analysis = pipeline("sentiment-analysis")
 except Exception as e:
-    app.logger.error(f"Failed to initialize sentiment pipeline: {e}", exc_info=True)
+    app.logger.error(f"Failed to initialize sentiment pipeline: {e}")
     sentiment_analysis = None
 
+# Your existing preprocessing and response functions remain the same
 def preprocess_input(user_input):
     tokens = word_tokenize(user_input.lower())
     tokens = [word for word in tokens if word not in string.punctuation]
@@ -77,6 +80,13 @@ def chatbot_response(user_input):
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST')
+        return response, 200
+        
     try:
         data = request.json
         user_message = data.get('message', '')
@@ -88,7 +98,7 @@ def chat():
         return jsonify(response_data)
         
     except Exception as e:
-        app.logger.error(f"Unhandled exception: {e}", exc_info=True)
+        app.logger.error(f"Error: {str(e)}")
         return jsonify({"error": "An internal error occurred"}), 500
 
 if __name__ == '__main__':
