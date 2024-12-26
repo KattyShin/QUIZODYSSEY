@@ -8,18 +8,16 @@ import string
 import os
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
-# Updated CORS configuration
-CORS(app, 
-     resources={r"/chat": {
-         "origins": ["https://quizodyssey.onrender.com"],
-         "methods": ["POST", "OPTIONS"],
-         "allow_headers": ["Content-Type"],
-         "max_age": 3600,
-         "supports_credentials": False
-     }})
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    return response
 
-# Your existing NLTK and pipeline setup code remains the same
+# Rest of your code remains the same...
 nltk.data.path.append('./nltk_data')
 try:
     nltk.data.find('tokenizers/punkt')
@@ -37,7 +35,6 @@ except Exception as e:
     app.logger.error(f"Failed to initialize sentiment pipeline: {e}")
     sentiment_analysis = None
 
-# Your existing preprocessing and response functions remain the same
 def preprocess_input(user_input):
     tokens = word_tokenize(user_input.lower())
     tokens = [word for word in tokens if word not in string.punctuation]
@@ -81,11 +78,7 @@ def chatbot_response(user_input):
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
     if request.method == 'OPTIONS':
-        response = jsonify({'status': 'ok'})
-        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        response.headers.add('Access-Control-Allow-Methods', 'POST')
-        return response, 200
+        return '', 204
         
     try:
         data = request.json
