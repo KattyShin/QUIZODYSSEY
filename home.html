@@ -755,12 +755,14 @@
 
         window.closeCreateNew = function (){
             document.getElementById('upload-modal').style.display = 'none';
+            resetFields()
         }
 
         window.cancelCreateNew = function (){
             const confirmCancel = window.confirm("Are you sure you want to exit? Quiz will not be saved.")
             if(confirmCancel){
                 document.getElementById('add-item').style.display = 'none';
+                resetFields()
             }
         }
 
@@ -834,7 +836,7 @@
             e.preventDefault()
 
             let question = document.getElementById('question').value;
-            let answer = document.getElementById('title').value;
+            let answer = document.getElementById('answer').value;
             let type = document.querySelector('input[name="question-type"]:checked').value;
 
             if (!question || !answer || !type) {
@@ -844,7 +846,6 @@
 
             // Create a temporary item object
             let quizItem = {
-                // id: itemId,
                 question: question,
                 answer: answer,
                 type: type
@@ -867,11 +868,7 @@
             console.log('Quiz data saved:', quizItems);
 
             // Reset everything
-            quizItems = [];  
-            quizdetails = {}
-            document.getElementById('title').value = '';
-            document.getElementById('description').value = '';
-
+            resetFields()
             document.getElementById('add-item').style.display = 'none';
 
             } catch (error) {
@@ -879,6 +876,16 @@
                 alert('Failed to save quiz. Please try again.');
             }
          })
+
+         window.resetFields = function(){
+            quizItems = [];  
+            quizdetails = {}
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('question').value = '';
+            document.getElementById('answer').value = '';
+            document.querySelector('input[name="question-type"]:checked').checked = false;
+         }
     </script>
 
 
