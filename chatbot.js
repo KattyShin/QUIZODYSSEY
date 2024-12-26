@@ -21,37 +21,26 @@ class Chatbot {
         const message = this.chatInput.value.trim();
         if (!message) return;
     
-        // Add user message
         this.appendMessage(message, "user");
         this.chatInput.value = "";
     
         try {
-            console.log("Sending message:", message);  // Log the message being sent
             const response = await fetch("https://python-quizodyssey.onrender.com/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ message }),
+                credentials: "omit",
+                body: JSON.stringify({ message })
             });
     
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Server response error:", errorText);  // Log error response
-                throw new Error(`Server Error: ${errorText}`);
-            }
-    
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
             const data = await response.json();
-            console.log("Received response:", data);  // Log the response data
-    
-            // Display bot response
             this.appendMessage(data.response, "bot");
         } catch (error) {
             console.error("Error:", error);
-            this.appendMessage(
-                "Sorry, I encountered an error. Please try again.",
-                "bot"
-            );
+            this.appendMessage("Sorry, I encountered an error. Please try again.", "bot");
         }
     }
     

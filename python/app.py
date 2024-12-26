@@ -1,3 +1,4 @@
+# Python Backend (app.py)
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import nltk
@@ -9,11 +10,15 @@ import os
 
 app = Flask(__name__)
 
-# Apply CORS settings globally, allow all methods for the '/chat' route
-CORS(app, resources={r"/chat": {"origins": "https://quizodyssey.onrender.com"}})
+CORS(app, resources={
+    r"/chat": {
+        "origins": ["https://quizodyssey.onrender.com"],
+        "methods": ["POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
-# Ensure necessary NLTK data is downloaded
-nltk.data.path.append('./nltk_data')  # Add a local path for NLTK data
+nltk.data.path.append('./nltk_data')
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
@@ -24,7 +29,6 @@ try:
 except LookupError:
     nltk.download('stopwords', quiet=True)
 
-# Initialize sentiment analysis pipeline
 try:
     sentiment_analysis = pipeline("sentiment-analysis")
 except Exception as e:
@@ -47,13 +51,10 @@ def chatbot_response(user_input):
         }
 
     processed_input = preprocess_input(user_input)
-
-    # Get sentiment analysis
     sentiment = sentiment_analysis(user_input)[0]
     sentiment_label = sentiment['label']
     sentiment_score = sentiment['score']
 
-    # Basic response logic
     if "hi" in processed_input:
         response = "Hi langga ni kaon naka ara?"
     elif "wala" in processed_input:
@@ -76,27 +77,19 @@ def chatbot_response(user_input):
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
-    if request.method == 'OPTIONS':
-        # Handle preflight request
-        response = jsonify({'message': 'Preflight request successful'})
-        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
-        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        return response
-
     try:
         data = request.json
         user_message = data.get('message', '')
-
+        
         if not user_message or not isinstance(user_message, str):
-            return jsonify({"error": "Invalid input. Please provide a valid message."}), 400
-
+            return jsonify({"error": "Invalid input"}), 400
+            
         response_data = chatbot_response(user_message)
         return jsonify(response_data)
-
+        
     except Exception as e:
         app.logger.error(f"Unhandled exception: {e}", exc_info=True)
-        return jsonify({"error": "An internal error occurred. Please try again later."}), 500
+        return jsonify({"error": "An internal error occurred"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
