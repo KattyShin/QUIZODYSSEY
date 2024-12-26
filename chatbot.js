@@ -27,7 +27,7 @@ class Chatbot {
     
     try {
     // Make API call to Flask backend
-    const response = await fetch("http://https://python-quizodyssey.onrender.com/chat", {
+    const response = await fetch("https://python-quizodyssey.onrender.com/chat", {
     method: "POST",
     headers: {
     "Content-Type": "application/json",
