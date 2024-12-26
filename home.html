@@ -834,7 +834,7 @@
             e.preventDefault()
 
             let question = document.getElementById('question').value;
-            let answer = document.getElementById('title').value;
+            let answer = document.getElementById('answer').value;
             let type = document.querySelector('input[name="question-type"]:checked').value;
 
             if (!question || !answer || !type) {
@@ -871,6 +871,9 @@
             quizdetails = {}
             document.getElementById('title').value = '';
             document.getElementById('description').value = '';
+            document.getElementById('question').value = '';
+            document.getElementById('answer').value = '';
+            document.querySelector('input[name="question-type"]:checked').checked = false;
 
             document.getElementById('add-item').style.display = 'none';
 
