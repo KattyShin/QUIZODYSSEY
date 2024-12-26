@@ -9,7 +9,7 @@ import os
 
 
 app = Flask(__name__)
-CORS(app) # Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Initialize sentiment analysis pipeline
 sentiment_analysis = pipeline("sentiment-analysis")
