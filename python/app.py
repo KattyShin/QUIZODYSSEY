@@ -1,81 +1,33 @@
-# backend.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from transformers import pipeline
-import string
+from openai import OpenAI
 import os
 
 app = Flask(__name__)
-CORS(app, resources={r"/chat": {"origins": "https://quizodyssey.onrender.com"}})
 
-# Setup NLTK data
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.data.path.append(os.path.join(os.getcwd(), 'nltk_data'))
+# Allow all origins for CORS; replace "*" with specific domains if needed
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Initialize sentiment analysis
-try:
-    sentiment_analysis = pipeline("sentiment-analysis")
-except Exception as e:
-    app.logger.error(f"Failed to initialize sentiment pipeline: {e}")
-    sentiment_analysis = None
+# Initialize OpenAI client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))  # Ensure this is set in your Render environment
 
-def preprocess_input(user_input):
+def generate_ai_response(user_input):
+    """Generate a conversational response using OpenAI's new API."""
     try:
-        tokens = word_tokenize(user_input.lower())
-        tokens = [word for word in tokens if word not in string.punctuation]
-        stop_words = set(stopwords.words('english'))
-        return [word for word in tokens if word not in stop_words]
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",  # Or gpt-4 if you have access
+            messages=[{"role": "user", "content": user_input}],
+            max_tokens=150,
+            temperature=0.7
+        )
+        return response.choices[0].message.content.strip()
     except Exception as e:
-        app.logger.error(f"Tokenization error: {e}")
-        return user_input.lower().split()
-
-def chatbot_response(user_input):
-    if sentiment_analysis is None:
-        return {
-            "response": "Sorry, sentiment analysis is temporarily unavailable.",
-            "sentiment": "UNKNOWN",
-            "confidence": 0.0,
-        }
-
-    try:
-        processed_input = preprocess_input(user_input)
-        sentiment = sentiment_analysis(user_input)[0]
-        sentiment_label = sentiment['label']
-        sentiment_score = sentiment['score']
-
-        if "hi" in processed_input:
-            response = "Hi langga ni kaon naka ara?"
-        elif "wala" in processed_input:
-            response = "Kaon na langga ayaw sig code kay MABOANG naka ana"
-        elif "name" in processed_input:
-            response = "I'm an AI-powered chatbot. What's your name?"
-        elif "weather" in processed_input:
-            response = "I'm not sure about the weather right now, but you can check a weather app!"
-        else:
-            if sentiment_label == "POSITIVE":
-                response = "I'm glad you're feeling positive! How can I help you further?"
-            else:
-                response = "I sense some concern in your message. How can I help make things better?"
-
-        return {
-            "response": response,
-            "sentiment": sentiment_label,
-            "confidence": sentiment_score
-        }
-    except Exception as e:
-        app.logger.error(f"Error in chatbot response: {e}")
-        return {
-            "response": "I encountered an error processing your message. Please try again.",
-            "sentiment": "UNKNOWN",
-            "confidence": 0.0
-        }
+        app.logger.error(f"OpenAI API error: {e}")
+        return "I encountered an issue while generating a response."
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
+    """Handle chat requests."""
     if request.method == 'OPTIONS':
         response = jsonify({'status': 'ok'})
         response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
@@ -90,15 +42,14 @@ def chat():
         if not user_message or not isinstance(user_message, str):
             return jsonify({"error": "Invalid input"}), 400
 
-        response_data = chatbot_response(user_message)
+        response_data = {"response": generate_ai_response(user_message)}
         response = jsonify(response_data)
         response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
         return response
-
     except Exception as e:
-        app.logger.error(f"Error: {str(e)}")
+        app.logger.error(f"Error: {e}")
         return jsonify({"error": "An internal error occurred"}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.getenv('PORT', 5000))
     app.run(debug=True, host='0.0.0.0', port=port)
