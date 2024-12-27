@@ -1,80 +1,66 @@
 class Chatbot {
     constructor() {
-        this.chatbox = document.getElementById('chatbox');
-        this.userInput = document.getElementById('userInput');
+        this.dialogOverlay = document.getElementById("npcHome1Bot");
+        this.messagesContainer = document.getElementById("messagesContainer");
+        this.chatInput = this.dialogOverlay.querySelector(".chat-input");
+        this.sendButton = this.dialogOverlay.querySelector(".send-button");
         this.setupEventListeners();
     }
 
     setupEventListeners() {
-        this.userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && this.userInput.value.trim() !== '') {
+        this.sendButton.addEventListener("click", () => this.sendMessage());
+        this.chatInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
                 this.sendMessage();
             }
         });
     }
 
     async sendMessage() {
-        const userMessage = this.userInput.value.trim();
-        if (!userMessage) return;
+        const message = this.chatInput.value.trim();
+        if (!message) return;
 
         try {
-            // Display user message
-            this.appendMessage('User', userMessage);
-            this.userInput.value = '';
+            this.appendMessage(message, "user");
+            this.chatInput.value = "";
+            this.sendButton.disabled = true;
 
-            // Show loading indicator
-            const loadingDiv = this.appendMessage('Assistant', 'Thinking...');
-            
-            const response = await fetch('https://quizodyssey-py2.onrender.com/chat', {
-                method: 'POST',
+            const response = await fetch("https://quizodyssey-py2.onrender.com/chat", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ message: userMessage }),
-                credentials: 'include'
+                body: JSON.stringify({ message }),
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
 
             const data = await response.json();
-            
-            // Remove loading indicator and show response
-            loadingDiv.remove();
-            this.appendMessage('Assistant', data.response);
-
+            this.appendMessage(data.response, "bot");
         } catch (error) {
-            console.error('Error:', error);
-            // Remove loading indicator if it exists
-            const loadingDiv = document.querySelector('.loading');
-            if (loadingDiv) loadingDiv.remove();
-            
-            // Show error message to user
-            this.appendMessage('System', 'Sorry, I encountered an error. Please try again later.');
+            console.error("Error:", error);
+            this.appendMessage("Sorry, I encountered an error. Please try again.", "bot");
+        } finally {
+            this.sendButton.disabled = false;
         }
     }
 
-    appendMessage(sender, message) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${sender.toLowerCase()}`;
-        
-        const senderSpan = document.createElement('strong');
-        senderSpan.textContent = `${sender}: `;
-        
-        const messageSpan = document.createElement('span');
-        messageSpan.textContent = message;
-        
-        messageDiv.appendChild(senderSpan);
-        messageDiv.appendChild(messageSpan);
-        
-        this.chatbox.appendChild(messageDiv);
-        this.chatbox.scrollTop = this.chatbox.scrollHeight;
-        
-        return messageDiv;
+    appendMessage(text, sender) {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", `${sender}-message`);
+        messageDiv.textContent = text;
+        this.messagesContainer.appendChild(messageDiv);
+        this.scrollToBottom();
+    }
+
+    scrollToBottom() {
+        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
     }
 }
 
-// Initialize the chatbot
-const chatbot = new Chatbot();
+document.addEventListener("DOMContentLoaded", () => {
+    const chatbot = new Chatbot();
+});
