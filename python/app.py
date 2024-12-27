@@ -4,6 +4,7 @@ import os
 import requests
 import logging
 from logging.handlers import RotatingFileHandler
+import json
 
 app = Flask(__name__)
 
@@ -41,34 +42,89 @@ def make_api_request(user_input, max_retries=3):
     """Make API request with retry logic and detailed error logging."""
     for attempt in range(max_retries):
         try:
-            app.logger.info(f"Attempt {attempt + 1}: Sending request to Hugging Face API...")
+            # Log the exact payload being sent
+            payload = {"inputs": user_input}
+            app.logger.info(f"Request payload: {json.dumps(payload)}")
+            app.logger.info(f"Request headers: {json.dumps({k: v for k, v in headers.items() if k != 'Authorization'})}")
+            
             response = requests.post(
                 HUGGING_FACE_URL,
                 headers=headers,
-                json={"inputs": user_input},
+                json=payload,
                 timeout=10
             )
+            
+            # Log response details
             app.logger.info(f"Response Status Code: {response.status_code}")
+            app.logger.info(f"Response Headers: {dict(response.headers)}")
+            
+            # Try to get response content, handle different formats
+            try:
+                response_content = response.json()
+                app.logger.info(f"Response Content: {json.dumps(response_content)}")
+            except json.JSONDecodeError:
+                app.logger.error(f"Non-JSON response content: {response.text}")
+                response_content = response.text
+
+            # Check for specific error conditions
+            if response.status_code == 400:
+                app.logger.error(f"Bad Request Error. Response: {response_content}")
+                if attempt < max_retries - 1:
+                    app.logger.info("Retrying request...")
+                    continue
+                
             response.raise_for_status()
-            return response.json()
+            return response_content
+
         except requests.exceptions.RequestException as e:
             app.logger.error(f"API request failed (attempt {attempt + 1}/{max_retries}): {str(e)}")
             if attempt == max_retries - 1:
+                # On final attempt, include more detailed error information
+                error_details = {
+                    "error": str(e),
+                    "url": HUGGING_FACE_URL,
+                    "attempt": attempt + 1,
+                    "max_retries": max_retries
+                }
+                if hasattr(e, 'response') and e.response is not None:
+                    error_details["status_code"] = e.response.status_code
+                    try:
+                        error_details["response_content"] = e.response.json()
+                    except:
+                        error_details["response_content"] = e.response.text
+                
+                app.logger.error(f"Final error details: {json.dumps(error_details)}")
                 raise
+
+def validate_input(user_input):
+    """Validate user input meets API requirements."""
+    if not isinstance(user_input, str):
+        raise ValueError("Input must be a string")
+    
+    # Remove leading/trailing whitespace
+    user_input = user_input.strip()
+    
+    if len(user_input) == 0:
+        raise ValueError("Input cannot be empty")
+        
+    if len(user_input) > 512:  # Adjust this limit based on model requirements
+        raise ValueError("Input exceeds maximum length of 512 characters")
+        
+    return user_input
 
 def chatbot_response(user_input):
     """Process user input and generate response."""
     try:
-        # Input validation
-        if not user_input or not isinstance(user_input, str) or len(user_input.strip()) == 0:
-            raise ValueError("Invalid input: Must be a non-empty string.")
-
+        # Validate and sanitize input
+        validated_input = validate_input(user_input)
+        
         # Make API request
-        response_data = make_api_request(user_input)
-
+        response_data = make_api_request(validated_input)
+        
         # Validate response
         if not response_data or not isinstance(response_data, list):
-            raise ValueError("Invalid API response format.")
+            app.logger.error(f"Unexpected API response format: {response_data}")
+            raise ValueError("Invalid API response format")
 
         sentiment_data = response_data[0]
         sentiment_label = sentiment_data.get("label", "UNKNOWN")
@@ -93,7 +149,7 @@ def chatbot_response(user_input):
     except ValueError as e:
         app.logger.warning(f"Validation error: {str(e)}")
         return {
-            "response": "Please provide a valid message.",
+            "response": str(e),
             "sentiment": "UNKNOWN",
             "confidence": 0.0,
             "status": "error",
@@ -103,11 +159,12 @@ def chatbot_response(user_input):
     except requests.exceptions.RequestException as e:
         app.logger.error(f"API error: {str(e)}")
         return {
-            "response": "Sorry, I'm having trouble connecting to the AI service. Please try again later.",
+            "response": "Sorry, I'm having trouble processing your message. Please try again later.",
             "sentiment": "UNKNOWN",
             "confidence": 0.0,
             "status": "error",
-            "error_type": "api"
+            "error_type": "api",
+            "error_details": str(e)
         }
 
     except Exception as e:
@@ -117,7 +174,8 @@ def chatbot_response(user_input):
             "sentiment": "UNKNOWN",
             "confidence": 0.0,
             "status": "error",
-            "error_type": "internal"
+            "error_type": "internal",
+            "error_details": str(e)
         }
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
