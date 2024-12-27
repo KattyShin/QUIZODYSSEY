@@ -15,13 +15,14 @@ OpenAIError = Exception
 def generate_ai_response(user_input):
     """Generate a conversational response using OpenAI's API."""
     try:
-        response = openai.Completion.create(
-            model="text-davinci-003",  # Or "gpt-3.5-turbo" or "gpt-4" if you have access
-            prompt=user_input,
+        # Use the new chat_completions.create method
+        response = openai.chat_completions.create(
+            model="gpt-3.5-turbo",  # Or gpt-4 if you have access
+            messages=[{"role": "user", "content": user_input}],
             max_tokens=150,
             temperature=0.7
         )
-        return response.choices[0].text.strip()
+        return response['choices'][0]['message']['content'].strip()
     except OpenAIError as e:
         app.logger.error(f"OpenAI API error: {e}")
         return "I encountered an issue while generating a response."
