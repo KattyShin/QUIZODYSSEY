@@ -2,13 +2,15 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import openai
 import os
-from openai.error import OpenAIError
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Set your OpenAI API key
 openai.api_key = os.getenv("OPENAI_API_KEY")  # Ensure this is set in your Render environment
+
+# Generic fallback for OpenAI exceptions
+OpenAIError = Exception
 
 def generate_ai_response(user_input):
     """Generate a conversational response using OpenAI's API."""
