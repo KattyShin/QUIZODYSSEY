@@ -4,6 +4,8 @@ import openai
 import os
 
 app = Flask(__name__)
+
+# Allow all origins for CORS; replace "*" with specific domains if needed
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Set your OpenAI API key
@@ -15,8 +17,8 @@ OpenAIError = Exception
 def generate_ai_response(user_input):
     """Generate a conversational response using OpenAI's API."""
     try:
-        # Use the new chat_completions.create method
-        response = openai.chat_completions.create(
+        # Correct method to use for the chat model
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",  # Or gpt-4 if you have access
             messages=[{"role": "user", "content": user_input}],
             max_tokens=150,
@@ -32,7 +34,7 @@ def chat():
     """Handle chat requests."""
     if request.method == 'OPTIONS':
         response = jsonify({'status': 'ok'})
-        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')  # Make sure this matches your frontend URL
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
         return response, 200
@@ -46,7 +48,7 @@ def chat():
 
         response_data = {"response": generate_ai_response(user_message)}
         response = jsonify(response_data)
-        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')  # Again, make sure this matches your frontend URL
         return response
     except Exception as e:
         app.logger.error(f"Error: {e}")
