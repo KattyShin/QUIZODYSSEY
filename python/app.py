@@ -2,81 +2,172 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import requests
+import logging
+from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 
-# Allow CORS for all routes and from your frontend origin
-CORS(app, resources={r"/*": {"origins": "https://quizodyssey.onrender.com"}})
+# Enhanced logging setup
+logging.basicConfig(level=logging.INFO)
+handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=3)
+handler.setFormatter(logging.Formatter(
+    '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+))
+app.logger.addHandler(handler)
 
-# Your Hugging Face API key
+# CORS setup with more specific configuration
+CORS(app, resources={
+    r"/chat": {
+        "origins": ["https://quizodyssey.onrender.com"],
+        "methods": ["POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
+
+# Environment variables with fallback
 HUGGING_FACE_API_KEY = os.getenv('HUGGING_FACE_API_KEY')
+if not HUGGING_FACE_API_KEY:
+    app.logger.error("No Hugging Face API key found in environment variables")
+    raise ValueError("HUGGING_FACE_API_KEY environment variable is required")
 
-# Hugging Face sentiment analysis model endpoint
 HUGGING_FACE_URL = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english"
 
 headers = {
-    "Authorization": f"Bearer {HUGGING_FACE_API_KEY}"
+    "Authorization": f"Bearer {HUGGING_FACE_API_KEY}",
+    "Content-Type": "application/json"
 }
 
-def preprocess_input(user_input):
-    return user_input  # Send as is to Hugging Face API
+def make_api_request(user_input, max_retries=3):
+    """Make API request with retry logic"""
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(
+                HUGGING_FACE_URL,
+                headers=headers,
+                json={"inputs": user_input},
+                timeout=10  # Add timeout
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            app.logger.error(f"API request failed (attempt {attempt + 1}/{max_retries}): {str(e)}")
+            if attempt == max_retries - 1:
+                raise
+            continue
 
 def chatbot_response(user_input):
+    """Process user input and generate response"""
     try:
-        # Send request to Hugging Face API
-        response = requests.post(HUGGING_FACE_URL, headers=headers, json={"inputs": user_input})
-        
-        if response.status_code != 200:
-            return {"response": "Sorry, there was an issue with the AI service.", "sentiment": "UNKNOWN", "confidence": 0.0}
-        
-        response_data = response.json()
-        sentiment_label = response_data[0]["label"]
-        sentiment_score = response_data[0]["score"]
+        # Input validation
+        if not isinstance(user_input, str) or len(user_input.strip()) == 0:
+            raise ValueError("Invalid input: Empty or non-string input")
 
-        response_message = "I'm glad you're feeling positive!" if sentiment_label == "POSITIVE" else "I sense some concern in your message."
+        # Make API request with retry logic
+        response_data = make_api_request(user_input)
+        
+        if not response_data or not isinstance(response_data, list):
+            raise ValueError("Invalid response format from API")
+
+        sentiment_data = response_data[0]
+        sentiment_label = sentiment_data.get("label", "UNKNOWN")
+        sentiment_score = sentiment_data.get("score", 0.0)
+
+        # Enhanced response messages based on confidence
+        if sentiment_score < 0.6:
+            response_message = "I'm not entirely sure, but I sense some mixed feelings in your message."
+        else:
+            response_message = (
+                "I'm glad you're feeling positive!" if sentiment_label == "POSITIVE"
+                else "I notice some concerns in your message. Would you like to talk about it?"
+            )
 
         return {
             "response": response_message,
             "sentiment": sentiment_label,
-            "confidence": sentiment_score
+            "confidence": sentiment_score,
+            "status": "success"
+        }
+
+    except ValueError as e:
+        app.logger.warning(f"Validation error: {str(e)}")
+        return {
+            "response": "Please provide a valid message.",
+            "sentiment": "UNKNOWN",
+            "confidence": 0.0,
+            "status": "error",
+            "error_type": "validation"
+        }
+
+    except requests.exceptions.RequestException as e:
+        app.logger.error(f"API error: {str(e)}")
+        return {
+            "response": "Sorry, I'm having trouble connecting to the AI service. Please try again later.",
+            "sentiment": "UNKNOWN",
+            "confidence": 0.0,
+            "status": "error",
+            "error_type": "api"
         }
 
     except Exception as e:
-        app.logger.error(f"Error in chatbot response: {e}")
-        return {"response": "I encountered an error processing your message.", "sentiment": "UNKNOWN", "confidence": 0.0}
+        app.logger.error(f"Unexpected error: {str(e)}")
+        return {
+            "response": "An unexpected error occurred. Please try again later.",
+            "sentiment": "UNKNOWN",
+            "confidence": 0.0,
+            "status": "error",
+            "error_type": "internal"
+        }
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
-    """Handle CORS pre-flight request and chat requests."""
-    # Handle pre-flight OPTIONS request
+    """Handle chat endpoint"""
     if request.method == 'OPTIONS':
-        response = jsonify({'status': 'ok'})
-        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        return response, 200
+        return handle_preflight()
 
     try:
-        # Handle the POST request
-        data = request.json
-        user_message = data.get('message', '')
+        # Request validation
+        if not request.is_json:
+            raise ValueError("Content-Type must be application/json")
 
-        if not user_message:
-            return jsonify({"error": "Invalid input"}), 400
+        data = request.get_json()
+        if not data or 'message' not in data:
+            raise ValueError("Request must include 'message' field")
 
-        # Generate response using Hugging Face API
+        user_message = data['message']
         response_data = chatbot_response(user_message)
-        response = jsonify(response_data)
+        
+        return create_response(response_data)
 
-        # Add CORS headers to the response
-        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
-
-        return response
+    except ValueError as e:
+        app.logger.warning(f"Invalid request: {str(e)}")
+        return create_response({
+            "error": str(e),
+            "status": "error",
+            "error_type": "validation"
+        }), 400
 
     except Exception as e:
-        app.logger.error(f"Error: {str(e)}")
-        return jsonify({"error": "An internal error occurred"}), 500
+        app.logger.error(f"Server error: {str(e)}")
+        return create_response({
+            "error": "An internal server error occurred",
+            "status": "error",
+            "error_type": "internal"
+        }), 500
+
+def handle_preflight():
+    """Handle CORS preflight requests"""
+    response = jsonify({'status': 'ok'})
+    response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+    return response
+
+def create_response(data):
+    """Create JSON response with CORS headers"""
+    response = jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
+    return response
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port)
