@@ -1,4 +1,3 @@
-// chatbot.js
 class Chatbot {
     constructor() {
         this.dialogOverlay = document.getElementById("npcHome1Bot");
@@ -32,7 +31,6 @@ class Chatbot {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ message }),
-                credentials: "omit"
             });
 
             if (!response.ok) {
