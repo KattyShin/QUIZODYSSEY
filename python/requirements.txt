@@ -1,5 +1,6 @@
 Flask
-Flask-CORS# nltk
+Flask-CORS
+# nltk
 transformers
 torch
 gunicorn
