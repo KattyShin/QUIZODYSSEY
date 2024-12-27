@@ -1,10 +1,9 @@
-# backend.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from transformers import pipeline
+from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
 import string
 import os
 
@@ -23,6 +22,16 @@ except Exception as e:
     app.logger.error(f"Failed to initialize sentiment pipeline: {e}")
     sentiment_analysis = None
 
+# Initialize conversational model
+try:
+    model_name = "gpt2"  # Replace with a more advanced model if desired
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name)
+except Exception as e:
+    app.logger.error(f"Failed to load conversational model: {e}")
+    model, tokenizer = None, None
+
+
 def preprocess_input(user_input):
     try:
         tokens = word_tokenize(user_input.lower())
@@ -33,7 +42,23 @@ def preprocess_input(user_input):
         app.logger.error(f"Tokenization error: {e}")
         return user_input.lower().split()
 
+
+def generate_ai_response(user_input):
+    """Generate a conversational response using the AI model."""
+    if not model or not tokenizer:
+        return "Sorry, my conversational abilities are currently unavailable."
+    
+    try:
+        inputs = tokenizer.encode(user_input, return_tensors="pt")
+        outputs = model.generate(inputs, max_length=150, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
+        return tokenizer.decode(outputs[0], skip_special_tokens=True)
+    except Exception as e:
+        app.logger.error(f"Error generating AI response: {e}")
+        return "I encountered an issue while generating a response."
+
+
 def chatbot_response(user_input):
+    """Generates a response using sentiment analysis and conversational AI."""
     if sentiment_analysis is None:
         return {
             "response": "Sorry, sentiment analysis is temporarily unavailable.",
@@ -42,24 +67,12 @@ def chatbot_response(user_input):
         }
 
     try:
-        processed_input = preprocess_input(user_input)
         sentiment = sentiment_analysis(user_input)[0]
         sentiment_label = sentiment['label']
         sentiment_score = sentiment['score']
 
-        if "hi" in processed_input:
-            response = "Hi langga ni kaon naka ara?"
-        elif "wala" in processed_input:
-            response = "Kaon na langga ayaw sig code kay MABOANG naka ana"
-        elif "name" in processed_input:
-            response = "I'm an AI-powered chatbot. What's your name?"
-        elif "weather" in processed_input:
-            response = "I'm not sure about the weather right now, but you can check a weather app!"
-        else:
-            if sentiment_label == "POSITIVE":
-                response = "I'm glad you're feeling positive! How can I help you further?"
-            else:
-                response = "I sense some concern in your message. How can I help make things better?"
+        # Generate dynamic response using AI
+        response = generate_ai_response(user_input)
 
         return {
             "response": response,
@@ -73,6 +86,7 @@ def chatbot_response(user_input):
             "sentiment": "UNKNOWN",
             "confidence": 0.0
         }
+
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
@@ -98,6 +112,7 @@ def chat():
     except Exception as e:
         app.logger.error(f"Error: {str(e)}")
         return jsonify({"error": "An internal error occurred"}), 500
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
