@@ -1,7 +1,7 @@
 Flask
-flask-cors
-# nltk
+Flask-CORS# nltk
 transformers
 torch
 gunicorn
+requests
 # openai

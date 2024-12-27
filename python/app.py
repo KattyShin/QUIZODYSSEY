@@ -47,6 +47,8 @@ def chatbot_response(user_input):
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
+    """Handle CORS pre-flight request and chat requests."""
+    # Handle pre-flight OPTIONS request
     if request.method == 'OPTIONS':
         response = jsonify({'status': 'ok'})
         response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
@@ -55,15 +57,20 @@ def chat():
         return response, 200
 
     try:
+        # Handle the POST request
         data = request.json
         user_message = data.get('message', '')
 
         if not user_message:
             return jsonify({"error": "Invalid input"}), 400
 
+        # Generate response using Hugging Face API
         response_data = chatbot_response(user_message)
         response = jsonify(response_data)
+
+        # Add CORS headers to the response
         response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
+
         return response
 
     except Exception as e:
