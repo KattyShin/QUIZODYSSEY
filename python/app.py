@@ -15,19 +15,19 @@ openai.api_key = os.getenv("OPENAI_API_KEY")  # Ensure this is set in your Rende
 OpenAIError = Exception
 
 def generate_ai_response(user_input):
-    """Generate a conversational response using OpenAI's API."""
+    """Generate a conversational response using OpenAI's new API."""
     try:
-        # Correct method to use for the chat model
-        response = openai.ChatCompletion.create(
+        response = openai.chat.create(
             model="gpt-3.5-turbo",  # Or gpt-4 if you have access
             messages=[{"role": "user", "content": user_input}],
             max_tokens=150,
             temperature=0.7
         )
         return response['choices'][0]['message']['content'].strip()
-    except OpenAIError as e:
+    except Exception as e:
         app.logger.error(f"OpenAI API error: {e}")
         return "I encountered an issue while generating a response."
+
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
