@@ -1,7 +1,7 @@
 Flask
 flask-cors
-nltk
+# nltk
 transformers
 torch
 gunicorn
-openai
+# openai
