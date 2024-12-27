@@ -263,7 +263,7 @@
         /* Dialog Overlay Styles */
         .dialog-overlay {
             position: fixed;
-            display: none;
+            display: display;
             left: 50%;
             bottom: 40px;
             transform: translate(-50%);
@@ -448,6 +448,7 @@
         </canvas>
     </div>
 
+
     <!-- Dialog Overlay -->
     <div class="dialog-overlay" id="npcHome1Bot">
         <div class="dialog-header">
@@ -516,15 +517,17 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-    <script src="/public/data/audio.js"></script>
-    <script src="/public/data//quiz.js"></script>
-    <script src="/public/data//oceanScenery.js"></script>
-    <script src="/public/data//chests.js"></script>
-    <script src="/public/data//chestNearby.js"></script>
-    <script src="/public/data//npcHome1.js"></script>
-    <script src="/public/data//home3Nearby.js"></script>
-    <script src="/public/data//collision.js"></script>
+    <script src="/data/audio.js"></script>
+    <script src="/data//quiz.js"></script>
+    <script src="/data//oceanScenery.js"></script>
+    <script src="/data//chests.js"></script>
+    <script src="/data//chestNearby.js"></script>
+    <script src="/data//npcHome1.js"></script>
+    <script src="/data//home3Nearby.js"></script>
+    <script src="/data//collision.js"></script>
     <script src="classes.js"></script>
+    <script src="game.js"></script>
+    <script src="chatbot.js"></script>
 
 
 
@@ -533,52 +536,7 @@
         crossorigin="anonymous"></script>
 
     <script src="https://kit.fontawesome.com/88979c2f8f.js" crossorigin="anonymous"></script>
-    <script src="js.js"></script>
-    <script>
-        const natural = require('natural');
-        const tokenizer = new natural.WordTokenizer();
 
-        const responses = {
-            "hello": "Hi there! How can I help you today?",
-            "how are you": "I'm just a bot, but I'm doing great! How about you?",
-            "bye": "Goodbye! Have a great day!"
-        };
-
-        function getResponse(message) {
-            const tokens = tokenizer.tokenize(message.toLowerCase());
-            for (const token of tokens) {
-                if (responses[token]) {
-                    return responses[token];
-                }
-            }
-            return "I'm sorry, I don't understand that.";
-        }
-
-        document.querySelector('.send-button').addEventListener('click', () => {
-            const input = document.querySelector('.chat-input');
-            const message = input.value;
-            if (message.trim() !== "") {
-                addMessageToChat("user-message", message);
-                const response = getResponse(message);
-                addMessageToChat("bot-message", response);
-                input.value = "";
-            }
-        });
-
-        function addMessageToChat(className, message) {
-            const messagesContainer = document.getElementById('messagesContainer');
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${className}`;
-            messageElement.textContent = message;
-            messagesContainer.appendChild(messageElement);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-        function exitGame() {
-            window.location.href = 'home.html'
-
-        }
-
-    </script>
 
 </body>
 
