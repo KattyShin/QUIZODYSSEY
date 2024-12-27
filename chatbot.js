@@ -26,7 +26,7 @@ class Chatbot {
             this.chatInput.value = "";
             this.sendButton.disabled = true;
 
-            const response = await fetch("https://python-quizodyssey.onrender.com/chat", {
+            const response = await fetch("https://quizodyssey-py2.onrender.com/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

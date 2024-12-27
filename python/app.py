@@ -1,83 +1,41 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
-import string
+import openai
 import os
 
 app = Flask(__name__)
 CORS(app, resources={r"/chat": {"origins": "https://quizodyssey.onrender.com"}})
 
-# Setup NLTK data
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.data.path.append(os.path.join(os.getcwd(), 'nltk_data'))
-
-# Initialize sentiment analysis
-try:
-    sentiment_analysis = pipeline("sentiment-analysis")
-except Exception as e:
-    app.logger.error(f"Failed to initialize sentiment pipeline: {e}")
-    sentiment_analysis = None
-
-# Initialize conversational model
-try:
-    model_name = "gpt2"  # Replace with a more advanced model if desired
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(model_name)
-except Exception as e:
-    app.logger.error(f"Failed to load conversational model: {e}")
-    model, tokenizer = None, None
-
-
-def preprocess_input(user_input):
-    try:
-        tokens = word_tokenize(user_input.lower())
-        tokens = [word for word in tokens if word not in string.punctuation]
-        stop_words = set(stopwords.words('english'))
-        return [word for word in tokens if word not in stop_words]
-    except Exception as e:
-        app.logger.error(f"Tokenization error: {e}")
-        return user_input.lower().split()
-
+# Set your OpenAI API key
+openai.api_key = os.getenv("OPENAI_API_KEY")  # Make sure to set the OPENAI_API_KEY environment variable
 
 def generate_ai_response(user_input):
-    """Generate a conversational response using the AI model."""
-    if not model or not tokenizer:
-        return "Sorry, my conversational abilities are currently unavailable."
-    
+    """Generate a conversational response using OpenAI's API."""
     try:
-        inputs = tokenizer.encode(user_input, return_tensors="pt")
-        outputs = model.generate(inputs, max_length=150, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
-        return tokenizer.decode(outputs[0], skip_special_tokens=True)
-    except Exception as e:
+        # Call OpenAI API for text generation
+        response = openai.Completion.create(
+            model="text-davinci-003",  # Or "gpt-3.5-turbo" or "gpt-4" if you have access
+            prompt=user_input,
+            max_tokens=150,  # Adjust based on your requirements
+            temperature=0.7  # Control creativity in the response
+        )
+
+        return response.choices[0].text.strip()
+
+    except openai.error.OpenAIError as e:
         app.logger.error(f"Error generating AI response: {e}")
         return "I encountered an issue while generating a response."
 
-
 def chatbot_response(user_input):
-    """Generates a response using sentiment analysis and conversational AI."""
-    if sentiment_analysis is None:
-        return {
-            "response": "Sorry, sentiment analysis is temporarily unavailable.",
-            "sentiment": "UNKNOWN",
-            "confidence": 0.0,
-        }
-
+    """Generates a response using OpenAI API."""
     try:
-        sentiment = sentiment_analysis(user_input)[0]
-        sentiment_label = sentiment['label']
-        sentiment_score = sentiment['score']
-
-        # Generate dynamic response using AI
+        # Generate dynamic response using OpenAI's API
         response = generate_ai_response(user_input)
 
         return {
             "response": response,
-            "sentiment": sentiment_label,
-            "confidence": sentiment_score
+            "sentiment": "UNKNOWN",  # Sentiment is not used anymore
+            "confidence": 0.0
         }
     except Exception as e:
         app.logger.error(f"Error in chatbot response: {e}")
@@ -86,7 +44,6 @@ def chatbot_response(user_input):
             "sentiment": "UNKNOWN",
             "confidence": 0.0
         }
-
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
@@ -113,7 +70,7 @@ def chat():
         app.logger.error(f"Error: {str(e)}")
         return jsonify({"error": "An internal error occurred"}), 500
 
-
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, host='0.0.0.0', port=port)
+    
