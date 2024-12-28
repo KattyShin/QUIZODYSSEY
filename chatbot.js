@@ -26,13 +26,12 @@ class Chatbot {
         this.sendButton.disabled = true;
 
         try {
-            const response = await fetch("https://quizodyssey-py2.onrender.com/chat", {
+            const response = await fetch("http://127.0.0.1:5000/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json"
                 },
-                credentials: "same-origin",
+                credentials: "include",
                 body: JSON.stringify({ message }),
             });
 
@@ -53,7 +52,17 @@ class Chatbot {
     appendMessage(text, sender) {
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("message", `${sender}-message`);
-        messageDiv.textContent = text;
+        
+        // Split the text by newlines and create paragraph elements
+        const paragraphs = text.split('\n').filter(line => line.trim() !== '');
+        
+        paragraphs.forEach(paragraph => {
+            const p = document.createElement("p");
+            p.textContent = paragraph;
+            p.style.margin = "0.5em 0"; // Add some spacing between paragraphs
+            messageDiv.appendChild(p);
+        });
+
         this.messagesContainer.appendChild(messageDiv);
         this.scrollToBottom();
     }

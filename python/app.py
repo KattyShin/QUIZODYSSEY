@@ -1,86 +1,56 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from transformers import pipeline
 import string
 import os
 
 app = Flask(__name__)
 
-# Configure CORS
+
+
+
+
+# Configure CORS for local development (allow localhost:3000 as frontend)
 CORS(app, 
-     resources={
-         r"/chat": {
-             "origins": ["https://quizodyssey.onrender.com"],
-             "methods": ["POST", "OPTIONS"],
-             "allow_headers": ["Content-Type"],
-             "supports_credentials": True,
-             "max_age": 3600
-         }
-     })
+     resources={r"/*": {
+         "origins": ["http://127.0.0.1:5501", "http://localhost:5501"],  
+         "methods": ["POST", "OPTIONS"],
+         "allow_headers": ["Content-Type"],
+         "supports_credentials": True,
+         "max_age": 3600
+     }})
 
 # Setup NLTK data
 nltk.download('punkt')
 nltk.download('stopwords')
-nltk.data.path.append(os.path.join(os.getcwd(), 'nltk_data'))
 
-# Initialize sentiment analysis
-try:
-    sentiment_analysis = pipeline("sentiment-analysis")
-except Exception as e:
-    app.logger.error(f"Failed to initialize sentiment pipeline: {e}")
-    sentiment_analysis = None
-
+# Preprocess user input
 def preprocess_input(user_input):
     try:
-        # Ensure NLTK resources are available
-        if not nltk.data.find('tokenizers/punkt'):
-            nltk.download('punkt')
-        if not nltk.data.find('corpora/stopwords'):
-            nltk.download('stopwords')
-
-        tokens = word_tokenize(user_input.lower())
+        tokens = nltk.word_tokenize(user_input.lower())
         tokens = [word for word in tokens if word not in string.punctuation]
-        stop_words = set(stopwords.words('english'))
+        stop_words = set(nltk.corpus.stopwords.words('english'))
         return [word for word in tokens if word not in stop_words]
     except Exception as e:
         app.logger.error(f"Tokenization error: {e}")
         return user_input.lower().split()
-
-
-# Sample question and answer dictionary (without hint)
-questions_and_answers = {
-    "How many continents are there?": {
-        "answer": "There are seven continents."
-    },
-    "What is the capital of France?": {
-        "answer": "The capital of France is Paris."
-    },
-    "Who wrote 'Romeo and Juliet'?": {
-        "answer": "William Shakespeare wrote 'Romeo and Juliet'."
-    }
-    # Add more questions and answers as needed
-}
 
 class ChatbotState:
     def __init__(self):
         self.conversation_started = False
         self.current_stage = 1
         self.question_history = []
-        self.hints_used = 0
-        self.MAX_HINTS = 5
 
 # Create a global state object
 global_state = ChatbotState()
+
 def chatbot_response(user_input):
     global global_state
 
     try:
         processed_input = preprocess_input(user_input.lower())
 
-        # Handle 'start' command
+        # Start the game
         if "start" in processed_input:
             if global_state.conversation_started:
                 return {"response": "🎮 You have already started your journey!"}
@@ -89,24 +59,25 @@ def chatbot_response(user_input):
                 "response": (
                     "🎮 Welcome to Quiz Odyssey! 🎉\n\n"
                     "Ready to begin your quest for knowledge? Here's your adventure toolkit:\n"
-                    "🤔 Need help? Type 'hint' followed by your question (max 5 hints)\n"
+                    "🤔 Need help? Type 'help' for game mechanics\n"
                     "🎁 Type 'chest' to learn about treasure chests\n"
-                    "📖 Lost? Type 'help' for game mechanics\n"
+                    "📖 Type 'houses' to learn about the different houses\n"
                     "🎯 Type 'status' to see your current progress\n\n"
                     "What would you like to explore first?"
                 )
             }
 
-        # Check if game has started
+        # Ensure game is started
         if not global_state.conversation_started:
             return {"response": "🎮 Type 'start' to begin your Quiz Odyssey adventure!"}
 
-        # Handle other commands
+        # Show current stage
         if "stage" in processed_input:
             return {
                 "response": f"📍 You're currently on Stage {global_state.current_stage}!"
             }
 
+        # Information about treasure chests
         if "chest" in processed_input:
             return {
                 "response": (
@@ -118,67 +89,51 @@ def chatbot_response(user_input):
                 )
             }
 
+        # Display player status
         if "status" in processed_input:
-            hints_remaining = max(0, global_state.MAX_HINTS - global_state.hints_used)
             return {
                 "response": (
                     f"📊 Your Quest Status:\n"
                     f"Stage: {global_state.current_stage}\n"
-                    f"Hints Used: {global_state.hints_used}\n"
-                    f"Hints Remaining: {hints_remaining}\n"
                     f"Questions Answered: {len(global_state.question_history)}"
                 )
             }
 
-        if "hint" in processed_input:
-            if global_state.hints_used >= global_state.MAX_HINTS:
-                return {
-                    "response": (
-                        "❌ You've used all 5 hints already!\n"
-                        "Try your best to solve the question on your own!"
-                    )
-                }
-            global_state.hints_used += 1
-            hints_remaining = global_state.MAX_HINTS - global_state.hints_used
-            # Remove the "hint" part and clean the question
-            question = user_input.lower().replace("hint", "").strip()
+        # House lore or history
+        if "houses" in processed_input:
+            return {
+                "response": (
+                    "🏰 The Three Houses of Quiz Odyssey:\n\n"
+                    "1. **The House of Wisdom**\n"
+                    "   - An ancient mansion filled with puzzles and challenges. It is said that only those with true wisdom can pass through its trials.\n\n"
+                    "2. **The House of Mystery**\n"
+                    "   - A mansion shrouded in darkness and mystery. Its rooms are filled with cryptic riddles and secrets waiting to be uncovered.\n\n"
+                    "3. **The House of Strength**\n"
+                    "   - A fortress built for the bravest of adventurers. It is home to fierce trials that test not only your knowledge but your resilience.\n\n"
+                    "Each house offers different challenges, but only the wise and determined will succeed in their quests!"
+                )
+            }
 
-            # Function to check if question contains relevant keywords
-            def find_best_matching_answer(user_question):
-                for key, value in questions_and_answers.items():
-                    # Check if any keyword from the question matches
-                    key_tokens = set(word_tokenize(key.lower()))
-                    user_tokens = set(word_tokenize(user_question))
-                    common_tokens = key_tokens.intersection(user_tokens)
-
-                    # If at least one common word is found, return the answer
-                    if common_tokens:
-                        return value["answer"]
-                return None
-
-            # Find the best matching answer
-            answer = find_best_matching_answer(question)
-
-            if answer:
-                return {
-                    "response": (
-                        f"💡 Here's the answer to your question:\n"
-                        f"{answer}\n"
-                        f"(Hints remaining: {hints_remaining})"
-                    )
-                }
-
-            return {"response": "❓ Please specify a valid question after 'hint'!"}
-
+        # Help command for game mechanics
         if "help" in processed_input:
             return {
                 "response": (
                     "🎮 Quiz Odyssey Guide:\n\n"
                     "1. Answer questions to progress\n"
                     "2. Explore chests for rewards\n"
-                    "3. Use 'hint' for help (max 5 hints)\n"
-                    "4. Type 'status' to view progress\n\n"
+                    "3. Type 'status' to view progress\n"
+                    "4. Type 'houses' to learn about the different houses\n"
+                    "5. Type 'stage' to see your current stage\n\n"
                     "Ready to continue?"
+                )
+            }
+
+        # Fun interaction: Jokes or casual conversation
+        if "joke" in processed_input:
+            return {
+                "response": (
+                    "😄 Here's a joke for you:\n"
+                    "Why don't skeletons fight each other? They don't have the guts!"
                 )
             }
 
@@ -188,14 +143,14 @@ def chatbot_response(user_input):
         app.logger.error(f"Error in chatbot response: {e}")
         return {"response": "🚫 Oops! Something went wrong."}
 
-
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
     if request.method == 'OPTIONS':
         response = jsonify({'status': 'ok'})
-        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
+        response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin'))
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response, 200
 
     try:
@@ -207,7 +162,8 @@ def chat():
 
         response_data = chatbot_response(user_message)
         response = jsonify(response_data)
-        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
+        response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin'))
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
 
     except Exception as e:
@@ -216,4 +172,4 @@ def chat():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=True, host='127.0.0.1', port=port)
