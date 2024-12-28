@@ -28,20 +28,23 @@ class Chatbot {
         try {
             const response = await fetch("https://quizodyssey-py2.onrender.com/chat", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                credentials: "same-origin",
                 body: JSON.stringify({ message }),
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
             this.appendMessage(data.response, "bot");
         } catch (error) {
             console.error("Error:", error);
-            this.appendMessage("Sorry, there was an error. Please try again.", "bot");
+            this.appendMessage("Sorry, there was an error connecting to the server. Please try again later.", "bot");
         } finally {
             this.sendButton.disabled = false;
         }

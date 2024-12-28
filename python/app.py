@@ -10,8 +10,16 @@ import os
 app = Flask(__name__)
 
 # Configure CORS
-CORS(app, origins=["https://quizodyssey.onrender.com"], supports_credentials=True)
-
+CORS(app, 
+     resources={
+         r"/chat": {
+             "origins": ["https://quizodyssey.onrender.com"],
+             "methods": ["POST", "OPTIONS"],
+             "allow_headers": ["Content-Type"],
+             "supports_credentials": True,
+             "max_age": 3600
+         }
+     })
 # Setup NLTK data
 nltk.download('punkt')
 nltk.download('stopwords')
