@@ -500,39 +500,50 @@ const chestOpened = {
 };
 const chestClaimed = {};
 function addKeyPressListenerForNpC(id, divId) {
-    if (activeListeners[id]) {
-      document.removeEventListener("keydown", activeListeners[id]);
-      activeListeners[id] = null;
-    }
-  
-    const listener = (e) => {
-      const activeElement = document.activeElement;
-      if (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA") {
-        return;
-      }
-  
-      if ((e.key === "e" || e.key === "E") && divId.startsWith("chest")) {
-        e.preventDefault();
-        handleChestInteraction(id, divId);
-        resetMovementKeys()
-        return;
-      }
-  
-      if ((e.key === "t" || e.key === "T")) {
-        handleNPCDialog(id, divId);
-        return;
-      }
-    };
-
-
-
-  
-    document.addEventListener("keydown", listener);
-    activeListeners[id] = listener;
+  if (activeListeners[id]) {
+    document.removeEventListener("keydown", activeListeners[id]);
+    activeListeners[id] = null;
   }
-  
+
+  const listener = (e) => {
+    const activeElement = document.activeElement;
+    if (
+      activeElement.tagName === "INPUT" ||
+      activeElement.tagName === "TEXTAREA"
+    ) {
+      return;
+    }
+
+    if (e.key === "t" || e.key === "T") {
+      handleNPCDialog(id, divId);
+      return;
+    }
+  };
+
+  document.addEventListener("keydown", listener);
+  activeListeners[id] = listener;
+}
+
+function addKeyPressListenerChest(id, divId) {
+  if (activeListeners[id]) {
+    document.removeEventListener("keydown", activeListeners[id]);
+    activeListeners[id] = null;
+  }
+  const listener = (e) => {
+    if ((e.key === "e" || e.key === "E") && divId.startsWith("chest")) {
+      e.preventDefault();
+      handleChestInteraction(id, divId);
+      resetMovementKeys();
+      return;
+    }
+  };
+
+  document.addEventListener("keydown", listener);
+  activeListeners[id] = listener;
+}
+
 function isAnyChestOpen() {
-  return Object.keys(chestOpened).some(chestId => {
+  return Object.keys(chestOpened).some((chestId) => {
     const chest = document.getElementById(chestId);
     return chest && chest.style.display === "block";
   });
@@ -549,14 +560,11 @@ function handleChestInteraction(id, divId) {
     chestDiv.querySelector(".chest-content").innerHTML = chestContent;
     chestOpened[divId] = true;
     chestDiv.style.display = "block";
+    resetMovementKeys();
   } else if (isChestCurrentlyOpen) {
     chestDiv.style.display = "none";
   } else {
     chestDiv.style.display = "block";
-  }
-
-  updateCollisionIndicator(chestDiv.style.display === "block", player.position, id, divId.replace("Div", ""));
-  if (chestDiv.style.display === "block") {
     resetMovementKeys();
   }
 }
@@ -566,26 +574,22 @@ function handleNPCDialog(id, divId) {
   console.log(`T key pressed to toggle ${divId}`);
   const npcHome1Bot = document.getElementById(divId);
   if (npcHome1Bot) {
-      const newDisplayState =
-          npcHome1Bot.style.display === "none" ? "block" : "none";
-      npcHome1Bot.style.display = newDisplayState;
-      isDialogOpen = newDisplayState === "block";
+    const newDisplayState =
+      npcHome1Bot.style.display === "none" ? "block" : "none";
+    npcHome1Bot.style.display = newDisplayState;
+    isDialogOpen = newDisplayState === "block";
 
-      if (isDialogOpen) {
-          resetMovementKeys();
-      }
+    if (isDialogOpen) {
+      resetMovementKeys();
+    }
 
-      // Clear input fields when dialog closes
-      const inputElements = npcHome1Bot.querySelectorAll("input");
-      inputElements.forEach((input) => {
-          input.value = "";
-      });
-
-      updateCollisionIndicator(true, player.position, id, "T");
+    // Clear input fields when dialog closes
+    const inputElements = npcHome1Bot.querySelectorAll("input");
+    inputElements.forEach((input) => {
+      input.value = "";
+    });
   }
 }
-
-
 
 function getRandomChestContent(chestId) {
   const contentOptions = [
@@ -596,7 +600,8 @@ function getRandomChestContent(chestId) {
     "You got a Free Pass! Use it to skip a question.",
   ];
 
-  const randomContent = contentOptions[Math.floor(Math.random() * contentOptions.length)];
+  const randomContent =
+    contentOptions[Math.floor(Math.random() * contentOptions.length)];
 
   if (randomContent.includes("Free Pass")) {
     if (chestClaimed[chestId]) {
@@ -622,26 +627,25 @@ function getRandomChestContent(chestId) {
 }
 
 function handleClaim(chestId) {
-    console.log("Claiming chest:", chestId);
-    const chestDiv = document.getElementById(chestId);
-    if (!chestDiv) {
-        console.error("Chest div not found for id:", chestId);
-        return;
-    }
+  console.log("Claiming chest:", chestId);
+  const chestDiv = document.getElementById(chestId);
+  if (!chestDiv) {
+    console.error("Chest div not found for id:", chestId);
+    return;
+  }
 
-    if (chestClaimed[chestId]) {
-        alert("You've already claimed this Free Pass!");
-        return;
-    }
+  if (chestClaimed[chestId]) {
+    alert("You've already claimed this Free Pass!");
+    return;
+  }
 
-    chestClaimed[chestId] = true;
-    chestDiv.querySelector(".chest-content").innerHTML = `
+  chestClaimed[chestId] = true;
+  chestDiv.querySelector(".chest-content").innerHTML = `
         <h5>You have already redeemed the Free Pass!</h5>
         <p>You can't claim it again.</p>
     `;
-    alert("Successfully claimed the Free Pass!");
+  alert("Successfully claimed the Free Pass!");
 }
-
 
 function resetMovementKeys() {
   keys.w.pressed = false;
@@ -649,7 +653,6 @@ function resetMovementKeys() {
   keys.s.pressed = false;
   keys.d.pressed = false;
 }
-
 
 //------STORE LAST POSITION OF THE PLAYER---------------------------------------
 window.onload = () => {
@@ -1044,7 +1047,7 @@ function animate() {
         "chest1" // Add this parameter to show "Press T"
       );
 
-      addKeyPressListenerForNpC("chest1", "chest1Div");
+      addKeyPressListenerChest("chest1", "chest1Div");
     }
   });
 
@@ -1072,7 +1075,7 @@ function animate() {
         "chest2" // Add this parameter to show "Press T"
       );
 
-      addKeyPressListenerForNpC("chest2", "chest2Div");
+      addKeyPressListenerChest("chest2", "chest2Div");
     }
   });
 
@@ -1100,7 +1103,7 @@ function animate() {
         "chest3" // Add this parameter to show "Press T"
       );
       // alert("Sdadds")
-      addKeyPressListenerForNpC("chest3", "chest3Div");
+      addKeyPressListenerChest("chest3", "chest3Div");
     }
   });
   updateNoCollisionHandlers();
@@ -1225,8 +1228,8 @@ window.addEventListener("keydown", (e) => {
     return;
   }
 
-  // Only process movement keys if dialog is not open
-  if (!isDialogOpen) {
+  // Prevent movement if any chest is open or dialog is open
+  if (!isDialogOpen && !isAnyChestOpen()) {
     switch (e.key) {
       case "w":
       case "W":
@@ -1249,6 +1252,9 @@ window.addEventListener("keydown", (e) => {
         lastKey = "d";
         break;
     }
+  } else {
+    // Prevent movement entirely if chest or dialog is open
+    e.preventDefault();
   }
 });
 
@@ -1272,139 +1278,3 @@ window.addEventListener("keyup", (e) => {
       break;
   }
 });
-
-// let clicked = false;
-// addKeyPressListener("click", () => {
-//   if (!clicked) {
-//     audio.Map.play();
-//     clicked = true;
-//   }
-// });
-
-//------------------------------------------------------------------------------------------
-
-// function handleClaim() {
-//   const successMessage = document.querySelector(".success-message");
-//   const chestOverlay = document.getElementById("chest1Div");
-//   const chest2Overlay = document.getElementById("chest2Div");
-//   const chest3Overlay = document.getElementById("chest3Div");
-
-//   const claimButton = document.querySelector(".claim-pass1");
-
-//   chestOverlay.style.display = "none";
-//   chest2Overlay.style.display = "none";
-//   chest3Overlay.style.display = "none";
-
-//   // Disable the claim button
-//   claimButton.disabled = true;
-//   claimButton.style.backgroundColor = "#5D655E"; // Visual feedback for disabled state
-
-//   // Show success message
-//   successMessage.style.display = "block";
-
-//   // Add small delay before showing the success message animation
-//   setTimeout(() => {
-//     successMessage.classList.add("show");
-//   }, 50);
-
-//   // After 3 seconds, hide everything
-//   setTimeout(() => {
-//     // Hide success message
-//     successMessage.classList.remove("show");
-
-//     // Hide chest overlay
-//     chestOverlay.style.display = "none";
-//     chest2Overlay.style.display = "none";
-//     chest3Overlay.style.display = "none";
-
-//     // After animations complete, reset everything
-//     setTimeout(() => {
-//       successMessage.style.display = "none";
-//       chestOverlay.style.display = "none";
-//       chest2Overlay.style.display = "none";
-//       chest3Overlay.style.display = "none";
-
-//       // Reset button state
-//       claimButton.disabled = false;
-//       claimButton.style.backgroundColor = "#26C236";
-//     }, 300);
-//   }, 3000);
-// }
-
-// function handleClaim2() {
-//   const successMessage = document.querySelector(".success-message");
-//   const chest2Overlay = document.getElementById("chest2Div");
-//   const claimButton = document.querySelector(".claim-pass1");
-
-//   chest2Overlay.style.display = "none";
-
-//   // Disable the claim button
-//   claimButton.disabled = true;
-//   claimButton.style.backgroundColor = "#5D655E"; // Visual feedback for disabled state
-
-//   // Show success message
-//   successMessage.style.display = "block";
-
-//   // Add small delay before showing the success message animation
-//   setTimeout(() => {
-//     successMessage.classList.add("show");
-//   }, 50);
-
-//   // After 3 seconds, hide everything
-//   setTimeout(() => {
-//     // Hide success message
-//     successMessage.classList.remove("show");
-
-//     // Hide chest overlay
-//     chest2Overlay.style.display = "none";
-
-//     // After animations complete, reset everything
-//     setTimeout(() => {
-//       successMessage.style.display = "none";
-//       chest2Overlay.style.display = "none";
-
-//       // Reset button state
-//       claimButton.disabled = false;
-//       claimButton.style.backgroundColor = "#26C236";
-//     }, 300);
-//   }, 3000);
-// }
-
-// function handleClaim3() {
-//   const successMessage = document.querySelector(".success-message");
-//   const chest3Overlay = document.getElementById("chest3Div");
-
-//   const claimButton = document.querySelector(".claim-pass1");
-
-//   chest3Overlay.style.display = "none";
-
-//   // Disable the claim button
-//   claimButton.disabled = true;
-//   claimButton.style.backgroundColor = "#5D655E"; // Visual feedback for disabled state
-
-//   // Show success message
-//   successMessage.style.display = "block";
-
-//   // Add small delay before showing the success message animation
-//   setTimeout(() => {
-//     successMessage.classList.add("show");
-//   }, 50);
-
-//   // After 3 seconds, hide everything
-//   setTimeout(() => {
-//     // Hide success message
-//     successMessage.classList.remove("show");
-
-//     chest3Overlay.style.display = "none";
-
-//     // After animations complete, reset everything
-//     setTimeout(() => {
-//       successMessage.style.display = "none";
-
-//       chest3Overlay.style.display = "none";
-//       // Reset button state
-//       claimButton.disabled = false;
-//       claimButton.style.backgroundColor = "#26C236";
-//     }, 300);
-//   }, 3000);
-// }
