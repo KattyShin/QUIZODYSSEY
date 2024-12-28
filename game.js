@@ -519,6 +519,9 @@ function addKeyPressListenerForNpC(id, divId) {
   
       // Only allow NPC dialog if no chest is open
       if ((e.key === "t" || e.key === "T") && !isAnyChestOpen() && !isDialogOpen) {
+        e.preventDefault();
+        const chatbot = new Chatbot();
+        chatbot.triggerWelcomeMessage();
         handleNPCDialog(id, divId);
       }
     };

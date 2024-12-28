@@ -1,4 +1,3 @@
-// chatbot.js
 class Chatbot {
     constructor() {
         this.dialogOverlay = document.getElementById("npcHome1Bot");
@@ -15,15 +14,22 @@ class Chatbot {
                 this.sendMessage();
             }
         });
+
+        // Add key press listener for 'T'
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "t" || e.key === "T") {
+                this.triggerWelcomeMessage();
+            }
+        });
     }
 
-    async sendMessage() {
-        const message = this.chatInput.value.trim();
-        if (!message) return;
+    async sendMessage(message = null) {
+        const userMessage = message || this.chatInput.value.trim();
+        if (!userMessage) return;
 
         try {
-            this.appendMessage(message, "user");
-            this.chatInput.value = "";
+            this.appendMessage(userMessage, "user");
+            if (!message) this.chatInput.value = "";
             this.sendButton.disabled = true;
 
             const response = await fetch("https://quizodyssey-py2.onrender.com/chat", {
@@ -31,8 +37,8 @@ class Chatbot {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ message }),
-                credentials: "omit"
+                body: JSON.stringify({ message: userMessage }),
+                credentials: "omit",
             });
 
             if (!response.ok) {
@@ -48,6 +54,11 @@ class Chatbot {
         } finally {
             this.sendButton.disabled = false;
         }
+    }
+
+    triggerWelcomeMessage() {
+        // Simulate sending "start" message to the chatbot
+        this.sendMessage("start");
     }
 
     appendMessage(text, sender) {
