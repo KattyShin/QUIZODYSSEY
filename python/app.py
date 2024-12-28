@@ -56,7 +56,7 @@ def chatbot_response(user_input):
                     "How can I assist you with the quiz today?"
                 )
             else:
-                response = "Please enter 'start' to begin the conversation. If you need help, type 'help' to see the options."
+                response = "Please enter 'start' to begin the conversation. If you need help, type 'help' to see the game mechanics."
         else:
             # Continue handling regular chatbot commands after the conversation has started
             if "stage" in processed_input:

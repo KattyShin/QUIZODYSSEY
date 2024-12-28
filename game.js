@@ -519,10 +519,13 @@ function addKeyPressListenerForNpC(id, divId) {
       }
   
       // Only allow NPC dialog if no chest is open
-      if ((e.key === "t" || e.key === "T") && !isAnyChestOpen() && !isDialogOpen) {
+      if ((e.key === "t" || e.key === "T")) {
         handleNPCDialog(id, divId);
       }
     };
+
+
+
   
     document.addEventListener("keydown", listener);
     activeListeners[id] = listener;
@@ -560,23 +563,29 @@ function handleChestInteraction(id, divId) {
 
 function handleNPCDialog(id, divId) {
   const npcDialog = document.getElementById(divId);
-  if (!npcDialog) return;
+  console.log(`T key pressed to toggle ${divId}`);
+  const npcHome1Bot = document.getElementById(divId);
+  if (npcHome1Bot) {
+      const newDisplayState =
+          npcHome1Bot.style.display === "none" ? "block" : "none";
+      npcHome1Bot.style.display = newDisplayState;
+      isDialogOpen = newDisplayState === "block";
 
-  const newDisplayState = npcDialog.style.display === "none" ? "block" : "none";
-  npcDialog.style.display = newDisplayState;
-  isDialogOpen = newDisplayState === "block";
+      if (isDialogOpen) {
+          resetMovementKeys();
+      }
 
-  if (isDialogOpen) {
-    resetMovementKeys();
+      // Clear input fields when dialog closes
+      const inputElements = npcHome1Bot.querySelectorAll("input");
+      inputElements.forEach((input) => {
+          input.value = "";
+      });
+
+      updateCollisionIndicator(true, player.position, id, "T");
   }
-
-  const inputElements = npcDialog.querySelectorAll("input");
-  inputElements.forEach(input => {
-    input.value = "";
-  });
-
-  updateCollisionIndicator(true, player.position, id, "T");
 }
+
+
 
 function getRandomChestContent(chestId) {
   const contentOptions = [
