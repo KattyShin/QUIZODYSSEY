@@ -36,133 +36,63 @@ def preprocess_input(user_input):
 # Track whether the user has started the conversation
 conversation_started = False  # Global variable to track conversation state
 
-
-class ChatbotState:
-    def __init__(self):
-        self.conversation_started = False
-        self.current_stage = 1
-        self.question_history = []
-        self.hints_used = 0
-        self.MAX_HINTS = 5  # Added constant for maximum hints     
-
-def chatbot_response(user_input, state=None):
-    if state is None:
-        state = ChatbotState()
+def chatbot_response(user_input):
+    global conversation_started  # Access the global variable
 
     try:
         # Preprocess user input
-        processed_input = preprocess_input(user_input.lower())
+        processed_input = preprocess_input(user_input)
 
-        # Initial conversation state
-        if not state.conversation_started:
+        # Check if the user has started the conversation
+        if not conversation_started:
             if "start" in processed_input:
-                state.conversation_started = True
-                return {
-                    "response": (
-                        "🎮 Welcome to Quiz Odyssey! 🎉\n\n"
-                        "Ready to begin your quest for knowledge? Here's your adventure toolkit:\n"
-                        "🤔 Need help? Type 'hint' followed by your question (max 5 hints)\n"
-                        "🎁 Type 'chest' to learn about treasure chests\n"
-                        "📖 Lost? Type 'help' for game mechanics\n"
-                        "🎯 Type 'status' to see your current progress\n\n"
-                        "What would you like to explore first?"
-                    )
-                }
-            return {
-                "response": "🎮 Type 'start' to begin your Quiz Odyssey adventure!"
-            }
-
-        # Handle various commands
-        if "stage" in processed_input:
-            return {
-                "response": (
-                    f"📍 You're currently on Stage {state.current_stage}!\n"
-                    "Each stage has unique challenges waiting to be conquered.\n"
-                    "Would you like a hint for your current question?"
+                conversation_started = True
+                response = (
+                    "Welcome to Quiz Odyssey! 🎉 Here's how you can interact with me:\n"
+                    "- Type hint then followed by any questions related to the quiz you made to get a hint.\n"
+                    "- Type 'chest' to learn more about pass tokens.\n"
+                    "- If you dont know the game mechanics, type 'help'."
+                    "How can I assist you with the quiz today?"
                 )
-            }
-
-        if "chest" in processed_input:
-            return {
-                "response": (
-                    "📦 About Treasure Chests:\n\n"
-                    "In Quiz Odyssey, treasure chests can contain various items:\n"
-                    "🎟️ Pass Tokens - Special items that let you skip challenging questions\n"
-                    "❌ Bokya - Empty chests with no rewards\n\n"
-                    "Keep exploring different areas to find these chests! Good luck on your quest!"
+            else:
+                response = "Please enter 'start' to begin the conversation."
+        else:
+            # Continue handling regular chatbot commands after the conversation has started
+            if "stage" in processed_input:
+                response = (
+                    "Each stage contains questions that you must answer correctly to proceed. "
+                    "Do you need help with a specific question or a want a hint?"
                 )
-            }
-
-        if "status" in processed_input:
-            hints_remaining = max(0, state.MAX_HINTS - state.hints_used)
-            return {
-                "response": (
-                    f"📊 Your Quest Status:\n"
-                    f"Stage: {state.current_stage}\n"
-                    f"Hints Used: {state.hints_used}\n"
-                    f"Hints Remaining: {hints_remaining}\n"
-                    f"Questions Answered: {len(state.question_history)}"
+            elif "chest" in processed_input or "pass" in processed_input:
+                response = (
+                    "You can find pass tokens in chests! These tokens allow you to skip difficult questions. "
                 )
-            }
-
-        if "hint" in processed_input:
-            # Check if maximum hints limit reached
-            if state.hints_used >= state.MAX_HINTS:
-                return {
-                    "response": (
-                        "❌ You've used all 5 hints already!\n"
-                        "I can't help you with any more hints.\n"
-                        "Try your best to solve the question on your own, or look for a pass token in chests!"
-                    )
-                }
-            
-            state.hints_used += 1
-            hints_remaining = state.MAX_HINTS - state.hints_used
-            # Extract the question from user input after "hint"
-            question = processed_input.split("hint", 1)[1].strip()
-            if question:
-                return {
-                    "response": (
-                        f"💡 Here's a hint for your question:\n"
-                        f"[Specific hint would be generated based on: {question}]\n"
-                        f"(This is your {state.hints_used}th hint used. You have {hints_remaining} hints remaining)"
-                    )
-                }
-            return {
-                "response": "❓ Please specify your question after 'hint' to get help!"
-            }
-
-        if "help" in processed_input:
-            return {
-                "response": (
-                    "🎮 Quiz Odyssey Guide:\n\n"
-                    "1. Answer questions to progress through stages\n"
-                    "2. Explore the area to find chests containing pass tokens or bokya\n"
-                    "3. Use 'hint' + your question for help (maximum 5 hints)\n"
-                    "4. Type 'chest' to learn about possible chest contents\n"
-                    "5. Check your 'status' anytime\n\n"
-                    "Ready to continue your quest?"
+    
+            elif "hint" in processed_input:
+                response = (
+                    "Hints are available! Let me know the question , and I’ll provide a helpful tip. "
                 )
-            }
+            elif "help" in processed_input:
+                response = (
+                    "This is a quiz game! Complete all questions in a stage to proceed to the next.\n "
+                    "You can room around the are and look for a chest to get a reward its either a free pass or bokya\n"
+                    " If you want to ask for 'hint' to get help with a question I'm here to help you\n"
+                    "just type hint then followed by any questions related to the quiz you made"
+                    "What would you like to do next?"
+                )
+            else:
+                response = (
+                    "I didn’t quite get that. Remember, you can type 'stage', 'hint', 'use pass', or 'help' "
+                    "to get started. What can I help you with?"
+                )
 
-        # Default response for unrecognized commands
+
         return {
-            "response": (
-                "🤔 I'm not sure what you mean.\n"
-                "Try these commands:\n"
-                "'stage' - Check your current stage\n"
-                "'hint' + question - Get help (5 hints max)\n"
-                "'chest' - Learn about treasure chests\n"
-                "'status' - View your progress\n"
-                "'help' - Game guide"
-            )
+            "response": response,
+            "sentiment": "NEUTRAL",  # Since sentiment analysis is not tied to game mechanics here
+            "confidence": 1.0  # Confidence is set to maximum for rule-based responses
         }
 
-    except Exception as e:
-        app.logger.error(f"Error in chatbot response: {e}")
-        return {
-            "response": "🚫 Oops! Something went wrong. Please try again."
-        }
 
 
     except Exception as e:
