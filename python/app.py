@@ -50,6 +50,20 @@ def preprocess_input(user_input):
         return user_input.lower().split()
 
 
+# Sample question and answer dictionary (without hint)
+questions_and_answers = {
+    "How many continents are there?": {
+        "answer": "There are seven continents."
+    },
+    "What is the capital of France?": {
+        "answer": "The capital of France is Paris."
+    },
+    "Who wrote 'Romeo and Juliet'?": {
+        "answer": "William Shakespeare wrote 'Romeo and Juliet'."
+    }
+    # Add more questions and answers as needed
+}
+
 class ChatbotState:
     def __init__(self):
         self.conversation_started = False
@@ -127,11 +141,14 @@ def chatbot_response(user_input):
             global_state.hints_used += 1
             hints_remaining = global_state.MAX_HINTS - global_state.hints_used
             question = processed_input.split("hint", 1)[1].strip()
-            if question:
+            
+            # Check if the question exists in the questions_and_answers dictionary
+            if question in questions_and_answers:
+                answer = questions_and_answers[question]["answer"]
                 return {
                     "response": (
-                        f"💡 Here's a hint for your question:\n"
-                        f"[Hint for: {question}]\n"
+                        f"💡 Here's the answer to your question:\n"
+                        f"{answer}\n"
                         f"(Hints remaining: {hints_remaining})"
                     )
                 }
