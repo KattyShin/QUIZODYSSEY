@@ -6,6 +6,7 @@ class Chatbot {
         this.sendButton = this.dialogOverlay.querySelector(".send-button");
         this.setupEventListeners();
 
+        // Initial chatbot message
         this.appendMessage("Good morning! Enter 'start' to begin.", "bot");
     }
 
@@ -31,7 +32,7 @@ class Chatbot {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 },
-                credentials: "include",
+                credentials: "same-origin",
                 body: JSON.stringify({ message }),
             });
 

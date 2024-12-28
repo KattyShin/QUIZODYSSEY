@@ -10,16 +10,16 @@ import os
 app = Flask(__name__)
 
 # Configure CORS
-CORS(app, supports_credentials=True)
-
-@app.after_request
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "https://quizodyssey.onrender.com"
-    response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    return response
-
+CORS(app, 
+     resources={
+         r"/chat": {
+             "origins": ["https://quizodyssey.onrender.com"],
+             "methods": ["POST", "OPTIONS"],
+             "allow_headers": ["Content-Type"],
+             "supports_credentials": True,
+             "max_age": 3600
+         }
+     })
 # Setup NLTK data
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -57,6 +57,7 @@ def chatbot_response(user_input, state=None):
     try:
         processed_input = preprocess_input(user_input.lower())
 
+        # Ensure that after typing 'start', the chatbot recognizes the conversation has started
         if not state.conversation_started:
             if "start" in processed_input:
                 state.conversation_started = True
@@ -73,8 +74,11 @@ def chatbot_response(user_input, state=None):
                 }
             return {"response": "🎮 Type 'start' to begin your Quiz Odyssey adventure!"}
 
+        # After 'start', allow the player to type 'chest' or other commands
         if "stage" in processed_input:
-            return {"response": f"📍 You're currently on Stage {state.current_stage}!"}
+            return {
+                "response": f"📍 You're currently on Stage {state.current_stage}!"
+            }
 
         if "chest" in processed_input:
             return {
@@ -101,7 +105,12 @@ def chatbot_response(user_input, state=None):
 
         if "hint" in processed_input:
             if state.hints_used >= state.MAX_HINTS:
-                return {"response": "❌ You've used all 5 hints already!"}
+                return {
+                    "response": (
+                        "❌ You've used all 5 hints already!\n"
+                        "Try your best to solve the question on your own!"
+                    )
+                }
             state.hints_used += 1
             hints_remaining = state.MAX_HINTS - state.hints_used
             question = processed_input.split("hint", 1)[1].strip()
@@ -133,10 +142,15 @@ def chatbot_response(user_input, state=None):
         app.logger.error(f"Error in chatbot response: {e}")
         return {"response": "🚫 Oops! Something went wrong."}
 
+
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
     if request.method == 'OPTIONS':
-        return jsonify({"status": "ok"}), 200
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        return response, 200
 
     try:
         data = request.json
@@ -146,7 +160,9 @@ def chat():
             return jsonify({"error": "Invalid input"}), 400
 
         response_data = chatbot_response(user_message)
-        return jsonify(response_data)
+        response = jsonify(response_data)
+        response.headers.add('Access-Control-Allow-Origin', 'https://quizodyssey.onrender.com')
+        return response
 
     except Exception as e:
         app.logger.error(f"Error: {str(e)}")
