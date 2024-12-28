@@ -34,38 +34,56 @@ def preprocess_input(user_input):
         return user_input.lower().split()
 
 def chatbot_response(user_input):
-    if sentiment_analysis is None:
-        return {
-            "response": "Sorry, sentiment analysis is temporarily unavailable.",
-            "sentiment": "UNKNOWN",
-            "confidence": 0.0,
-        }
-
     try:
+        # Preprocess user input
         processed_input = preprocess_input(user_input)
-        sentiment = sentiment_analysis(user_input)[0]
-        sentiment_label = sentiment['label']
-        sentiment_score = sentiment['score']
 
-        if "hi" in processed_input:
-            response = "Hi langga ni kaon naka ara?"
-        elif "wala" in processed_input:
-            response = "Kaon na langga ayaw sig code kay MABOANG naka ana"
-        elif "name" in processed_input:
-            response = "I'm an AI-powered chatbot. What's your name?"
-        elif "weather" in processed_input:
-            response = "I'm not sure about the weather right now, but you can check a weather app!"
+        # If no input or first interaction, guide the user
+        if not user_input.strip() or "start" in processed_input:
+            response = (
+                "Welcome to Quiz Odyssey! 🎉 Here's how you can interact with me:\n"
+                "- Type 'stage' to check your progress or proceed to the next stage.\n"
+                "- Type 'hint' to get help with a question.\n"
+                "- Type 'use pass' if you have a pass token to skip a question.\n"
+                "- Type 'chest' to learn more about pass tokens.\n"
+                "How can I assist you with the quiz today?"
+            )
+        elif "stage" in processed_input:
+            response = (
+                "Each stage contains questions that you must answer correctly to proceed. "
+                "Do you need help with a specific question or a hint?"
+            )
+        elif "chest" in processed_input or "pass" in processed_input:
+            response = (
+                "You can find pass tokens in chests! These tokens allow you to skip difficult questions. "
+                "Type 'use pass' when you're ready to use one."
+            )
+        elif "use" in processed_input and "pass" in processed_input:
+            response = "Pass token used! The question has been skipped. Moving on to the next question."
+        elif "hint" in processed_input:
+            response = (
+                "Hints are available! Let me know the question number, and I’ll provide a helpful tip. "
+                "For example, you can say 'hint for question 2'."
+            )
+        elif "help" in processed_input:
+            response = (
+                "This is a quiz game! Complete all questions in a stage to proceed to the next. "
+                "Ask for 'hint' to get help with a question or 'use pass' if you have a pass token to skip. "
+                "What would you like to do next?"
+            )
         else:
-            if sentiment_label == "POSITIVE":
-                response = "I'm glad you're feeling positive! How can I help you further?"
-            else:
-                response = "I sense some concern in your message. How can I help make things better?"
+            # Fallback response for unrecognized input
+            response = (
+                "I didn’t quite get that. Remember, you can type 'stage', 'hint', 'use pass', or 'help' "
+                "to get started. What can I help you with?"
+            )
 
         return {
             "response": response,
-            "sentiment": sentiment_label,
-            "confidence": sentiment_score
+            "sentiment": "NEUTRAL",  # Since sentiment analysis is not tied to game mechanics here
+            "confidence": 1.0  # Confidence is set to maximum for rule-based responses
         }
+
     except Exception as e:
         app.logger.error(f"Error in chatbot response: {e}")
         return {
