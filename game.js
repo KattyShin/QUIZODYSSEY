@@ -514,14 +514,12 @@ function addKeyPressListenerForNpC(id, divId) {
       if ((e.key === "e" || e.key === "E") && divId.startsWith("chest")) {
         e.preventDefault();
         handleChestInteraction(id, divId);
+        resetMovementKeys()
         return;
       }
   
       // Only allow NPC dialog if no chest is open
       if ((e.key === "t" || e.key === "T") && !isAnyChestOpen() && !isDialogOpen) {
-        e.preventDefault();
-        const chatbot = new Chatbot();
-        chatbot.triggerWelcomeMessage();
         handleNPCDialog(id, divId);
       }
     };

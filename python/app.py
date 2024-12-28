@@ -33,50 +33,60 @@ def preprocess_input(user_input):
         app.logger.error(f"Tokenization error: {e}")
         return user_input.lower().split()
 
+# Track whether the user has started the conversation
+conversation_started = False  # Global variable to track conversation state
+
 def chatbot_response(user_input):
+    global conversation_started  # Access the global variable
+
     try:
         # Preprocess user input
         processed_input = preprocess_input(user_input)
 
-        # If no input or first interaction, guide the user
-        if not user_input.strip() or "start" in processed_input:
-            response = (
-                "Welcome to Quiz Odyssey! 🎉 Here's how you can interact with me:\n"
-                "- Type 'stage' to check your progress or proceed to the next stage.\n"
-                "- Type 'hint' to get help with a question.\n"
-                "- Type 'use pass' if you have a pass token to skip a question.\n"
-                "- Type 'chest' to learn more about pass tokens.\n"
-                "How can I assist you with the quiz today?"
-            )
-        elif "stage" in processed_input:
-            response = (
-                "Each stage contains questions that you must answer correctly to proceed. "
-                "Do you need help with a specific question or a hint?"
-            )
-        elif "chest" in processed_input or "pass" in processed_input:
-            response = (
-                "You can find pass tokens in chests! These tokens allow you to skip difficult questions. "
-                "Type 'use pass' when you're ready to use one."
-            )
-        elif "use" in processed_input and "pass" in processed_input:
-            response = "Pass token used! The question has been skipped. Moving on to the next question."
-        elif "hint" in processed_input:
-            response = (
-                "Hints are available! Let me know the question number, and I’ll provide a helpful tip. "
-                "For example, you can say 'hint for question 2'."
-            )
-        elif "help" in processed_input:
-            response = (
-                "This is a quiz game! Complete all questions in a stage to proceed to the next. "
-                "Ask for 'hint' to get help with a question or 'use pass' if you have a pass token to skip. "
-                "What would you like to do next?"
-            )
+        # Check if the user has started the conversation
+        if not conversation_started:
+            if "start" in processed_input:
+                conversation_started = True
+                response = (
+                    "Welcome to Quiz Odyssey! 🎉 Here's how you can interact with me:\n"
+                    "- Type 'stage' to check your progress or proceed to the next stage.\n"
+                    "- Type 'hint' to get help with a question.\n"
+                    "- Type 'use pass' if you have a pass token to skip a question.\n"
+                    "- Type 'chest' to learn more about pass tokens.\n"
+                    "How can I assist you with the quiz today?"
+                )
+            else:
+                response = "Please enter 'start' to begin the conversation. If you need help, type 'help' to see the options."
         else:
-            # Fallback response for unrecognized input
-            response = (
-                "I didn’t quite get that. Remember, you can type 'stage', 'hint', 'use pass', or 'help' "
-                "to get started. What can I help you with?"
-            )
+            # Continue handling regular chatbot commands after the conversation has started
+            if "stage" in processed_input:
+                response = (
+                    "Each stage contains questions that you must answer correctly to proceed. "
+                    "Do you need help with a specific question or a hint?"
+                )
+            elif "chest" in processed_input or "pass" in processed_input:
+                response = (
+                    "You can find pass tokens in chests! These tokens allow you to skip difficult questions. "
+                    "Type 'use pass' when you're ready to use one."
+                )
+            elif "use" in processed_input and "pass" in processed_input:
+                response = "Pass token used! The question has been skipped. Moving on to the next question."
+            elif "hint" in processed_input:
+                response = (
+                    "Hints are available! Let me know the question number, and I’ll provide a helpful tip. "
+                    "For example, you can say 'hint for question 2'."
+                )
+            elif "help" in processed_input:
+                response = (
+                    "This is a quiz game! Complete all questions in a stage to proceed to the next. "
+                    "Ask for 'hint' to get help with a question or 'use pass' if you have a pass token to skip. "
+                    "What would you like to do next?"
+                )
+            else:
+                response = (
+                    "I didn’t quite get that. Remember, you can type 'stage', 'hint', 'use pass', or 'help' "
+                    "to get started. What can I help you with?"
+                )
 
         return {
             "response": response,
@@ -91,6 +101,7 @@ def chatbot_response(user_input):
             "sentiment": "UNKNOWN",
             "confidence": 0.0
         }
+
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():

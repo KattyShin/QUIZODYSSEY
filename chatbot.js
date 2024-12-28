@@ -5,6 +5,9 @@ class Chatbot {
         this.chatInput = this.dialogOverlay.querySelector(".chat-input");
         this.sendButton = this.dialogOverlay.querySelector(".send-button");
         this.setupEventListeners();
+
+        // Display initial chatbot message
+        this.appendMessage("Good morning Katty! Please enter 'start' to begin the conversation.", "bot");
     }
 
     setupEventListeners() {
@@ -57,7 +60,6 @@ class Chatbot {
     }
 
     triggerWelcomeMessage() {
-        // Simulate sending "start" message to the chatbot
         this.sendMessage("start");
     }
 
