@@ -72,7 +72,10 @@ def chatbot_response(user_input, state=None):
                         "What would you like to explore first?"
                     )
                 }
-            return {"response": "🎮 Type 'start' to begin your Quiz Odyssey adventure!"}
+            else:
+                  return  {"response": "🎮 Type 'start' to begin your Quiz Odyssey adventure!"} 
+                
+    
 
         # After 'start', allow the player to type 'chest' or other commands
         if "stage" in processed_input:
