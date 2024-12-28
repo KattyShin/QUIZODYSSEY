@@ -6,6 +6,27 @@ import os
 
 app = Flask(__name__)
 
+@app.route('/api/username', methods=['POST'])
+def receive_username():
+    try:
+        data = request.json
+        username = data.get('username')
+        firstname = data.get('firstname')
+        lastname = data.get('lastname')
+
+        # Handle the username, firstname, lastname here (e.g., store it in a session or database)
+        print(f"Username: {username}, Firstname: {firstname}, Lastname: {lastname}")
+
+        # Store username in global_state (or session/cookie for persistent use)
+        global_state.username = username
+
+        return jsonify({"message": "Username received successfully", "username": username, "firstname": firstname, "lastname": lastname})
+    
+    except Exception as e:
+        return jsonify({"error": "An error occurred while processing your request", "details": str(e)}), 500
+
+
+
 
 
 
@@ -38,11 +59,14 @@ def preprocess_input(user_input):
 class ChatbotState:
     def __init__(self):
         self.conversation_started = False
-        self.current_stage = 1
+        self.username = None  # Store the username
+        self.current_stage = 0
         self.question_history = []
 
 # Create a global state object
 global_state = ChatbotState()
+
+import random  # Make sure to import random at the top of your script
 
 def chatbot_response(user_input):
     global global_state
@@ -52,12 +76,16 @@ def chatbot_response(user_input):
 
         # Start the game
         if "start" in processed_input:
+            if global_state.username is None:
+                return {"response": "🚫 You need to log in first!"}
+
             if global_state.conversation_started:
                 return {"response": "🎮 You have already started your journey!"}
+
             global_state.conversation_started = True
             return {
                 "response": (
-                    "🎮 Welcome to Quiz Odyssey! 🎉\n\n"
+                    f"🎮 Welcome to Quiz Odyssey, {global_state.username} 🎉\n\n"  # Use global_state.username here
                     "Ready to begin your quest for knowledge? Here's your adventure toolkit:\n"
                     "🤔 Need help? Type 'help' for game mechanics\n"
                     "🎁 Type 'chest' to learn about treasure chests\n"
@@ -71,12 +99,6 @@ def chatbot_response(user_input):
         if not global_state.conversation_started:
             return {"response": "🎮 Type 'start' to begin your Quiz Odyssey adventure!"}
 
-        # Show current stage
-        if "stage" in processed_input:
-            return {
-                "response": f"📍 You're currently on Stage {global_state.current_stage}!"
-            }
-
         # Information about treasure chests
         if "chest" in processed_input:
             return {
@@ -89,26 +111,46 @@ def chatbot_response(user_input):
                 )
             }
 
-        # Display player status
+        # Display player status and current stage
+        # Ensure game is started before showing the status
         if "status" in processed_input:
+            if global_state.current_stage == 0:
+                return {"response": ("🚫 You haven't started your journey yet.\n"
+                        "Enter The House of Wisdom fisrt to begin you journey")}
+
+            house = ""
+            if global_state.current_stage == 1:
+                house = "The House of Wisdom"
+            elif global_state.current_stage == 2:
+                house = "The House of Mystery"
+            elif global_state.current_stage == 3:
+                house = "The House of Strength"
+
+            # Placeholder values for demonstration (replace with actual logic)
+            best_score = 200  # Replace with actual best score logic
+            current_score = 150  # Replace with actual current score logic
+            passes_used = 3  # Replace with actual passes used logic
+
             return {
                 "response": (
-                    f"📊 Your Quest Status:\n"
-                    f"Stage: {global_state.current_stage}\n"
-                    f"Questions Answered: {len(global_state.question_history)}"
+                    f"📍 Current Stage: {global_state.current_stage} - {house}\n"
+                    f"🏆 Best Score: {best_score}\n"
+                    f"⭐ Current Score: {current_score}\n"
+                    f"🎟️ Passes Used: {passes_used}\n"
                 )
             }
+
 
         # House lore or history
         if "houses" in processed_input:
             return {
                 "response": (
                     "🏰 The Three Houses of Quiz Odyssey:\n\n"
-                    "1. **The House of Wisdom**\n"
-                    "   - An ancient mansion filled with puzzles and challenges. It is said that only those with true wisdom can pass through its trials.\n\n"
-                    "2. **The House of Mystery**\n"
+                    "1. **The House of Wisdom (STAGE 1)**\n"
+                    "   - An ancient mansion filled with  challenges. It is said that only those with true wisdom can pass through its trials.\n\n"
+                    "2. **The House of Mystery (STAGE 2)**\n"
                     "   - A mansion shrouded in darkness and mystery. Its rooms are filled with cryptic riddles and secrets waiting to be uncovered.\n\n"
-                    "3. **The House of Strength**\n"
+                    "3. **The House of Strength (STAGE 3)**\n"
                     "   - A fortress built for the bravest of adventurers. It is home to fierce trials that test not only your knowledge but your resilience.\n\n"
                     "Each house offers different challenges, but only the wise and determined will succeed in their quests!"
                 )
@@ -130,18 +172,21 @@ def chatbot_response(user_input):
 
         # Fun interaction: Jokes or casual conversation
         if "joke" in processed_input:
-            return {
-                "response": (
-                    "😄 Here's a joke for you:\n"
-                    "Why don't skeletons fight each other? They don't have the guts!"
-                )
-            }
+            jokes = [
+                "😄 Here's a joke for you:\nWhy don't skeletons fight each other? They don't have the guts!",
+                "😆 Here's a joke for you:\nWhy don't eggs tell jokes? They'd crack each other up!",
+                "🤣 Here's a joke for you:\nWhy don’t scientists trust atoms? Because they make up everything!",
+                "😂 Here's a joke for you:\nWhy was the math book sad? Because it had too many problems!"
+            ]
+            return {"response": random.choice(jokes)}
 
         return {"response": "🤔 Unrecognized command. Try 'help' for options!"}
 
     except Exception as e:
         app.logger.error(f"Error in chatbot response: {e}")
         return {"response": "🚫 Oops! Something went wrong."}
+
+
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():

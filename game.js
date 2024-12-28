@@ -515,6 +515,7 @@ function addKeyPressListenerForNpC(id, divId) {
 
     if (e.key === "t" || e.key === "T") {
       handleNPCDialog(id, divId);
+      
       return;
     }
   };
