@@ -1,4 +1,3 @@
-# backend.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import nltk
@@ -9,7 +8,9 @@ import string
 import os
 
 app = Flask(__name__)
-CORS(app, resources={r"/chat": {"origins": "https://quizodyssey.onrender.com"}})
+
+# Configure CORS
+CORS(app, origins=["https://quizodyssey.onrender.com"], supports_credentials=True)
 
 # Setup NLTK data
 nltk.download('punkt')
@@ -33,76 +34,103 @@ def preprocess_input(user_input):
         app.logger.error(f"Tokenization error: {e}")
         return user_input.lower().split()
 
-# Track whether the user has started the conversation
-conversation_started = False  # Global variable to track conversation state
+class ChatbotState:
+    def __init__(self):
+        self.conversation_started = False
+        self.current_stage = 1
+        self.question_history = []
+        self.hints_used = 0
+        self.MAX_HINTS = 5
 
-def chatbot_response(user_input):
-    global conversation_started  # Access the global variable
+def chatbot_response(user_input, state=None):
+    if state is None:
+        state = ChatbotState()
 
     try:
-        # Preprocess user input
-        processed_input = preprocess_input(user_input)
+        processed_input = preprocess_input(user_input.lower())
 
-        # Check if the user has started the conversation
-        if not conversation_started:
+        if not state.conversation_started:
             if "start" in processed_input:
-                conversation_started = True
-                response = (
-                    "Welcome to Quiz Odyssey! 🎉 Here's how you can interact with me:\n"
-                    "- Type hint then followed by any questions related to the quiz you made to get a hint.\n"
-                    "- Type 'chest' to learn more about pass tokens.\n"
-                    "- If you dont know the game mechanics, type 'help'."
-                    "How can I assist you with the quiz today?"
-                )
-            else:
-                response = "Please enter 'start' to begin the conversation."
-        else:
-            # Continue handling regular chatbot commands after the conversation has started
-            if "stage" in processed_input:
-                response = (
-                    "Each stage contains questions that you must answer correctly to proceed. "
-                    "Do you need help with a specific question or a want a hint?"
-                )
-            elif "chest" in processed_input or "pass" in processed_input:
-                response = (
-                    "You can find pass tokens in chests! These tokens allow you to skip difficult questions. "
-                )
-    
-            elif "hint" in processed_input:
-                response = (
-                    "Hints are available! Let me know the question , and I’ll provide a helpful tip. "
-                )
-            elif "help" in processed_input:
-                response = (
-                    "This is a quiz game! Complete all questions in a stage to proceed to the next.\n "
-                    "You can room around the are and look for a chest to get a reward its either a free pass or bokya\n"
-                    " If you want to ask for 'hint' to get help with a question I'm here to help you\n"
-                    "just type hint then followed by any questions related to the quiz you made"
-                    "What would you like to do next?"
-                )
-            else:
-                response = (
-                    "I didn’t quite get that. Remember, you can type 'stage', 'hint', 'use pass', or 'help' "
-                    "to get started. What can I help you with?"
-                )
+                state.conversation_started = True
+                return {
+                    "response": (
+                        "🎮 Welcome to Quiz Odyssey! 🎉\n\n"
+                        "Ready to begin your quest for knowledge? Here's your adventure toolkit:\n"
+                        "🤔 Need help? Type 'hint' followed by your question (max 5 hints)\n"
+                        "🎁 Type 'chest' to learn about treasure chests\n"
+                        "📖 Lost? Type 'help' for game mechanics\n"
+                        "🎯 Type 'status' to see your current progress\n\n"
+                        "What would you like to explore first?"
+                    )
+                }
+            return {"response": "🎮 Type 'start' to begin your Quiz Odyssey adventure!"}
 
+        if "stage" in processed_input:
+            return {
+                "response": f"📍 You're currently on Stage {state.current_stage}!"
+            }
 
-        return {
-            "response": response,
-            "sentiment": "NEUTRAL",  # Since sentiment analysis is not tied to game mechanics here
-            "confidence": 1.0  # Confidence is set to maximum for rule-based responses
-        }
+        if "chest" in processed_input:
+            return {
+                "response": (
+                    "📦 About Treasure Chests:\n\n"
+                    "In Quiz Odyssey, treasure chests can contain various items:\n"
+                    "🎟️ Pass Tokens - Special items that let you skip challenging questions\n"
+                    "❌ Bokya - Empty chests with no rewards\n\n"
+                    "Keep exploring different areas to find these chests!"
+                )
+            }
 
+        if "status" in processed_input:
+            hints_remaining = max(0, state.MAX_HINTS - state.hints_used)
+            return {
+                "response": (
+                    f"📊 Your Quest Status:\n"
+                    f"Stage: {state.current_stage}\n"
+                    f"Hints Used: {state.hints_used}\n"
+                    f"Hints Remaining: {hints_remaining}\n"
+                    f"Questions Answered: {len(state.question_history)}"
+                )
+            }
 
+        if "hint" in processed_input:
+            if state.hints_used >= state.MAX_HINTS:
+                return {
+                    "response": (
+                        "❌ You've used all 5 hints already!\n"
+                        "Try your best to solve the question on your own!"
+                    )
+                }
+            state.hints_used += 1
+            hints_remaining = state.MAX_HINTS - state.hints_used
+            question = processed_input.split("hint", 1)[1].strip()
+            if question:
+                return {
+                    "response": (
+                        f"💡 Here's a hint for your question:\n"
+                        f"[Hint for: {question}]\n"
+                        f"(Hints remaining: {hints_remaining})"
+                    )
+                }
+            return {"response": "❓ Please specify your question after 'hint'!"}
+
+        if "help" in processed_input:
+            return {
+                "response": (
+                    "🎮 Quiz Odyssey Guide:\n\n"
+                    "1. Answer questions to progress\n"
+                    "2. Explore chests for rewards\n"
+                    "3. Use 'hint' for help (max 5 hints)\n"
+                    "4. Type 'status' to view progress\n\n"
+                    "Ready to continue?"
+                )
+            }
+
+        return {"response": "🤔 Unrecognized command. Try 'help' for options!"}
 
     except Exception as e:
         app.logger.error(f"Error in chatbot response: {e}")
-        return {
-            "response": "I encountered an error processing your message. Please try again.",
-            "sentiment": "UNKNOWN",
-            "confidence": 0.0
-        }
-
+        return {"response": "🚫 Oops! Something went wrong."}
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
@@ -127,7 +155,7 @@ def chat():
 
     except Exception as e:
         app.logger.error(f"Error: {str(e)}")
-        return jsonify({"error": "An internal error occurred"}), 500
+        return jsonify({"error": "Internal error occurred"}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

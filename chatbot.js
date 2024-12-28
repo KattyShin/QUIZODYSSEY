@@ -1,4 +1,3 @@
-// chatbot.js
 class Chatbot {
     constructor() {
         this.dialogOverlay = document.getElementById("npcHome1Bot");
@@ -6,16 +5,15 @@ class Chatbot {
         this.chatInput = this.dialogOverlay.querySelector(".chat-input");
         this.sendButton = this.dialogOverlay.querySelector(".send-button");
         this.setupEventListeners();
-           // Display initial chatbot message
-           this.appendMessage("Good morning Katty! Please enter 'start' to begin the conversation.", "bot");
+
+        // Initial chatbot message
+        this.appendMessage("Good morning! Enter 'start' to begin.", "bot");
     }
 
     setupEventListeners() {
         this.sendButton.addEventListener("click", () => this.sendMessage());
         this.chatInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-                this.sendMessage();
-            }
+            if (e.key === "Enter") this.sendMessage();
         });
     }
 
@@ -23,18 +21,15 @@ class Chatbot {
         const message = this.chatInput.value.trim();
         if (!message) return;
 
-        try {
-            this.appendMessage(message, "user");
-            this.chatInput.value = "";
-            this.sendButton.disabled = true;
+        this.appendMessage(message, "user");
+        this.chatInput.value = "";
+        this.sendButton.disabled = true;
 
+        try {
             const response = await fetch("https://quizodyssey-py2.onrender.com/chat", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message }),
-                credentials: "omit"
             });
 
             if (!response.ok) {
@@ -46,7 +41,7 @@ class Chatbot {
             this.appendMessage(data.response, "bot");
         } catch (error) {
             console.error("Error:", error);
-            this.appendMessage("Sorry, I encountered an error. Please try again.", "bot");
+            this.appendMessage("Sorry, there was an error. Please try again.", "bot");
         } finally {
             this.sendButton.disabled = false;
         }
@@ -65,6 +60,4 @@ class Chatbot {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const chatbot = new Chatbot();
-});
+document.addEventListener("DOMContentLoaded", () => new Chatbot());
