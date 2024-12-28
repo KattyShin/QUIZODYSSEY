@@ -518,9 +518,9 @@ function addKeyPressListenerForNpC(id, divId) {
         return;
       }
   
-      // Only allow NPC dialog if no chest is open
       if ((e.key === "t" || e.key === "T")) {
         handleNPCDialog(id, divId);
+        return;
       }
     };
 
