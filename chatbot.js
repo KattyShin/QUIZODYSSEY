@@ -1,3 +1,4 @@
+// chatbot.js
 class Chatbot {
     constructor() {
         this.dialogOverlay = document.getElementById("npcHome1Bot");
@@ -5,9 +6,8 @@ class Chatbot {
         this.chatInput = this.dialogOverlay.querySelector(".chat-input");
         this.sendButton = this.dialogOverlay.querySelector(".send-button");
         this.setupEventListeners();
-
-        // Display initial chatbot message
-        this.appendMessage("Good morning Katty! Please enter 'start' to begin the conversation.", "bot");
+           // Display initial chatbot message
+           this.appendMessage("Good morning Katty! Please enter 'start' to begin the conversation.", "bot");
     }
 
     setupEventListeners() {
@@ -17,22 +17,15 @@ class Chatbot {
                 this.sendMessage();
             }
         });
-
-        // Add key press listener for 'T'
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "t" || e.key === "T") {
-                this.triggerWelcomeMessage();
-            }
-        });
     }
 
-    async sendMessage(message = null) {
-        const userMessage = message || this.chatInput.value.trim();
-        if (!userMessage) return;
+    async sendMessage() {
+        const message = this.chatInput.value.trim();
+        if (!message) return;
 
         try {
-            this.appendMessage(userMessage, "user");
-            if (!message) this.chatInput.value = "";
+            this.appendMessage(message, "user");
+            this.chatInput.value = "";
             this.sendButton.disabled = true;
 
             const response = await fetch("https://quizodyssey-py2.onrender.com/chat", {
@@ -40,8 +33,8 @@ class Chatbot {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ message: userMessage }),
-                credentials: "omit",
+                body: JSON.stringify({ message }),
+                credentials: "omit"
             });
 
             if (!response.ok) {
@@ -57,10 +50,6 @@ class Chatbot {
         } finally {
             this.sendButton.disabled = false;
         }
-    }
-
-    triggerWelcomeMessage() {
-        this.sendMessage("start");
     }
 
     appendMessage(text, sender) {
