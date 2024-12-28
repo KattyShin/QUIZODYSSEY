@@ -76,7 +76,7 @@ class ChatbotState:
 global_state = ChatbotState()
 def chatbot_response(user_input):
     global global_state
-    
+
     try:
         processed_input = preprocess_input(user_input.lower())
 
@@ -140,11 +140,26 @@ def chatbot_response(user_input):
                 }
             global_state.hints_used += 1
             hints_remaining = global_state.MAX_HINTS - global_state.hints_used
-            question = processed_input.split("hint", 1)[1].strip()
-            
-            # Check if the question exists in the questions_and_answers dictionary
-            if question in questions_and_answers:
-                answer = questions_and_answers[question]["answer"]
+            # Remove the "hint" part and clean the question
+            question = user_input.lower().replace("hint", "").strip()
+
+            # Function to check if question contains relevant keywords
+            def find_best_matching_answer(user_question):
+                for key, value in questions_and_answers.items():
+                    # Check if any keyword from the question matches
+                    key_tokens = set(word_tokenize(key.lower()))
+                    user_tokens = set(word_tokenize(user_question))
+                    common_tokens = key_tokens.intersection(user_tokens)
+
+                    # If at least one common word is found, return the answer
+                    if common_tokens:
+                        return value["answer"]
+                return None
+
+            # Find the best matching answer
+            answer = find_best_matching_answer(question)
+
+            if answer:
                 return {
                     "response": (
                         f"💡 Here's the answer to your question:\n"
@@ -152,7 +167,8 @@ def chatbot_response(user_input):
                         f"(Hints remaining: {hints_remaining})"
                     )
                 }
-            return {"response": "❓ Please specify your question after 'hint'!"}
+
+            return {"response": "❓ Please specify a valid question after 'hint'!"}
 
         if "help" in processed_input:
             return {
