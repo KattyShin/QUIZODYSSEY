@@ -57,6 +57,7 @@ def chatbot_response(user_input, state=None):
     try:
         processed_input = preprocess_input(user_input.lower())
 
+        # Ensure that after typing 'start', the chatbot recognizes the conversation has started
         if not state.conversation_started:
             if "start" in processed_input:
                 state.conversation_started = True
@@ -73,6 +74,7 @@ def chatbot_response(user_input, state=None):
                 }
             return {"response": "🎮 Type 'start' to begin your Quiz Odyssey adventure!"}
 
+        # After 'start', allow the player to type 'chest' or other commands
         if "stage" in processed_input:
             return {
                 "response": f"📍 You're currently on Stage {state.current_stage}!"
@@ -139,6 +141,7 @@ def chatbot_response(user_input, state=None):
     except Exception as e:
         app.logger.error(f"Error in chatbot response: {e}")
         return {"response": "🚫 Oops! Something went wrong."}
+
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
