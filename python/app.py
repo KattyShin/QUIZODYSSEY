@@ -20,6 +20,7 @@ CORS(app,
              "max_age": 3600
          }
      })
+
 # Setup NLTK data
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -50,37 +51,38 @@ class ChatbotState:
         self.hints_used = 0
         self.MAX_HINTS = 5
 
-def chatbot_response(user_input, state=None):
-    if state is None:
-        state = ChatbotState()
+# Create a global state object
+global_state = ChatbotState()
 
+def chatbot_response(user_input):
+    global global_state
+    
     try:
         processed_input = preprocess_input(user_input.lower())
 
-        # Ensure that after typing 'start', the chatbot recognizes the conversation has started
-        if not state.conversation_started:
-            if "start" in processed_input:
-                state.conversation_started = True
-                return {
-                    "response": (
-                        "🎮 Welcome to Quiz Odyssey! 🎉\n\n"
-                        "Ready to begin your quest for knowledge? Here's your adventure toolkit:\n"
-                        "🤔 Need help? Type 'hint' followed by your question (max 5 hints)\n"
-                        "🎁 Type 'chest' to learn about treasure chests\n"
-                        "📖 Lost? Type 'help' for game mechanics\n"
-                        "🎯 Type 'status' to see your current progress\n\n"
-                        "What would you like to explore first?"
-                    )
-                }
-            else:
-                  return  {"response": "🎮 Type 'start' to begin your Quiz Odyssey adventure!"} 
-                
-    
+        # Handle 'start' command
+        if "start" in processed_input:
+            global_state.conversation_started = True
+            return {
+                "response": (
+                    "🎮 Welcome to Quiz Odyssey! 🎉\n\n"
+                    "Ready to begin your quest for knowledge? Here's your adventure toolkit:\n"
+                    "🤔 Need help? Type 'hint' followed by your question (max 5 hints)\n"
+                    "🎁 Type 'chest' to learn about treasure chests\n"
+                    "📖 Lost? Type 'help' for game mechanics\n"
+                    "🎯 Type 'status' to see your current progress\n\n"
+                    "What would you like to explore first?"
+                )
+            }
 
-        # After 'start', allow the player to type 'chest' or other commands
+        # Check if game has started
+        if not global_state.conversation_started:
+            return {"response": "🎮 Type 'start' to begin your Quiz Odyssey adventure!"}
+
+        # Handle other commands
         if "stage" in processed_input:
             return {
-                "response": f"📍 You're currently on Stage {state.current_stage}!"
+                "response": f"📍 You're currently on Stage {global_state.current_stage}!"
             }
 
         if "chest" in processed_input:
@@ -95,27 +97,27 @@ def chatbot_response(user_input, state=None):
             }
 
         if "status" in processed_input:
-            hints_remaining = max(0, state.MAX_HINTS - state.hints_used)
+            hints_remaining = max(0, global_state.MAX_HINTS - global_state.hints_used)
             return {
                 "response": (
                     f"📊 Your Quest Status:\n"
-                    f"Stage: {state.current_stage}\n"
-                    f"Hints Used: {state.hints_used}\n"
+                    f"Stage: {global_state.current_stage}\n"
+                    f"Hints Used: {global_state.hints_used}\n"
                     f"Hints Remaining: {hints_remaining}\n"
-                    f"Questions Answered: {len(state.question_history)}"
+                    f"Questions Answered: {len(global_state.question_history)}"
                 )
             }
 
         if "hint" in processed_input:
-            if state.hints_used >= state.MAX_HINTS:
+            if global_state.hints_used >= global_state.MAX_HINTS:
                 return {
                     "response": (
                         "❌ You've used all 5 hints already!\n"
                         "Try your best to solve the question on your own!"
                     )
                 }
-            state.hints_used += 1
-            hints_remaining = state.MAX_HINTS - state.hints_used
+            global_state.hints_used += 1
+            hints_remaining = global_state.MAX_HINTS - global_state.hints_used
             question = processed_input.split("hint", 1)[1].strip()
             if question:
                 return {
@@ -144,7 +146,6 @@ def chatbot_response(user_input, state=None):
     except Exception as e:
         app.logger.error(f"Error in chatbot response: {e}")
         return {"response": "🚫 Oops! Something went wrong."}
-
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
