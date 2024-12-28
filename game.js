@@ -324,9 +324,8 @@ padding: 10px 10px;
 border-radius: 5px;
 font-size: 11px;
 pointer-events: none;
-transform: translate(-60%, -100%);
 animation: float 1s infinite ease-in-out;
-z-index: 1000;
+z-index: 900;
 }
 
 @keyframes float {

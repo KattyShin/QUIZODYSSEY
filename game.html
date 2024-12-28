@@ -263,7 +263,7 @@
         /* Dialog Overlay Styles */
         .dialog-overlay {
             position: fixed;
-            display: block;
+            display: none;
             left: 50%;
             bottom: 40px;
             transform: translate(-50%);
@@ -272,7 +272,7 @@
             background-color: #D4854C;
             border: 5px solid #F7C396;
             border-radius: 8px;
-            z-index: 10000;
+            z-index: 1000;
         }
 
         .dialog-header {
@@ -419,9 +419,9 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <div style ="z-index: 40000;"  class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true" >
+        <div class="modal-dialog modal-dialog-centered" >
             <div class="modal-content custom-modal-content">
                 <div class="modal-body text-center py-4">
                     <h2 class="custom-modal-title">

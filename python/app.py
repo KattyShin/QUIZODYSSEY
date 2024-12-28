@@ -35,6 +35,12 @@ except Exception as e:
 
 def preprocess_input(user_input):
     try:
+        # Ensure NLTK resources are available
+        if not nltk.data.find('tokenizers/punkt'):
+            nltk.download('punkt')
+        if not nltk.data.find('corpora/stopwords'):
+            nltk.download('stopwords')
+
         tokens = word_tokenize(user_input.lower())
         tokens = [word for word in tokens if word not in string.punctuation]
         stop_words = set(stopwords.words('english'))
@@ -42,6 +48,7 @@ def preprocess_input(user_input):
     except Exception as e:
         app.logger.error(f"Tokenization error: {e}")
         return user_input.lower().split()
+
 
 class ChatbotState:
     def __init__(self):
@@ -53,7 +60,6 @@ class ChatbotState:
 
 # Create a global state object
 global_state = ChatbotState()
-
 def chatbot_response(user_input):
     global global_state
     
@@ -62,6 +68,8 @@ def chatbot_response(user_input):
 
         # Handle 'start' command
         if "start" in processed_input:
+            if global_state.conversation_started:
+                return {"response": "🎮 You have already started your journey!"}
             global_state.conversation_started = True
             return {
                 "response": (
@@ -146,6 +154,7 @@ def chatbot_response(user_input):
     except Exception as e:
         app.logger.error(f"Error in chatbot response: {e}")
         return {"response": "🚫 Oops! Something went wrong."}
+
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
