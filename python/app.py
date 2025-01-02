@@ -2,20 +2,35 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForCausalLM
 import logging
+import os
 
 # Set up logging for debugging purposes
 logging.basicConfig(level=logging.INFO)
 
 # Initialize the Flask app
 app = Flask(__name__)
-CORS(app, 
-     resources={r"/*": {
-         "origins": ["http://127.0.0.1:5501", "http://localhost:5501"],  
-         "methods": ["POST", "OPTIONS"],
-         "allow_headers": ["Content-Type"],
-         "supports_credentials": True,
-         "max_age": 3600
-     }})
+
+
+# Configure CORS with all necessary options
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://127.0.0.1:5501", "http://localhost:5501"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"],
+        "supports_credentials": True,
+        "max_age": 600  # Cache preflight requests for 10 minutes
+    }
+})
+
+# Add OPTIONS handler for the /get endpoint
+@app.route("/get", methods=["OPTIONS"])
+def handle_options():
+    response = jsonify({"status": "ok"})
+    response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+    response.headers.add("Access-Control-Allow-Origin", "http://127.0.0.1:5501")
+    response.headers.add("Access-Control-Allow-Credentials", "true")
+    return response, 200
 
 @app.route('/api/username', methods=['POST'])
 def receive_username():
@@ -33,21 +48,6 @@ def receive_username():
     except Exception as e:
         return jsonify({"error": "An error occurred while processing your request", "details": str(e)}), 500
 
-
-@app.route('/api/quiz', methods=['POST'])
-def receive_quiz_data():
-    try:
-        data = request.json
-        quiz_id = data.get('quizId')
-        best_score = data.get('bestScore')
-
-        # Log or handle the quiz data (e.g., store it in a session or database)
-        print(f"Received quiz data - Quiz ID: {quiz_id}, Best Score: {best_score}")
-
-        return jsonify({"message": "Quiz data received successfully", "quizId": quiz_id, "bestScore": best_score})
-
-    except Exception as e:
-        return jsonify({"error": "An error occurred while processing your request", "details": str(e)}), 500
 
 
 # Initialize tokenizer and models with error handling
@@ -73,24 +73,22 @@ def index():
     """Serve the chat interface HTML."""
     return render_template("chat.html")
 
-
 @app.route("/get", methods=["POST"])
 def chat():
     """Handle chat messages and generate responses."""
-    if not tokenizer_flant5 or not model_flant5 or not tokenizer_dialo or not model_dialo:
-        return jsonify({"response": "Model is not available. Please try again later."}), 500
-
-    data = request.get_json()  # Retrieve JSON data from the request
-    msg = data.get("msg", "").strip()  # Safely get and trim the 'msg' key
-
-    if not msg:
-        return jsonify({"response": "Please enter a valid message."}), 400
-
     try:
-        response = generate_response(msg)
-        return jsonify({"response": response})  # Return JSON response
+        data = request.get_json()
+        if not data or "msg" not in data:
+            return jsonify({"response": "Please enter a valid message."}), 400
+            
+        msg = data["msg"].strip()
+        if not msg:
+            return jsonify({"response": "Please enter a valid message."}), 400
+            
+        response = generate_response(msg)  # Your existing generate_response function
+        return jsonify({"response": response})
     except Exception as e:
-        logging.error(f"Error generating response: {e}")
+        logging.error(f"Error in chat endpoint: {e}")
         return jsonify({"response": "An error occurred while processing your request."}), 500
 
 

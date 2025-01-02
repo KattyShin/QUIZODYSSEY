@@ -1087,26 +1087,24 @@
 
 
 
-
-        // Send this data to the backend
         fetch('http://127.0.0.1:5000/api/username', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: username,
-                firstname: firstname,
-                lastname: lastname,
-            }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Response from backend:', data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        username: username,
+        firstname: firstname,
+        lastname: lastname,
+    }),
+})
+    .then(response => response.json())
+    .then(data => {
+        console.log('Response from backend:', data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 
 
 
@@ -2132,10 +2130,10 @@
 
 
 
-            
+
         }
 
-        
+
     </script>
 </body>
 

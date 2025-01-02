@@ -602,28 +602,42 @@ function getRandomChestContent(chestId) {
   const randomContent =
     contentOptions[Math.floor(Math.random() * contentOptions.length)];
 
-  if (randomContent.includes("Free Pass")) {
-    if (chestClaimed[chestId]) {
-      return `
-        <h5>You have already redeemed the Free Pass from this chest!</h5>
-        <p>You can't claim it again.</p>
-      `;
-    } else {
-      return `
-        <h5>Congratulations! You have earned 1 Free Pass!</h5>
-        <p style="font-size: 10;">Use this pass to skip a question and move to the next one.</p>
-        <div class="claim-pass-con">
-          <img class="chest-claim-img" src="img/chest.png" alt="">
-          <button class="claim-pass" onclick="handleClaim('${chestId}')">Claim</button>
-        </div>
-      `;
-    }
+    if (randomContent.includes("Free Pass")) {
+      if (chestClaimed[chestId]) {
+        return `
+          <h5>You have successfuly redeemed the Free Pass!</h5>
+          <p>You can't claim it again.</p>
+        `;
+      } else {
+        return `
+          <div class="reward-container">
+              <h5>Congratulations! You have earned 1 Free Pass!</h5>
+              <p style="font-size: 10px;">Use this pass to skip a question and move to the next one.</p>
+              <div class="claim-pass-con" style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                  <img class="chest-claim-img" src="img/chest.png" alt="" style="width: 150px; height: auto;">
+                  <button class="claim-pass" 
+                          onclick="handleClaim('${chestId}')"
+                          style="padding: 10px 30px; 
+                                 background-color: #4CAF50; 
+                                 color: white; 
+                                 border: none; 
+                                 border-radius: 5px; 
+                                 cursor: pointer;">
+                      Claim
+                  </button>
+              </div>
+          </div>
+        `;
+      }
+    
   } else {
     return `
       <h5>${randomContent}</h5>
     `;
   }
 }
+
+
 
 function handleClaim(chestId) {
   console.log("Claiming chest:", chestId);
@@ -701,6 +715,7 @@ window.onload = () => {
     localStorage.removeItem("playerLastPosition");
   }
 };
+
 
 let collisionDetected = {
   quiz1: false,
