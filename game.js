@@ -441,6 +441,7 @@ let playerLastPosition = {
   x: offset.x,
   y: offset.y,
 };
+let freePassCount = 0; // Global variable to store the number of Free Passes the player has
 
 const activeListeners = {
   quiz1: null,
@@ -593,11 +594,9 @@ function handleNPCDialog(id, divId) {
 
 function getRandomChestContent(chestId) {
   const contentOptions = [
-    "You got a Free Pass! Use it to skip a question.",
-    "You got a Free Pass! Use it to skip a question.",
-    "A mysterious potion! Use it to boost your health.",
-    "You got a Free Pass! Use it to skip a question.",
-    "You got a Free Pass! Use it to skip a question.",
+    "You got a two Free Pass! Use it to skip a question.",
+    "Owh, My bad it's a Bokya..Better Luck next time.",
+    "I know you are looking for something ..you may look it to another chest"
   ];
 
   const randomContent =
@@ -644,8 +643,42 @@ function handleClaim(chestId) {
         <h5>You have already redeemed the Free Pass!</h5>
         <p>You can't claim it again.</p>
     `;
-  alert("Successfully claimed the Free Pass!");
+
+  // Increment the Free Pass count
+  freePassCount++;
+
+  // Store the Free Pass count in localStorage
+  localStorage.setItem("freePassCount", freePassCount);
+
+  updateFreePassDisplay()
+  // Optionally, you can update the UI here if you want to show the current Free Pass count to the player
 }
+
+
+function updateFreePassDisplay() {
+  const freePassDisplay = document.getElementById('freePassDisplay');
+  if (freePassDisplay) {
+      freePassDisplay.textContent = `Free Passes: ${freePassCount}`;
+  }
+}
+
+// Call the function whenever the value of freePassCount changes
+window.onload = function() {
+  // Retrieve the stored Free Pass count from localStorage if available
+  const storedFreePassCount = localStorage.getItem("freePassCount");
+  if (storedFreePassCount) {
+      freePassCount = parseInt(storedFreePassCount, 10);
+  }
+  updateFreePassDisplay(); // Update the display on page load
+};
+
+// Example: Increment freePassCount and update the display
+function incrementFreePass() {
+  freePassCount++;
+  localStorage.setItem("freePassCount", freePassCount); // Save to localStorage
+  updateFreePassDisplay(); // Update the display
+}
+
 
 function resetMovementKeys() {
   keys.w.pressed = false;
@@ -1278,3 +1311,12 @@ window.addEventListener("keyup", (e) => {
       break;
   }
 });
+
+// Redirect to 'home.html' on browser refresh
+window.onload = function () {
+  // Check if the page is being refreshed
+  if (performance.navigation.type === 1) {
+      // Redirect to 'home.html'
+      window.location.href = "home.html";
+  }
+};

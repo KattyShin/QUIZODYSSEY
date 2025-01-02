@@ -1,10 +1,21 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-import nltk
-import string
-import os
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForCausalLM
+import logging
 
+# Set up logging for debugging purposes
+logging.basicConfig(level=logging.INFO)
+
+# Initialize the Flask app
 app = Flask(__name__)
+CORS(app, 
+     resources={r"/*": {
+         "origins": ["http://127.0.0.1:5501", "http://localhost:5501"],  
+         "methods": ["POST", "OPTIONS"],
+         "allow_headers": ["Content-Type"],
+         "supports_credentials": True,
+         "max_age": 3600
+     }})
 
 @app.route('/api/username', methods=['POST'])
 def receive_username():
@@ -17,203 +28,164 @@ def receive_username():
         # Handle the username, firstname, lastname here (e.g., store it in a session or database)
         print(f"Username: {username}, Firstname: {firstname}, Lastname: {lastname}")
 
-        # Store username in global_state (or session/cookie for persistent use)
-        global_state.username = username
-
         return jsonify({"message": "Username received successfully", "username": username, "firstname": firstname, "lastname": lastname})
     
     except Exception as e:
         return jsonify({"error": "An error occurred while processing your request", "details": str(e)}), 500
 
 
-
-
-
-
-
-# Configure CORS for local development (allow localhost:3000 as frontend)
-CORS(app, 
-     resources={r"/*": {
-         "origins": ["http://127.0.0.1:5501", "http://localhost:5501"],  
-         "methods": ["POST", "OPTIONS"],
-         "allow_headers": ["Content-Type"],
-         "supports_credentials": True,
-         "max_age": 3600
-     }})
-
-# Setup NLTK data
-nltk.download('punkt')
-nltk.download('stopwords')
-
-# Preprocess user input
-def preprocess_input(user_input):
-    try:
-        tokens = nltk.word_tokenize(user_input.lower())
-        tokens = [word for word in tokens if word not in string.punctuation]
-        stop_words = set(nltk.corpus.stopwords.words('english'))
-        return [word for word in tokens if word not in stop_words]
-    except Exception as e:
-        app.logger.error(f"Tokenization error: {e}")
-        return user_input.lower().split()
-
-class ChatbotState:
-    def __init__(self):
-        self.conversation_started = False
-        self.username = None  # Store the username
-        self.current_stage = 0
-        self.question_history = []
-
-# Create a global state object
-global_state = ChatbotState()
-
-import random  # Make sure to import random at the top of your script
-
-def chatbot_response(user_input):
-    global global_state
-
-    try:
-        processed_input = preprocess_input(user_input.lower())
-
-        # Start the game
-        if "start" in processed_input:
-            if global_state.username is None:
-                return {"response": "🚫 You need to log in first!"}
-
-            if global_state.conversation_started:
-                return {"response": "🎮 You have already started your journey!"}
-
-            global_state.conversation_started = True
-            return {
-                "response": (
-                    f"🎮 Welcome to Quiz Odyssey, {global_state.username} 🎉\n\n"  # Use global_state.username here
-                    "Ready to begin your quest for knowledge? Here's your adventure toolkit:\n"
-                    "🤔 Need help? Type 'help' for game mechanics\n"
-                    "🎁 Type 'chest' to learn about treasure chests\n"
-                    "📖 Type 'houses' to learn about the different houses\n"
-                    "🎯 Type 'status' to see your current progress\n\n"
-                    "What would you like to explore first?"
-                )
-            }
-
-        # Ensure game is started
-        if not global_state.conversation_started:
-            return {"response": "🎮 Type 'start' to begin your Quiz Odyssey adventure!"}
-
-        # Information about treasure chests
-        if "chest" in processed_input:
-            return {
-                "response": (
-                    "📦 About Treasure Chests:\n\n"
-                    "In Quiz Odyssey, treasure chests can contain various items:\n"
-                    "🎟️ Pass Tokens - Special items that let you skip challenging questions\n"
-                    "❌ Bokya - Empty chests with no rewards\n\n"
-                    "Keep exploring different areas to find these chests!"
-                )
-            }
-
-        # Display player status and current stage
-        # Ensure game is started before showing the status
-        if "status" in processed_input:
-            if global_state.current_stage == 0:
-                return {"response": ("🚫 You haven't started your journey yet.\n"
-                        "Enter The House of Wisdom fisrt to begin you journey")}
-
-            house = ""
-            if global_state.current_stage == 1:
-                house = "The House of Wisdom"
-            elif global_state.current_stage == 2:
-                house = "The House of Mystery"
-            elif global_state.current_stage == 3:
-                house = "The House of Strength"
-
-            # Placeholder values for demonstration (replace with actual logic)
-            best_score = 200  # Replace with actual best score logic
-            current_score = 150  # Replace with actual current score logic
-            passes_used = 3  # Replace with actual passes used logic
-
-            return {
-                "response": (
-                    f"📍 Current Stage: {global_state.current_stage} - {house}\n"
-                    f"🏆 Best Score: {best_score}\n"
-                    f"⭐ Current Score: {current_score}\n"
-                    f"🎟️ Passes Used: {passes_used}\n"
-                )
-            }
-
-
-        # House lore or history
-        if "houses" in processed_input:
-            return {
-                "response": (
-                    "🏰 The Three Houses of Quiz Odyssey:\n\n"
-                    "1. **The House of Wisdom (STAGE 1)**\n"
-                    "   - An ancient mansion filled with  challenges. It is said that only those with true wisdom can pass through its trials.\n\n"
-                    "2. **The House of Mystery (STAGE 2)**\n"
-                    "   - A mansion shrouded in darkness and mystery. Its rooms are filled with cryptic riddles and secrets waiting to be uncovered.\n\n"
-                    "3. **The House of Strength (STAGE 3)**\n"
-                    "   - A fortress built for the bravest of adventurers. It is home to fierce trials that test not only your knowledge but your resilience.\n\n"
-                    "Each house offers different challenges, but only the wise and determined will succeed in their quests!"
-                )
-            }
-
-        # Help command for game mechanics
-        if "help" in processed_input:
-            return {
-                "response": (
-                    "🎮 Quiz Odyssey Guide:\n\n"
-                    "1. Answer questions to progress\n"
-                    "2. Explore chests for rewards\n"
-                    "3. Type 'status' to view progress\n"
-                    "4. Type 'houses' to learn about the different houses\n"
-                    "5. Type 'stage' to see your current stage\n\n"
-                    "Ready to continue?"
-                )
-            }
-
-        # Fun interaction: Jokes or casual conversation
-        if "joke" in processed_input:
-            jokes = [
-                "😄 Here's a joke for you:\nWhy don't skeletons fight each other? They don't have the guts!",
-                "😆 Here's a joke for you:\nWhy don't eggs tell jokes? They'd crack each other up!",
-                "🤣 Here's a joke for you:\nWhy don’t scientists trust atoms? Because they make up everything!",
-                "😂 Here's a joke for you:\nWhy was the math book sad? Because it had too many problems!"
-            ]
-            return {"response": random.choice(jokes)}
-
-        return {"response": "🤔 Unrecognized command. Try 'help' for options!"}
-
-    except Exception as e:
-        app.logger.error(f"Error in chatbot response: {e}")
-        return {"response": "🚫 Oops! Something went wrong."}
-
-
-
-@app.route('/chat', methods=['POST', 'OPTIONS'])
-def chat():
-    if request.method == 'OPTIONS':
-        response = jsonify({'status': 'ok'})
-        response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin'))
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        return response, 200
-
+@app.route('/api/quiz', methods=['POST'])
+def receive_quiz_data():
     try:
         data = request.json
-        user_message = data.get('message', '')
+        quiz_id = data.get('quizId')
+        best_score = data.get('bestScore')
 
-        if not user_message or not isinstance(user_message, str):
-            return jsonify({"error": "Invalid input"}), 400
+        # Log or handle the quiz data (e.g., store it in a session or database)
+        print(f"Received quiz data - Quiz ID: {quiz_id}, Best Score: {best_score}")
 
-        response_data = chatbot_response(user_message)
-        response = jsonify(response_data)
-        response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin'))
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        return response
+        return jsonify({"message": "Quiz data received successfully", "quizId": quiz_id, "bestScore": best_score})
 
     except Exception as e:
-        app.logger.error(f"Error: {str(e)}")
-        return jsonify({"error": "Internal error occurred"}), 500
+        return jsonify({"error": "An error occurred while processing your request", "details": str(e)}), 500
+
+
+# Initialize tokenizer and models with error handling
+try:
+    logging.info("Loading tokenizer and models...")
+
+    # FLAN-T5 for factual responses
+    tokenizer_flant5 = AutoTokenizer.from_pretrained("google/flan-t5-large")
+    model_flant5 = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-large", resume_download=True)
+
+    # DialoGPT for conversational responses
+    tokenizer_dialo = AutoTokenizer.from_pretrained("microsoft/DialoGPT-medium")
+    model_dialo = AutoModelForCausalLM.from_pretrained("microsoft/DialoGPT-medium", resume_download=True)
+
+    logging.info("Models and tokenizers loaded successfully.")
+except Exception as e:
+    logging.error(f"Error loading models or tokenizers: {e}")
+    tokenizer_flant5, model_flant5, tokenizer_dialo, model_dialo = None, None, None, None
+
+
+@app.route("/")
+def index():
+    """Serve the chat interface HTML."""
+    return render_template("chat.html")
+
+
+@app.route("/get", methods=["POST"])
+def chat():
+    """Handle chat messages and generate responses."""
+    if not tokenizer_flant5 or not model_flant5 or not tokenizer_dialo or not model_dialo:
+        return jsonify({"response": "Model is not available. Please try again later."}), 500
+
+    data = request.get_json()  # Retrieve JSON data from the request
+    msg = data.get("msg", "").strip()  # Safely get and trim the 'msg' key
+
+    if not msg:
+        return jsonify({"response": "Please enter a valid message."}), 400
+
+    try:
+        response = generate_response(msg)
+        return jsonify({"response": response})  # Return JSON response
+    except Exception as e:
+        logging.error(f"Error generating response: {e}")
+        return jsonify({"response": "An error occurred while processing your request."}), 500
+
+
+def generate_response(text):
+    """
+    Generate a conversational or factual response based on the input.
+
+    Args:
+        text (str): The input text.
+
+    Returns:
+        str: The response.
+    """
+    lower_text = text.lower()
+
+    # Handle conversational responses using predefined responses
+    conversational_responses = {
+       "chest": "📦 About Treasure Chests:\n\nIn Quiz Odyssey, treasure chests can contain various items:\n🎟️ Pass Tokens - Special items that let you skip challenging questions\n❌ Bokya - Empty chests with no rewards\n\nKeep exploring different areas to find these chests!",
+        "houses": "1. **The House of Wisdom (STAGE 1)**\n   - An ancient mansion filled with challenges. It is said that only those with true wisdom can pass through its trials.\n\n2. **The House of Mystery (STAGE 2)**\n   - A mansion shrouded in darkness and mystery. Its rooms are filled with cryptic riddles and secrets waiting to be uncovered.\n\n3. **The House of Strength (STAGE 3)**\n   - A fortress built for the bravest of adventurers. It is home to fierce trials that test not only your knowledge but your resilience.\n\nEach house offers different challenges, but only the wise and determined will succeed in their quests!",
+        "help": "🎮 Quiz Odyssey Guide:\n\n1. Answer questions to progress\n2. Explore chests for rewards\n3. Type 'status' to view progress\n4. Type 'houses' to learn about the different houses\n5. Type 'stage' to see your current stage\n\n"
+    }
+
+    if lower_text in conversational_responses:
+        return conversational_responses[lower_text]
+
+    # Use FLAN-T5 for factual responses to avoid repetition
+    if "?" in lower_text or lower_text.startswith(("who", "what", "where", "why", "how")):
+        response = get_factual_response_flant5(text)
+
+        # Check if the generated response is too similar to the input (avoid repetition)
+        if response.strip().lower() == text.lower():
+            response = "I am not sure how to answer that. Could you clarify?"
+        return response
+
+    # If it's a casual or conversational query, use DialoGPT
+    return get_conversational_response_dialo(text)
+
+
+def get_factual_response_flant5(text):
+    """
+    Generate a factual response using the FLAN-T5 model.
+
+    Args:
+        text (str): The input text/question.
+
+    Returns:
+        str: The model's response.
+    """
+    input_text = f"Provide a conversational yet factual response: {text}"
+
+    # Tokenize the input
+    input_ids = tokenizer_flant5.encode(input_text, return_tensors="pt")
+
+    # Generate a response
+    outputs = model_flant5.generate(input_ids, max_length=200, num_beams=3, early_stopping=True)
+
+    # Decode and return the response
+    response = tokenizer_flant5.decode(outputs[0], skip_special_tokens=True)
+
+    # Check for repetition of the input and handle it
+    if response.strip().lower() == text.lower():
+        response = "I couldn't quite understand that. Could you ask in a different way?"
+        
+    return response
+
+
+def get_conversational_response_dialo(text):
+    """
+    Generate a conversational response using DialoGPT and remove the input text from the response.
+
+    Args:
+        text (str): The input text/question.
+
+    Returns:
+        str: The model's response without the input text.
+    """
+    # Tokenize the input
+    input_ids = tokenizer_dialo.encode(text + tokenizer_dialo.eos_token, return_tensors="pt")
+
+    # Generate a response
+    outputs = model_dialo.generate(input_ids, max_length=200, pad_token_id=tokenizer_dialo.eos_token_id)
+
+    # Decode the response
+    response = tokenizer_dialo.decode(outputs[0], skip_special_tokens=True)
+
+    # Remove the input text from the response (basic filtering)
+    if response.lower().startswith(text.lower()):
+        response = response[len(text):].strip()
+
+    # Check if the response still starts with the input text after stripping
+    if response.strip().lower() == text.lower():
+        response = "I didn't quite get that. Could you say it in a different way?"
+
+    return response
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

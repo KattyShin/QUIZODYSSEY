@@ -159,9 +159,12 @@
         }
 
         .item-button-group {
-            position: absolute; /* Anchor to the parent */
-            bottom: 1rem; /* Spacing from the bottom edge */
-            right: 1rem; /* Spacing from the right edge */
+            position: absolute;
+            /* Anchor to the parent */
+            bottom: 1rem;
+            /* Spacing from the bottom edge */
+            right: 1rem;
+            /* Spacing from the right edge */
             display: flex;
             gap: 0.5rem;
             font-family: 'VT323';
@@ -264,7 +267,8 @@
             border-radius: 4px;
             padding: 0.5rem 1rem;
             position: absolute;
-            right: 4rem; /* Adjust as needed */
+            right: 4rem;
+            /* Adjust as needed */
             top: 1rem;
             cursor: pointer;
             font-size: 16px;
@@ -343,7 +347,7 @@
             color: white;
         }
 
-        .mult-option input{
+        .mult-option input {
             width: 50%;
             font-family: 'Outfit';
             font-size: 18px;
@@ -356,7 +360,7 @@
 
         }
 
-        .mult-option input::placeholder{
+        .mult-option input::placeholder {
             color: white;
             padding-left: 4px;
             font-family: 'Outfit';
@@ -417,26 +421,10 @@
             border-radius: 10px;
             border: 5px solid #F7C396;
         }
-<<<<<<< HEAD
-
 
         .manageAcc-modal .manageAcc-content {
             background-color: rgba(255, 229, 180, 0.3);
-            height: 160px;
             width: 510px;
-<<<<<<< HEAD
-
-=======
-=======
->>>>>>> 891a345349f7b46af09b92dbe5200d12b9b1f180
-    
-        .manageAcc-modal .manageAcc-content{
-            background-color: rgba(255, 229, 180, 0.3);  
-            width: 510px; 
-<<<<<<< HEAD
-=======
->>>>>>> origin/hannahsheen
->>>>>>> 891a345349f7b46af09b92dbe5200d12b9b1f180
             border-radius: 5px;
         }
 
@@ -502,24 +490,21 @@
             z-index: 1040;
             /* Below the sidebar */
         }
-<<<<<<< HEAD
-  
-=======
-<<<<<<< HEAD
-    </style>
-=======
->>>>>>> 891a345349f7b46af09b92dbe5200d12b9b1f180
 
         .item-cards {
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Align items at the top */
-            align-items: center; /* Prevent collapsing */
-            width: 100%; /* Prevent overflow */
-            gap: 1rem; /* Add spacing between items */
+            justify-content: center;
+            /* Align items at the top */
+            align-items: center;
+            /* Prevent collapsing */
+            width: 100%;
+            /* Prevent overflow */
+            gap: 1rem;
+            /* Add spacing between items */
             z-index: 10;
             margin-top: 6rem;
-            margin-bottom: 5rem ;
+            margin-bottom: 5rem;
         }
 
         .item-title-card {
@@ -535,35 +520,45 @@
             margin: auto;
             box-sizing: border-box;
             z-index: 10;
-            position: relative; /* Add this */
+            position: relative;
+            /* Add this */
         }
 
 
         .item-overlay {
-            display: none; /* Initially hidden */
+            display: none;
+            /* Initially hidden */
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-            z-index: 5; /* Below the sidebar */    
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent black */
+            z-index: 5;
+            /* Below the sidebar */
             overflow-y: auto;
             height: 100vh;
-            
+
         }
 
         .all-items {
-            display: none; /* Initially hidden */
-            position: fixed; /* Make it fixed to the viewport */
+            display: none;
+            /* Initially hidden */
+            position: fixed;
+            /* Make it fixed to the viewport */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8); /* Add a semi-transparent black background */
-            z-index: 1000; /* Make sure it appears above everything else */
-            justify-content: center; /* Center content horizontally */
-            align-items: center; /* Center content vertically */
+            background-color: rgba(0, 0, 0, 0.8);
+            /* Add a semi-transparent black background */
+            z-index: 1000;
+            /* Make sure it appears above everything else */
+            justify-content: center;
+            /* Center content horizontally */
+            align-items: center;
+            /* Center content vertically */
             overflow-y: auto;
 
         }
@@ -583,15 +578,17 @@
             display: flex;
             position: absolute;
             gap: 10px;
-            right:0.8rem;
+            right: 0.8rem;
             top: 0.7rem;
         }
 
-        .edit-btn, .delete-btn {
+        .edit-btn,
+        .delete-btn {
             background-color: transparent;
             padding: 8px;
             border: none;
-            font-size: 18px; /* Icon size */
+            font-size: 18px;
+            /* Icon size */
             color: white;
             cursor: pointer;
             display: flex;
@@ -599,11 +596,7 @@
             align-items: center;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-       </style>
-<<<<<<< HEAD
-=======
->>>>>>> origin/hannahsheen
->>>>>>> 891a345349f7b46af09b92dbe5200d12b9b1f180
+    </style>
 </head>
 
 <body>
@@ -649,11 +642,10 @@
     </div>
 
 
-<<<<<<< HEAD
     <!-- Settings Modal -->
     <div id="settings-modal" class="modal settings-modal" tabindex="-1">
         <div class="modal-content">
-            <a href="#" class="close-btn" onclick="closeSettingsModal()">&times;</a>
+            <a href="#" class="close-btn" style="left: 20px;" onclick="closeSettingsModal()">&times;</a>
             <h2 style="width: 100%; text-align: center; justify-content: center;">Confirm Logout</h2>
             <div>
                 <label
@@ -661,32 +653,9 @@
                     for="setting-option">Are you sure you want to logout?</label>
             </div>
             <div class="modal-footer">
-                <button class="button create-btn" onclick="saveSettings()">Yes, Logout Account</button>
+                <button class="button create-btn" onclick="confLogout()">Yes, Logout Account</button>
                 <button class="button cancel-btn" onclick="closeSettingsModal()">No, I'm Staying</button>
             </div>
-=======
-    <div class="settings-div">
-        <button onclick = "openManageAcc()">Manage Account</button>
-        <button onclick="openSettingsModal()">Logout</button>
-    </div>
-
-</div>
-<div class="sidebar-overlay" id="sidebar-overlay"  type = "button" onclick="closeSidebar()"></div>
-</div>  
-
-
-<!-- Settings Modal -->
-<div id="settings-modal" class="modal settings-modal" tabindex="-1">
-    <div class="modal-content">
-        <a href="#" class="close-btn" style = "left: 20px;" onclick="closeSettingsModal()">&times;</a>
-        <h2 style = "width: 100%; text-align: center; justify-content: center;">Confirm Logout</h2>
-        <div>
-            <label style = "font-family: 'Outfit'; color: white; font-size: 20px; justify-content: center; text-align: center; width: 100%; margin-top: 2rem; margin-bottom: 2rem;" for="setting-option">Are you sure you want to logout?</label>
-        </div>
-        <div class="modal-footer">
-            <button class="button create-btn" onclick="confLogout()">Yes, Logout Account</button>
-            <button class="button cancel-btn" onclick="closeSettingsModal()">No, I'm Staying</button>
->>>>>>> origin/hannahsheen
         </div>
     </div>
 
@@ -699,27 +668,19 @@
 
         <div class="header">
 
-            <div class="search-bar-container" style="position: absolute; display: flex; align-items: center; left: 0rem; margin-top: 0.rem;">
+            <div class="search-bar-container"
+                style="position: absolute; display: flex; align-items: center; left: 0rem; margin-top: 0.rem;">
                 <input type="text" id="search-input" class="search-bar" placeholder="Search..." onkeyup="searchQuiz()"
                     style="padding: 8px; font-size: 20px; width: 300px; border: 1px solid #ccc; border-radius: 5px; font-family: 'VT323'; box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);">
-                <button onclick="searchQuiz()" class="search-button" style="margin-left: 5px; background-color: #421D06; color: white; border: none; border-radius: 5px; padding: 8px;">
-                    <i class="fa-solid fa-magnifying-glass" style = "font-size: 20px;"></i>
+                <button onclick="searchQuiz()" class="search-button"
+                    style="margin-left: 5px; background-color: #421D06; color: white; border: none; border-radius: 5px; padding: 8px;">
+                    <i class="fa-solid fa-magnifying-glass" style="font-size: 20px;"></i>
                 </button>
             </div>
 
             <button class="create-new-btn" onclick="showUploadModal()"><i
-<<<<<<< HEAD
-                    class="fa-solid fa-circle-plus create-icon"></i>Create New</button>
-<<<<<<< HEAD
-
-                class="fa-solid fa-circle-plus create-icon"></i>Create New
+                    class="fa-solid fa-circle-plus create-icon"></i>Create New
             </button>
-=======
-=======
-                class="fa-solid fa-circle-plus create-icon"></i>Create New
-            </button>
->>>>>>> origin/hannahsheen
->>>>>>> 891a345349f7b46af09b92dbe5200d12b9b1f180
         </div>
         <!-- Start Game Button -->
 
@@ -743,106 +704,87 @@
         </div>
     </div>
 
-        <!-- edit quiz -->
-        <div id="edit-quiz-modal" class="modal modalSettings" style = "display: none;">
-            <div class="uploadmodal-content" style = "height: 360px;">
+    <!-- edit quiz -->
+    <div id="edit-quiz-modal" class="modal modalSettings" style="display: none;">
+        <div class="uploadmodal-content" style="height: 360px;">
 
-            <h2 style = "color: white; width: 100%; justify-content: center; text-align: center;">Edit Quiz</h2>
+            <h2 style="color: white; width: 100%; justify-content: center; text-align: center;">Edit Quiz</h2>
 
-            <input id = "edit-title" type="text" class="input-field" placeholder="Add Title">
-            <textarea id="edit-description" rows="4" cols="70" class = "textarea-field" placeholder="Add Description Optional"></textarea>
+            <input id="edit-title" type="text" class="input-field" placeholder="Add Title">
+            <textarea id="edit-description" rows="4" cols="70" class="textarea-field"
+                placeholder="Add Description Optional"></textarea>
             <div class="modal-footer">
-                <button class="button cancel-btn" onclick = "closeEditQuiz()">Cancel</button>
-                <button class="button create-btn" onclick = "saveQuizUpdate()">Save</button>
+                <button class="button cancel-btn" onclick="closeEditQuiz()">Cancel</button>
+                <button class="button create-btn" onclick="saveQuizUpdate()">Save</button>
             </div>
-            </div>
-
-        </div>
         </div>
 
+    </div>
+    </div>
 
 
-<<<<<<< HEAD
+
     <!-- Add Item -->
     <div id="add-item" class="modal modalSettings">
-        <div class="uploadmodal-content" style="height: 550px; padding-top: 3rem;">
+        <div class="uploadmodal-content" style="padding-top: 3rem;">
             <a href="#" class="check-btn" id="save-quiz">&#10003;</a>
-            <a href="#" class="close-btn" onclick="cancelCreateNew()">&times;</a>
+            <a href="#" class="close-btn" style="left: 20px;" onclick="cancelCreateNew()">&times;</a>
 
-            <textarea id="question" rows="4" cols="30" class="textarea-field" placeholder="Add Question"></textarea>
-            <textarea id="answer" rows="4" cols="30" class="textarea-field" placeholder="Add Answer"></textarea>
-=======
-        <!-- Add Item -->
-        <div id="add-item" class="modal modalSettings">
-            <div class="uploadmodal-content" style = "padding-top: 3rem;">
-                <a href="#" class="check-btn" id = "save-quiz">&#10003;</a>
-                <a href="#" class="close-btn" style = "left: 20px;" onclick="cancelCreateNew()">&times;</a>
-
-            <textarea id="question" rows="4" cols="20" class = "textarea-field" placeholder="Add Question"></textarea>
->>>>>>> origin/hannahsheen
+            <textarea id="question" rows="4" cols="20" class="textarea-field" placeholder="Add Question"></textarea>
 
             <div class="radio-group">
                 <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Choose thetype
                     of question:</p>
                 <div style="display: flex; gap: 10px; font-size: 16px;">
                     <div class="radio-option">
-<<<<<<< HEAD
-                        <input type="radio" id="true-false" name="question-type" value="True or False">
+                        <input type="radio" id="true-false" name="question-type" value="truefalse"
+                            onclick="showtruefalse()">
                         <label for="true-false">True or False</label>
                     </div>
                     <div class="radio-option">
-                        <input type="radio" id="identification" name="question-type" value="Identification">
+                        <input type="radio" id="identification" name="question-type" value="identification"
+                            onclick="showidentification()">
                         <label for="identification">Identification</label>
                     </div>
                     <div class="radio-option">
-                        <input type="radio" id="multiple-choice" name="question-type" value="Multiple Choice">
-                        <label for="identification">Multiple Choice</label>
-=======
-                        <input type="radio" id="true-false" name="question-type" value = "truefalse" onclick = "showtruefalse()">
-                        <label for="true-false">True or False</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="identification" name="question-type" value = "identification" onclick = "showidentification()">
-                        <label for="identification">Identification</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="multiple-choice" name="question-type" value = "multchoice" onclick = "showmultiplechoice()">
+                        <input type="radio" id="multiple-choice" name="question-type" value="multchoice"
+                            onclick="showmultiplechoice()">
                         <label for="multiple-choice">Multiple Choice</label>
->>>>>>> origin/hannahsheen
                     </div>
                 </div>
             </div>
 
             <!-- Multiple Choice -->
-            <div class="radio-group" id="multiple-choice-modal" style = "display: none;">
+            <div class="radio-group" id="multiple-choice-modal" style="display: none;">
                 <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Add options:</p>
-                    <div class="mult-option">
-                        <input type="text" id="wrong-option1" placeholder="Wrong Option">
-                    </div>
-                    <div class="mult-option">
-                        <input type="text" id="wrong-option2" placeholder="Wrong Option">
-                    </div>
-                    <div class="mult-option">
-                        <input type="text" id="correct-option" placeholder="Correct Option">
-                    </div>
+                <div class="mult-option">
+                    <input type="text" id="wrong-option1" placeholder="Wrong Option">
+                </div>
+                <div class="mult-option">
+                    <input type="text" id="wrong-option2" placeholder="Wrong Option">
+                </div>
+                <div class="mult-option">
+                    <input type="text" id="correct-option" placeholder="Correct Option">
+                </div>
             </div>
 
             <!-- Identification -->
-             <div id="identification-modal" style="display: none;">
-            <textarea id="answer" rows="4" cols="20" class = "textarea-field" placeholder="Add Answer"></textarea>
+            <div id="identification-modal" style="display: none;">
+                <textarea id="answer" rows="4" cols="20" class="textarea-field" placeholder="Add Answer"></textarea>
             </div>
 
             <!-- True or False -->
-            <div class="radio-group" id="true-false-modal" style = "display: none;">
-                <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Select Answer:</p>
-                    <div class="radio-option">
-                        <input type="radio" id="true" name = "truefalse" value= "True">
-                        <label for="true">True</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="false" name = "truefalse" value = "False">
-                        <label for="false">False</label>
-                    </div>
+            <div class="radio-group" id="true-false-modal" style="display: none;">
+                <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Select Answer:
+                </p>
+                <div class="radio-option">
+                    <input type="radio" id="true" name="truefalse" value="True">
+                    <label for="true">True</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="false" name="truefalse" value="False">
+                    <label for="false">False</label>
+                </div>
             </div>
 
 
@@ -854,65 +796,69 @@
     </div>
 
 
-    
-        <!--Add one Item -->
-        <div id="add-one-item" class="modal modalSettings">
-            <div class="uploadmodal-content" style = "padding-top: 3rem;">
-                <a href="#" class="close-btn" style = "left: 20px;" onclick="closeAddOne()">&times;</a>
 
-<<<<<<< HEAD
-    <div class="title-cards">
-=======
-            <textarea id="add-one-question" rows="4" cols="20" class = "textarea-field" placeholder="Add Question"></textarea>
+    <!--Add one Item -->
+    <div id="add-one-item" class="modal modalSettings">
+        <div class="uploadmodal-content" style="padding-top: 3rem;">
+            <a href="#" class="close-btn" style="left: 20px;" onclick="closeAddOne()">&times;</a>
+
+            <textarea id="add-one-question" rows="4" cols="20" class="textarea-field"
+                placeholder="Add Question"></textarea>
 
             <div class="radio-group">
-                <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Choose thetype of question:</p>
-                <div style = "display: flex; gap: 10px; font-size: 16px;">
+                <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Choose thetype
+                    of question:</p>
+                <div style="display: flex; gap: 10px; font-size: 16px;">
                     <div class="radio-option">
-                        <input type="radio" id="true-false" name="add-one-question-type" value = "truefalse" onclick = "truefalseAddOne()">
+                        <input type="radio" id="true-false" name="add-one-question-type" value="truefalse"
+                            onclick="truefalseAddOne()">
                         <label for="true-false">True or False</label>
                     </div>
                     <div class="radio-option">
-                        <input type="radio" id="identification" name="add-one-question-type" value = "identification" onclick = "identificationAddOne()">
+                        <input type="radio" id="identification" name="add-one-question-type" value="identification"
+                            onclick="identificationAddOne()">
                         <label for="identification">Identification</label>
                     </div>
                     <div class="radio-option">
-                        <input type="radio" id="multiple-choice" name="add-one-question-type" value = "multchoice" onclick = "multchoiceAddOne()">
+                        <input type="radio" id="multiple-choice" name="add-one-question-type" value="multchoice"
+                            onclick="multchoiceAddOne()">
                         <label for="multiple-choice">Multiple Choice</label>
                     </div>
                 </div>
             </div>
 
             <!-- Multiple Choice -->
-            <div class="radio-group" id="addOneMultChoice" style = "display: none;">
+            <div class="radio-group" id="addOneMultChoice" style="display: none;">
                 <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Add options:</p>
-                    <div class="mult-option">
-                        <input type="text" id="add-one-wrong-option1" placeholder="Wrong Option">
-                    </div>
-                    <div class="mult-option">
-                        <input type="text" id="add-one-wrong-option2" placeholder="Wrong Option">
-                    </div>
-                    <div class="mult-option">
-                        <input type="text" id="add-one-correct-option" placeholder="Correct Option">
-                    </div>
+                <div class="mult-option">
+                    <input type="text" id="add-one-wrong-option1" placeholder="Wrong Option">
+                </div>
+                <div class="mult-option">
+                    <input type="text" id="add-one-wrong-option2" placeholder="Wrong Option">
+                </div>
+                <div class="mult-option">
+                    <input type="text" id="add-one-correct-option" placeholder="Correct Option">
+                </div>
             </div>
 
             <!-- Identification -->
-             <div id="addOneIdentification" style="display: none;">
-            <textarea id="add-one-answer" rows="4" cols="20" class = "textarea-field" placeholder="Add Answer"></textarea>
+            <div id="addOneIdentification" style="display: none;">
+                <textarea id="add-one-answer" rows="4" cols="20" class="textarea-field"
+                    placeholder="Add Answer"></textarea>
             </div>
 
             <!-- True or False -->
-            <div class="radio-group" id="addOneTrueFalse" style = "display: none;">
-                <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Select Answer:</p>
-                    <div class="radio-option">
-                        <input type="radio" id="add-one-true" name = "add-one-truefalse" value= "True">
-                        <label for="add-one-true">True</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="add-one-false" name = "add-one-truefalse" value = "False">
-                        <label for="add-one-false">False</label>
-                    </div>
+            <div class="radio-group" id="addOneTrueFalse" style="display: none;">
+                <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Select Answer:
+                </p>
+                <div class="radio-option">
+                    <input type="radio" id="add-one-true" name="add-one-truefalse" value="True">
+                    <label for="add-one-true">True</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="add-one-false" name="add-one-truefalse" value="False">
+                    <label for="add-one-false">False</label>
+                </div>
             </div>
 
 
@@ -923,39 +869,42 @@
         </div>
     </div>
 
-    
-    
+
+
     <!-- Edit Quiz Item-->
-      <div id="edit-quiz" class="modal modalSettings">
-        <div class="uploadmodal-content" style = "padding-top: 3rem;">
-            <a href="#" class="close-btn" style = "left: 20px;" onclick="closeEditItem()">&times;</a>
+    <div id="edit-quiz" class="modal modalSettings">
+        <div class="uploadmodal-content" style="padding-top: 3rem;">
+            <a href="#" class="close-btn" style="left: 20px;" onclick="closeEditItem()">&times;</a>
 
-        <textarea id="edit-quiz-question" rows="4" cols="20" class = "textarea-field" placeholder="Add Question"></textarea>
-        
-
-         <!--Edit Identification -->
-        <div id="edit-quiz-identification" style="display: none;">
-            <textarea id="edit-quiz-answer" rows="4" cols="20" class = "textarea-field" placeholder="Add Answer"></textarea>
-        </div>
+            <textarea id="edit-quiz-question" rows="4" cols="20" class="textarea-field"
+                placeholder="Add Question"></textarea>
 
 
-        <!--Edit TrueFalse -->
-        <div class="radio-group" id="edit-quiz-TrueFalse" style = "display: none;">
-            <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Select Answer:</p>
+            <!--Edit Identification -->
+            <div id="edit-quiz-identification" style="display: none;">
+                <textarea id="edit-quiz-answer" rows="4" cols="20" class="textarea-field"
+                    placeholder="Add Answer"></textarea>
+            </div>
+
+
+            <!--Edit TrueFalse -->
+            <div class="radio-group" id="edit-quiz-TrueFalse" style="display: none;">
+                <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Select Answer:
+                </p>
                 <div class="radio-option">
-                    <input type="radio" id="edit-quiz-true" name = "edit-quiz-truefalse" value= "True">
+                    <input type="radio" id="edit-quiz-true" name="edit-quiz-truefalse" value="True">
                     <label for="edit-quiz-true">True</label>
                 </div>
                 <div class="radio-option">
-                    <input type="radio" id="edit-quiz-false" name = "edit-quiz-truefalse" value = "False">
+                    <input type="radio" id="edit-quiz-false" name="edit-quiz-truefalse" value="False">
                     <label for="edit-quiz-false">False</label>
                 </div>
-        </div>
+            </div>
 
 
-        <!-- Edit Multiple Choice -->
-        <div class="radio-group" id="edit-quiz-MultChoice" style = "display: none;">
-            <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Add options:</p>
+            <!-- Edit Multiple Choice -->
+            <div class="radio-group" id="edit-quiz-MultChoice" style="display: none;">
+                <p style="font-family: 'Outfit'; margin: 0.5rem 0.5rem; color: white; font-size: 18px;">Add options:</p>
                 <div class="mult-option">
                     <input type="text" id="edit-quiz-wrong-option1" placeholder="Wrong Option">
                 </div>
@@ -965,67 +914,60 @@
                 <div class="mult-option">
                     <input type="text" id="edit-quiz-correct-option" placeholder="Correct Option">
                 </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="button create-btn" id="saveItemEdit" onclick="saveItemEdit()">Save</button>
+            </div>
+
         </div>
-
-        <div class="modal-footer">
-            <button class="button create-btn" id="saveItemEdit" onclick = "saveItemEdit()">Save</button>
-        </div>
-
-        </div>
-      </div>
+    </div>
 
 
 
 
-        <!-- View Quiz Title Cards -->
-        <div class="title-cards" id = "title-cards">
->>>>>>> origin/hannahsheen
+    <!-- View Quiz Title Cards -->
+    <div class="title-cards" id="title-cards">
 
-        <!-- Quiz Card 1 -->
+        <!-- Quiz Card 1
         <div class="quiz-title-card">
             <h2>Lorem Ipsum Dolor sit</h2>
-            <p style = "font-family: 'Outfit'; font-size: 13px; color: white;">Description: </p>
+            <p style="font-family: 'Outfit'; font-size: 13px; color: white;">Description: </p>
             <div class="card-content">
                 <div class="score">
                     Best Score: <span class="score-value">13</span><span class="score-max">/50</span>
-                </div>  
+                </div>
                 <div class="button-group">
-<<<<<<< HEAD
-                    <button class="play-btn" onclick="samplePlay()">Play</button>
-                    <button class="summary-btn">View Summary</button>
-=======
-                    <button class="play-btn" onclick="samplePlay()" >Play</button>
+                    <button class="play-btn" onclick="window.location.href='game.html'">Play</button>
                     <button class="summary-btn">View Items</button>
->>>>>>> origin/hannahsheen
+                </div>
+            </div>
+        </div> -->
+
+    </div>
+
+    <div id="all-items" class="all-items" style="display: none;">
+        <div class="item-cards" id="item-cards">
+            <a href="#" class="close-btn" onclick="closeItems()">&times;</a>
+            <div class="item-title-card" id="item-title-card">
+                <p style="font-family: 'Outfit'; font-size: 20px; color: white;">Question Identfication</p>
+                <div class="card-content">
+                    <div class="">
+                        <p style="font-family: 'Outfit'; font-size: 18px; color: #006600;">Answer: </p>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="item-overlay" id="item-overlay"></div>
+    </div>
 
-         </div>
 
-        <div id="all-items" class="all-items" style = "display: none;">
-            <div class = "item-cards" id = "item-cards">
-                <a href="#" class="close-btn" onclick="closeItems()">&times;</a>
-                <div class = "item-title-card" id = "item-title-card">
-                    <p style = "font-family: 'Outfit'; font-size: 20px; color: white;">Question Identfication</p>
-                        <div class="card-content">
-                            <div class="">
-                                <p style = "font-family: 'Outfit'; font-size: 18px; color: #006600;">Answer: </p>
-                            </div>
-                        </div>
-                </div>
-            </div>
-            <div class="item-overlay" id="item-overlay"></div>
-        </div>
-
-            
 
     <!-- Manage Account -->
     <div class="modal manage-account" id="manageAccount" tabindex="-1" style="display: none;">
 
-<<<<<<< HEAD
         <div class="manageAcc-modal">
-            <a href="#" class="close-btn" onclick="closeManageAcc()">&times;</a>
+            <a href="#" class="close-btn" style="left:20px;" onclick="closeManageAcc()">&times;</a>
             <h2
                 style="margin-bottom: 1rem; margin-top: 2rem; justify-content: center; width: 100%; text-align: center;">
                 Manage Account</h2>
@@ -1039,37 +981,23 @@
                         style="display: flex; flex-direction: column; gap: 1rem; margin: 0.5rem;">
                         <div>
                             <label
-                                style="font-family: 'Outfit'; font-size: 19px; color: white; margin-left: 3rem;">Firstname</label>
-                            <input type="text" class="manageAcc-input">
+                                style="font-family: 'Outfit'; font-size: 19px; color: white; margin-left: 2rem; width: 7.2rem; justify-content: left;">Firstname</label>
+                            <input type="text" class="manageAcc-input" style="padding-left: 5px;" id='manage-firstname'>
                         </div>
                         <div>
                             <label
-                                style="font-family: 'Outfit'; font-size: 19px; color: white; margin-left: 3rem;">Lastname</label>
-                            <input type="text" class="manageAcc-input">
+                                style="font-family: 'Outfit'; font-size: 19px; color: white; margin-left: 2rem;  width: 7.2rem; justify-content: left;"">Lastname</label>
+                    <input type=" text" class="manageAcc-input" style="padding-left: 5px;" id='manage-lastname'>
                         </div>
-=======
-    <div class="manageAcc-modal">
-        <a href="#" class="close-btn" style="left:20px;" onclick="closeManageAcc()">&times;</a>
-        <h2 style = "margin-bottom: 1rem; margin-top: 2rem; justify-content: center; width: 100%; text-align: center;">Manage Account</h2>
-        <div style = "display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px;">
-            <div class = "manageAcc-content">
-                <h4 style="font-family: 'VT323'; font-size: 29px; color: white; width: 100%; text-align: center; margin-top: 0.5rem;">Profile</h4>
-                <div class = "profile-content" style="display: flex; flex-direction: column; gap: 1rem; margin: 0.5rem;" >
-                    <div>
-                    <label style="font-family: 'Outfit'; font-size: 19px; color: white; margin-left: 2rem; width: 7.2rem; justify-content: left;">Firstname</label>
-                    <input type="text" class="manageAcc-input" style ="padding-left: 5px;" id = 'manage-firstname'>
-                    </div>
-                    <div>
-                    <label style="font-family: 'Outfit'; font-size: 19px; color: white; margin-left: 2rem;  width: 7.2rem; justify-content: left;"">Lastname</label>
-                    <input type="text" class="manageAcc-input"  style ="padding-left: 5px;" id = 'manage-lastname'>
-                    </div>
-                    <div>
-                    <label style="font-family: 'Outfit'; font-size: 19px; color: white; margin-left: 2rem;">Security Code</label>
-                    <input type="text" class="manageAcc-input"  style ="padding-left: 5px;" id = 'manage-security'>
-                    </div>
-                    <div style = "width: 100%; justify-content: center; text-align: center;">
-                        <button class = "save-btn" onclick = "saveProfile()" >Save</button>
->>>>>>> origin/hannahsheen
+                        <div>
+                            <label
+                                style="font-family: 'Outfit'; font-size: 19px; color: white; margin-left: 2rem;">Security
+                                Code</label>
+                            <input type="text" class="manageAcc-input" style="padding-left: 5px;" id='manage-security'>
+                        </div>
+                        <div style="width: 100%; justify-content: center; text-align: center;">
+                            <button class="save-btn" onclick="saveProfile()">Save</button>
+                        </div>
                     </div>
 
                 </div>
@@ -1084,50 +1012,30 @@
                             <label
                                 style="font-family: 'Outfit'; font-size: 16px; color: white; margin-left: 2rem; width: 8.1rem;">Current
                                 Password</label>
-                            <input type="password" class="manageAcc-input">
+                            <input type="password" class="manageAcc-input" style="padding-left: 5px;"
+                                id='manage-currpass'>
                         </div>
                         <div>
                             <label
                                 style="font-family: 'Outfit'; font-size: 16px; color: white; margin-left: 2rem; width: 8.1rem;">New
                                 Password</label>
-                            <input type="password" class="manageAcc-input">
+                            <input type="password" class="manageAcc-input" style="padding-left: 5px;"
+                                id='manage-newpass'>
                         </div>
                         <div>
                             <label
                                 style="font-family: 'Outfit'; font-size: 16px; color: white; margin-left: 2rem;">Confirm
                                 Password</label>
-                            <input type="password" class="manageAcc-input">
+                            <input type="password" class="manageAcc-input" style="padding-left: 5px;"
+                                id='manage-confpass'>
                         </div>
                     </div>
                     <div style="width: 100%; justify-content: center; text-align: center;">
-                        <button class="save-btn">Save</button>
+                        <button class="save-btn" onclick="savePassword()">Save</button>
                     </div>
                 </div>
             </div>
 
-<<<<<<< HEAD
-=======
-            <div class = "manageAcc-content" style = "height: 270px;">
-                <h4 style="font-family: 'VT323'; font-size: 29px; color: white; width: 100%; text-align: center; margin-top: 0.5rem;">Change Password </h4>
-                <div class = "profile-content" style="display: flex; flex-direction: column; gap: 1rem; margin: 0.5rem;" >
-                    <div>
-                        <label style="font-family: 'Outfit'; font-size: 16px; color: white; margin-left: 2rem; width: 8.1rem;">Current Password</label>
-                        <input type="password" class="manageAcc-input"  style ="padding-left: 5px;" id = 'manage-currpass'>
-                    </div>
-                    <div>
-                        <label style="font-family: 'Outfit'; font-size: 16px; color: white; margin-left: 2rem; width: 8.1rem;">New Password</label>
-                        <input type="password" class="manageAcc-input"  style ="padding-left: 5px;" id = 'manage-newpass'>
-                    </div>
-                    <div>
-                        <label style="font-family: 'Outfit'; font-size: 16px; color: white; margin-left: 2rem;">Confirm Password</label>
-                        <input type="password" class="manageAcc-input"  style ="padding-left: 5px;" id = 'manage-confpass'>
-                    </div>
-                </div>
-                <div style = "width: 100%; justify-content: center; text-align: center;">
-                    <button class = "save-btn" onclick = "savePassword()" >Save</button>
-                </div>
-            </div>  
->>>>>>> origin/hannahsheen
         </div>
     </div>
     </div>
@@ -1141,13 +1049,8 @@
     <script type="module">
         // firebase connection
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-<<<<<<< HEAD
-        import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+        import { getDatabase, ref, set, get, child, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
-=======
-        import { getDatabase, ref, set, get, child, onValue, update, remove} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-        
->>>>>>> origin/hannahsheen
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -1164,8 +1067,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-<<<<<<< HEAD
-=======
         //global variables
         let currentQuizId = null
         let quizdetails = {}
@@ -1173,12 +1074,18 @@
         let quizItems = []
         let currentItemId = null
         let currentItemType = null
-        
+
         // for home display
->>>>>>> origin/hannahsheen
         const username = sessionStorage.getItem('username');
         const firstname = sessionStorage.getItem('firstname');
         const lastname = sessionStorage.getItem('lastname');
+
+        if (username) {
+            document.getElementById('welcome-msg').textContent = `Welcome, ${firstname}!`;
+            document.getElementById('user-fullname').textContent = `${firstname} ${lastname}`;
+        }
+
+
 
 
         // Send this data to the backend
@@ -1201,41 +1108,36 @@
                 console.error('Error:', error);
             });
 
-        if (username) {
-            document.getElementById('welcome-msg').textContent = `Welcome, ${firstname}!`;
-            document.getElementById('user-fullname').textContent = `${firstname} ${lastname}`;
-        }
 
-        
 
         window.getUserQuizzes = async function () {
             const dbRef = ref(getDatabase());
-            
+
             try {
                 // Access the "user/{username}/quizzes" node
                 const snapshot = await get(child(dbRef, `user/${username}/quizzes`));
-                
+
                 if (snapshot.exists()) {
-                // Return the quizzes data
+                    // Return the quizzes data
                     const quizzes = snapshot.val();
                     const quizContainer = document.getElementById('title-cards');
-                
-                // Clear the existing quiz cards in case any exist
-                quizContainer.innerHTML = '';
 
-                // Loop through each quiz and generate a quiz card
-                Object.keys(quizzes).forEach(quizId => {
-                    const quiz = quizzes[quizId];
+                    // Clear the existing quiz cards in case any exist
+                    quizContainer.innerHTML = '';
 
-                    const maxScore = quiz.quizItems ? quiz.quizItems.length : '-'; // Default to 0 if no items exist
-                    // Create a new div for the quiz card
-                    const quizCard = document.createElement('div');
-                    quizCard.classList.add('quiz-title-card');
-                    quizCard.setAttribute('data-title', quiz.title);
-                    quizCard.setAttribute('data-description', quiz.description);
-                
-                // Set the inner HTML for the quiz card
-                quizCard.innerHTML = `
+                    // Loop through each quiz and generate a quiz card
+                    Object.keys(quizzes).forEach(quizId => {
+                        const quiz = quizzes[quizId];
+
+                        const maxScore = quiz.quizItems ? quiz.quizItems.length : '-'; // Default to 0 if no items exist
+                        // Create a new div for the quiz card
+                        const quizCard = document.createElement('div');
+                        quizCard.classList.add('quiz-title-card');
+                        quizCard.setAttribute('data-title', quiz.title);
+                        quizCard.setAttribute('data-description', quiz.description);
+
+                        // Set the inner HTML for the quiz card
+                        quizCard.innerHTML = `
                 <div class="action-buttons">
                     <button class="edit-btn" onclick  ="editQuiz(${quiz.quizId})"><i class="fa fa-pencil"></i> </button>
                     <button class="delete-btn" onclick = "deleteQuiz(${quiz.quizId})"><i class="fa fa-times"></i></button>
@@ -1247,23 +1149,23 @@
                             Best Score: <span class="score-value" style="color:#2130B6;">${quiz.bestscore || 0}</span><span class="score-max">/${maxScore}</span>
                         </div>
                         <div class="button-group">
-                            <button class="play-btn">Play</button>
+            <button class="play-btn" onclick="window.location.href='game.html?quizId=${quiz.quizId}'">Play</button>
                             <button class="summary-btn" onclick = showItems(${quiz.quizId})>View Items</button>
                         </div>
                     </div>
 
                     
                 
-                `;                
+                `;
 
-                quizContainer.appendChild(quizCard);
-            });
-            } else {
-                console.log(`No quizzes found for username: ${username}`);
-                document.getElementById('title-cards').textContent = 'No quizzes yet.'
-                document.getElementById('title-cards').style.color = 'white';
+                        quizContainer.appendChild(quizCard);
+                    });
+                } else {
+                    console.log(`No quizzes found for username: ${username}`);
+                    document.getElementById('title-cards').textContent = 'No quizzes yet.'
+                    document.getElementById('title-cards').style.color = 'white';
 
-            }
+                }
             } catch (error) {
                 console.error("Error fetching quizzes:", error);
                 throw error;
@@ -1330,83 +1232,76 @@
             document.getElementById('settings-modal').style.display = 'none';
         }
 
-<<<<<<< HEAD
         window.openManageAcc = function () {
-=======
-        window.openManageAcc = function (){
 
             const userRef = ref(db, 'user/' + username);
-                get(userRef).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const users = snapshot.val();
+            get(userRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const users = snapshot.val();
 
-                        document.getElementById('manage-firstname').value = users.firstname
-                        document.getElementById('manage-lastname').value = users.lastname
-                        document.getElementById('manage-security').value = users.security
-                    }
-                })
-                
->>>>>>> origin/hannahsheen
+                    document.getElementById('manage-firstname').value = users.firstname
+                    document.getElementById('manage-lastname').value = users.lastname
+                    document.getElementById('manage-security').value = users.security
+                }
+            })
+
             document.getElementById('manageAccount').style.display = 'flex';
             document.getElementById('side-menu').style.display = 'none';
             document.getElementById('sidebar-overlay').style.display = 'none';
         }
 
-<<<<<<< HEAD
-        window.closeManageAcc = function () {
-=======
-        window.saveProfile = function() {
+        window.saveProfile = function () {
             var managefname = document.getElementById('manage-firstname').value
             var managelname = document.getElementById('manage-lastname').value
             var managesecurity = document.getElementById('manage-security').value
 
-            if(!managefname || !managelname || !managesecurity){
+            if (!managefname || !managelname || !managesecurity) {
                 alert("Please fill in all the fields.")
                 return;
             }
 
-            const userRef = ref(db, 'user/'+ username);
+            const userRef = ref(db, 'user/' + username);
             update(ref(db, 'user/' + username), {
                 firstname: managefname,
                 lastname: managelname,
                 security: managesecurity
             });
             alert("Changes Saved!")
-            
+
             document.getElementById('welcome-msg').textContent = `Welcome, ${managefname}!`;
             document.getElementById('user-fullname').textContent = `${managefname} ${managelname}`;
             sessionStorage.setItem('firstname', managefname);
             sessionStorage.setItem('lastname', managelname);
-            
+
         }
 
-        window.savePassword = function (){
+        window.savePassword = function () {
             var managecurrpass = document.getElementById('manage-currpass').value
             var managenewpass = document.getElementById('manage-newpass').value
             var manageconfpass = document.getElementById('manage-confpass').value
 
-            if(!managecurrpass || !managenewpass || !manageconfpass){
+            if (!managecurrpass || !managenewpass || !manageconfpass) {
                 alert("Please fill in the password fields.")
                 return;
             }
-            else if(managenewpass != manageconfpass){
+            else if (managenewpass != manageconfpass) {
                 alert("Passwords do not match, please try again.")
                 return;
             }
-            else{
+            else {
 
-                const userRef = ref(db, 'user/'+ username);
+                const userRef = ref(db, 'user/' + username);
                 get(userRef).then((snapshot) => {
                     if (snapshot.exists()) {
                         const users = snapshot.val();
 
-                        if(users.password != managecurrpass){
+                        if (users.password != managecurrpass) {
                             alert("Current password is incorrect, please try again.")
                             return;
                         }
-                        else{
+                        else {
                             update(ref(db, 'user/' + username), {
-                            password: managenewpass
+                                password: managenewpass
                             });
                             alert("Password Updated!")
                             location.reload()
@@ -1416,11 +1311,10 @@
             }
         }
 
-        window.closeManageAcc = function (){
+        window.closeManageAcc = function () {
             document.getElementById('manage-newpass').value = ''
             document.getElementById('manage-confpass').value = ''
             document.getElementById('manage-currpass').value = ''
->>>>>>> origin/hannahsheen
             document.getElementById('manageAccount').style.display = 'none';
 
         }
@@ -1461,39 +1355,29 @@
             }
         }
 
-        window.showmultiplechoice = function (){
+        window.showmultiplechoice = function () {
             hideQuestionModals()
             document.getElementById('multiple-choice-modal').style.display = 'block';
         }
 
-<<<<<<< HEAD
-        let quizdetails = {}
-        let quizItems = []
-        document.getElementById('add-quiz-items').addEventListener('click', async function (e) {
-=======
-        window.showidentification = function (){
+        window.showidentification = function () {
             hideQuestionModals()
             document.getElementById('identification-modal').style.display = 'block';
         }
 
-        window.showtruefalse = function (){
+        window.showtruefalse = function () {
             hideQuestionModals()
             document.getElementById('true-false-modal').style.display = 'block';
         }
 
-        window.hideQuestionModals = function (){
+        window.hideQuestionModals = function () {
             document.getElementById('identification-modal').style.display = 'none';
             document.getElementById('true-false-modal').style.display = 'none';
             document.getElementById('multiple-choice-modal').style.display = 'none';
-        }    
-        
+        }
+
         //Get Quiz Title and Description
-        document.getElementById('add-quiz-items').addEventListener('click', async function(e) {
-<<<<<<< HEAD
->>>>>>> 
-=======
->>>>>>> origin/hannahsheen
->>>>>>> 891a345349f7b46af09b92dbe5200d12b9b1f180
+        document.getElementById('add-quiz-items').addEventListener('click', async function (e) {
             e.preventDefault();
 
             let description = null;
@@ -1518,24 +1402,15 @@
                 nextQuizId = Math.max(...quizIds) + 1; // Increment the highest ID
             }
 
-<<<<<<< HEAD
             quizdetails = {
-                nextQuizId, title, description
+                nextQuizId, title, description, bestscore
             }
-            alert(`${nextQuizId} ${title} ${description}`)
             addQuizItems()
 
-=======
-                quizdetails = {
-                    nextQuizId, title, description, bestscore
-                }
-                addQuizItems()
-            
->>>>>>> origin/hannahsheen
         });
 
         //gathers question details
-        window.getQuestionDetails = function (){
+        window.getQuestionDetails = function () {
             let question = document.getElementById('question').value;
             let type = document.querySelector('input[name="question-type"]:checked');
             let answer
@@ -1543,176 +1418,128 @@
             let correct
             let truefalse
 
-            if (type.value === "identification"){
-                    answer = document.getElementById('answer').value;
+            if (type.value === "identification") {
+                answer = document.getElementById('answer').value;
 
-                    if(!answer){
-                        alert("Please provide an answer for your identification-type question before proceeding.")
-                        return false;
-                    }
-                    // Create a temporary item object
-                    let quizItem = {
-                        question: question,
-                        answer: answer,
-                        type: type.value
-                    };
+                if (!answer) {
+                    alert("Please provide an answer for your identification-type question before proceeding.")
+                    return false;
+                }
+                // Create a temporary item object
+                let quizItem = {
+                    question: question,
+                    answer: answer,
+                    type: type.value
+                };
 
-                    quizItems.push(quizItem);
+                quizItems.push(quizItem);
 
-                    document.getElementById('question').value = '';
-                    document.getElementById('answer').value = '';
-                    document.querySelector('input[name="question-type"]:checked').checked = false;
+                document.getElementById('question').value = '';
+                document.getElementById('answer').value = '';
+                document.querySelector('input[name="question-type"]:checked').checked = false;
+            }
+
+            else if (type.value === "multchoice") {
+                wrong1 = document.getElementById('wrong-option1').value;
+                wrong2 = document.getElementById('wrong-option2').value;
+                correct = document.getElementById('correct-option').value;
+
+                if (!wrong1 || !wrong2 || !correct) {
+                    alert("Please answer options for your multiple choice-type question before proceeding.")
+                    return false;
                 }
 
-                else if(type.value === "multchoice"){
-                    wrong1 = document.getElementById('wrong-option1').value;
-                    wrong2 = document.getElementById('wrong-option2').value;
-                    correct = document.getElementById('correct-option').value;
+                let quizItem = {
+                    question: question,
+                    wrong1: wrong1,
+                    wrong2: wrong2,
+                    correct: correct,
+                    type: type.value
+                };
 
-                    if(!wrong1 || !wrong2 || !correct){
-                        alert("Please answer options for your multiple choice-type question before proceeding.")
-                        return false;
-                    }
+                quizItems.push(quizItem);
 
-                    let quizItem = {
-                        question: question,
-                        wrong1: wrong1,
-                        wrong2: wrong2,
-                        correct: correct,
-                        type: type.value
-                    };
+                document.getElementById('question').value = '';
+                document.getElementById('wrong-option1').value = '';
+                document.getElementById('wrong-option2').value = '';
+                document.getElementById('correct-option').value = '';
+                document.querySelector('input[name="question-type"]:checked').checked = false;
+            }
 
-                    quizItems.push(quizItem);
+            else {
+                truefalse = document.querySelector('input[name="truefalse"]:checked');
 
-                    document.getElementById('question').value = '';
-                    document.getElementById('wrong-option1').value = '';
-                    document.getElementById('wrong-option2').value = '';
-                    document.getElementById('correct-option').value = '';
-                    document.querySelector('input[name="question-type"]:checked').checked = false;
+                if (!truefalse) {
+                    alert("Please select the answer for your true or false-type question before proceeding.")
+                    return false;
                 }
 
-                else{
-                    truefalse = document.querySelector('input[name="truefalse"]:checked');
+                let quizItem = {
+                    question: question,
+                    truefalse: truefalse.value,
+                    type: type.value
+                };
 
-                    if(!truefalse){
-                        alert("Please select the answer for your true or false-type question before proceeding.")
-                        return false;
-                    }
+                quizItems.push(quizItem);
 
-                    let quizItem = {
-                        question: question,
-                        truefalse: truefalse.value,
-                        type: type.value
-                    };
+                document.getElementById('question').value = '';
+                document.querySelector('input[name="truefalse"]:checked').checked = false;
+                document.querySelector('input[name="question-type"]:checked').checked = false;
 
-                    quizItems.push(quizItem);
-
-                    document.getElementById('question').value = '';
-                    document.querySelector('input[name="truefalse"]:checked').checked = false;
-                    document.querySelector('input[name="question-type"]:checked').checked = false;
-
-                }
-                return true;
+            }
+            return true;
         }
 
 
         document.getElementById('add-new-item').addEventListener('click', function (e) {
             e.preventDefault()
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/hannahsheen
             let question = document.getElementById('question').value;
             let type = document.querySelector('input[name="question-type"]:checked');
 
-            if(!question){
+            if (!question) {
                 alert("Please add a question.");
                 return;
             }
-            else if (!type){
+            else if (!type) {
                 alert("Please select a question type.")
                 return;
             }
-            else{
+            else {
                 const success = getQuestionDetails()
-                if(success){
+                if (success) {
                     hideQuestionModals()
                 }
             }
-            
+
         })
 
 
-<<<<<<< HEAD
-        document.getElementById('save-quiz').addEventListener('click', async function (e) {
-=======
         // inserts data in the database
-        document.getElementById('save-quiz').addEventListener('click', async function(e){
->>>>>>> origin/hannahsheen
+        document.getElementById('save-quiz').addEventListener('click', async function (e) {
             e.preventDefault()
             let question = document.getElementById('question').value;
             let type = document.querySelector('input[name="question-type"]:checked');
 
-            if(!question){
+            if (!question) {
                 alert("Please add a question.");
                 return;
             }
-<<<<<<< HEAD
-
-            // Create a temporary item object
-            let quizItem = {
-                question: question,
-                answer: answer,
-                type: type
-            };
-
-            quizItems.push(quizItem);
-            alert(`${question} ${type} ${answer}`)
-
-            try {
-                // Save quiz data along with questions in Firebase
-                const quizRef = ref(db, `user/${username}/quizzes/${quizdetails.nextQuizId}`);
-                await set(quizRef, {
-                    nextQuizId: quizdetails.nextQuizId,
-                    title: quizdetails.title,
-                    description: quizdetails.description,
-                    quizItems: quizItems
-                });
-
-                alert('Quiz and questions saved successfully!');
-                console.log('Quiz data saved:', quizItems);
-
-                // Reset everything
-                resetFields()
-                document.getElementById('add-item').style.display = 'none';
-
-            } catch (error) {
-                console.error('Error saving quiz:', error);
-                alert('Failed to save quiz. Please try again.');
-            }
-        })
-
-        window.resetFields = function () {
-            quizItems = [];
-            quizdetails = {}
-=======
-            else if (!type){
+            else if (!type) {
                 alert("Please select a question type.")
                 return;
             }
-            else{   
+            else {
 
-                    const success = getQuestionDetails()
+                const success = getQuestionDetails()
 
-                    if(success)
-                    {
-                        try {
+                if (success) {
+                    try {
                         // Save quiz data along with questions in Firebase
                         const quizRef = ref(db, `user/${username}/quizzes/${quizdetails.nextQuizId}`);
                         await set(quizRef, {
                             quizId: quizdetails.nextQuizId,
                             title: quizdetails.title,
-                            description:quizdetails. description,
+                            description: quizdetails.description,
                             bestscore: bestscore,
                             quizItems: quizItems
                         });
@@ -1725,89 +1552,65 @@
                         resetFields()
                         document.getElementById('add-item').style.display = 'none';
 
-                        } catch (error) {
-                            console.error('Error saving quiz:', error);
-                            alert('Failed to save quiz. Please try again.');
-                        }
+                    } catch (error) {
+                        console.error('Error saving quiz:', error);
+                        alert('Failed to save quiz. Please try again.');
                     }
                 }
-            })
+            }
+        })
 
-         window.resetFields = function(){
-            quizItems = [];  
+        window.resetFields = function () {
+            quizItems = [];
             quizdetails = {};
             bestscore = 0;
-<<<<<<< HEAD
-=======
->>>>>>> origin/hannahsheen
->>>>>>> 891a345349f7b46af09b92dbe5200d12b9b1f180
             document.getElementById('title').value = '';
             document.getElementById('description').value = '';
             document.getElementById('question').value = '';
             document.getElementById('answer').value = '';
-<<<<<<< HEAD
-
-=======
-<<<<<<< HEAD
->>>>>>> 891a345349f7b46af09b92dbe5200d12b9b1f180
-            document.querySelector('input[name="question-type"]:checked').checked = false;
-        }
-
-
-        window.samplePlay = function () {
-            window.location.href = "game.html"
-        }
-<<<<<<< HEAD
-
-=======
-=======
->>>>>>> 891a345349f7b46af09b92dbe5200d12b9b1f180
             document.getElementById('wrong-option1').value = '';
             document.getElementById('wrong-option2').value = '';
             document.getElementById('correct-option').value = '';
             document.querySelector('input[name="truefalse"]:checked')?.checked ? document.querySelector('input[name="truefalse"]:checked').checked = false : null;
             document.querySelector('input[name="question-type"]:checked')?.checked ? document.querySelector('input[name="question-type"]:checked').checked = false : null;
-         }
-
-
-        window.samplePlay = function(){
-            window.location.href= "game.html"
         }
 
-        window.addOneItem = function (quiz_id){
+
+
+        window.addOneItem = function (quiz_id) {
             closeItems()
             currentQuizId = quiz_id
             document.getElementById('add-one-item').style.display = 'block';
-            
+
         }
 
-        window.closeAddOne = function (){
+        window.closeAddOne = function () {
             document.getElementById('add-one-item').style.display = 'none';
             showItems(currentQuizId)
         }
 
-        window.truefalseAddOne = function (){
+        window.truefalseAddOne = function () {
             hideAddOneModals()
             document.getElementById('addOneTrueFalse').style.display = 'block';
         }
 
-        window.multchoiceAddOne = function (){
+        window.multchoiceAddOne = function () {
             hideAddOneModals()
             document.getElementById('addOneMultChoice').style.display = 'block';
         }
 
-        window.identificationAddOne = function (){
+        window.identificationAddOne = function () {
             hideAddOneModals()
             document.getElementById('addOneIdentification').style.display = 'block';
         }
 
-        window.hideAddOneModals = function (){
+        window.hideAddOneModals = function () {
             document.getElementById('addOneTrueFalse').style.display = 'none';
             document.getElementById('addOneMultChoice').style.display = 'none';
             document.getElementById('addOneIdentification').style.display = 'none';
         }
 
-        document.getElementById('saveItem').addEventListener('click', async function (e){
+        document.getElementById('saveItem').addEventListener('click', async function (e) {
             e.preventDefault
             let question = document.getElementById('add-one-question').value;
             let type = document.querySelector('input[name="add-one-question-type"]:checked');
@@ -1820,54 +1623,54 @@
                 alert("Please add a question.");
                 return;
             }
-            else{
-                 if(!type){
+            else {
+                if (!type) {
                     alert("Please select a question type.")
                     return;
-                 }
-                 else if (type.value === "identification"){
+                }
+                else if (type.value === "identification") {
                     answer = document.getElementById('add-one-answer').value;
 
-                    if(!answer){
+                    if (!answer) {
                         alert("Please provide an answer for your identification-type question before proceeding.")
                         return;
                     }
 
                     try {
-                    const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems`);
-                    const snapshot = await get(quizRef);
-                    const currentQuizItems = snapshot.val() || {};
+                        const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems`);
+                        const snapshot = await get(quizRef);
+                        const currentQuizItems = snapshot.val() || {};
 
-                    const nextItemKey = Object.keys(currentQuizItems).length;
+                        const nextItemKey = Object.keys(currentQuizItems).length;
 
-                    const newItemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${nextItemKey}`);
-                    
-                    // Set the data at the new key
-                    await set(newItemRef, {
-                        question: question,
-                        type: type.value,
-                        answer: answer
-                    });
-                    showItems(currentQuizId)
-                    alert('Item added!');
-                    closeAddOne()
-                    getUserQuizzes()
+                        const newItemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${nextItemKey}`);
+
+                        // Set the data at the new key
+                        await set(newItemRef, {
+                            question: question,
+                            type: type.value,
+                            answer: answer
+                        });
+                        showItems(currentQuizId)
+                        alert('Item added!');
+                        closeAddOne()
+                        getUserQuizzes()
 
                     } catch (error) {
                         console.error('Error saving quiz:', error);
                         alert('Failed to save quiz. Please try again.');
                     }
-                            
+
                     document.getElementById('add-one-question').value = '';
                     document.getElementById('add-one-answer').value = '';
                 }
 
-                else if(type.value === "multchoice"){
+                else if (type.value === "multchoice") {
                     wrong1 = document.getElementById('add-one-wrong-option1').value;
                     wrong2 = document.getElementById('add-one-wrong-option2').value;
                     correct = document.getElementById('add-one-correct-option').value;
 
-                    if(!wrong1 || !wrong2 || !correct){
+                    if (!wrong1 || !wrong2 || !correct) {
                         alert("Please answer options for your multiple choice-type question before proceeding.")
                         return;
                     }
@@ -1880,13 +1683,13 @@
                         const nextItemKey = Object.keys(currentQuizItems).length;
 
                         const newItemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${nextItemKey}`);
-                        
+
                         // Set the data at the new key
                         await set(newItemRef, {
                             question: question,
                             type: type.value,
                             wrong1: wrong1,
-                            wrong2 :wrong2,
+                            wrong2: wrong2,
                             correct: correct
                         });
                         showItems(currentQuizId)
@@ -1895,21 +1698,21 @@
                         getUserQuizzes()
 
                     } catch (error) {
-                            console.error('Error saving quiz:', error);
-                            alert('Failed to save quiz. Please try again.');
+                        console.error('Error saving quiz:', error);
+                        alert('Failed to save quiz. Please try again.');
                     }
 
                     document.getElementById('add-one-question').value = '';
                     document.getElementById('add-one-wrong-option1').value = '';
                     document.getElementById('add-one-wrong-option2').value = '';
                     document.getElementById('add-one-correct-option').value = '';
-                    
+
                 }
 
-                else{
+                else {
                     truefalse = document.querySelector('input[name="add-one-truefalse"]:checked');
 
-                    if(!truefalse){
+                    if (!truefalse) {
                         alert("Please select the answer for your true or false-type question before proceeding.")
                         return;
                     }
@@ -1922,7 +1725,7 @@
                         const nextItemKey = Object.keys(currentQuizItems).length;
 
                         const newItemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${nextItemKey}`);
-                        
+
                         // Set the data at the new key
                         await set(newItemRef, {
                             question: question,
@@ -1948,7 +1751,7 @@
                 hideAddOneModals()
             }
 
-            
+
         })
 
         window.showItems = async function (quiz_id) {
@@ -2048,7 +1851,7 @@
                                     </div>
                                 </div>
                             `;
-                            
+
                             // Set the checked property based on item.truefalse
                             if (item.truefalse === "True") {
                                 itemCard.querySelector(`#true-${itemId}`).checked = true;
@@ -2096,27 +1899,27 @@
         };
 
 
-        window.closeItems = function(){
-            document.getElementById('all-items').style.display = 'none'; 
-            document.getElementById('item-overlay').style.display = 'none' 
+        window.closeItems = function () {
+            document.getElementById('all-items').style.display = 'none';
+            document.getElementById('item-overlay').style.display = 'none'
             document.getElementById('item-cards').style.display = 'none';
         }
 
-        window.confLogout = function (){
+        window.confLogout = function () {
             window.location.href = 'index.html';
         }
 
-        window.deleteItem = async function (itemId){
+        window.deleteItem = async function (itemId) {
             const confDelete = window.confirm("Are you sure you want to delete this item?")
-            if(confDelete){
+            if (confDelete) {
                 try {
                     const itemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${itemId}`);
                     await remove(itemRef);
                     console.log(`Item ${itemId} deleted successfully`);
-                    
+
                     // Optionally, refresh the list of items after deletion
                     showItems(currentQuizId);
-                    
+
                     // Show a success alert
                     alert('Item deleted successfully!');
                     location.reload()
@@ -2128,9 +1931,9 @@
             }
         }
 
-        window.deleteQuiz = async function(quiz_id){
+        window.deleteQuiz = async function (quiz_id) {
             const confDelete = window.confirm("Are you sure you want to delete this quiz?")
-            if(confDelete){
+            if (confDelete) {
                 try {
                     const quizref = ref(db, `user/${username}/quizzes/${quiz_id}`);
                     await remove(quizref);
@@ -2143,12 +1946,12 @@
             }
         }
 
-        window.editQuiz = function(quiz_id){
-        currentQuizId = quiz_id
-        const quizRef = ref(db, `user/${username}/quizzes/${quiz_id}`);
-        get(quizRef).then((snapshot) => {
+        window.editQuiz = function (quiz_id) {
+            currentQuizId = quiz_id
+            const quizRef = ref(db, `user/${username}/quizzes/${quiz_id}`);
+            get(quizRef).then((snapshot) => {
                 if (snapshot.exists()) {
-                    const quizData = snapshot.val(); 
+                    const quizData = snapshot.val();
                     document.getElementById('edit-title').value = quizData.title;
                     document.getElementById('edit-description').value = quizData.description;
                     document.getElementById('edit-quiz-modal').style.display = 'block';
@@ -2157,18 +1960,18 @@
                 }
             }).catch((error) => {
                 console.error('Error fetching quiz data:', error);
-            });      
+            });
         }
 
-        window.closeEditQuiz = function(){
+        window.closeEditQuiz = function () {
             document.getElementById('edit-quiz-modal').style.display = 'none';
         }
 
-        window.saveQuizUpdate = async function (){
+        window.saveQuizUpdate = async function () {
             var title = document.getElementById('edit-title').value
             var description = document.getElementById('edit-description').value
 
-            if(!title){
+            if (!title) {
                 alert("Please add a title.")
                 return;
             }
@@ -2189,113 +1992,113 @@
             }
         }
 
-        window.editItem = function(itemId, itemType){
+        window.editItem = function (itemId, itemType) {
             currentItemId = itemId
             currentItemType = itemType
 
             const itemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${itemId}`);
             get(itemRef).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const itemData = snapshot.val(); 
+                if (snapshot.exists()) {
+                    const itemData = snapshot.val();
 
-                        if(itemType == "identification"){
-                
-                            document.getElementById('edit-quiz-question').value = itemData.question
-                            document.getElementById('edit-quiz-answer').value = itemData.answer
-                            closeItems()
-                            document.getElementById('edit-quiz').style.display = 'block'
-                            document.getElementById('edit-quiz-identification').style.display = 'block'
-                        }
-                        else if(itemType == "multchoice"){
-                            document.getElementById('edit-quiz-question').value = itemData.question
-                            document.getElementById('edit-quiz-wrong-option1').value = itemData.wrong1
-                            document.getElementById('edit-quiz-wrong-option2').value = itemData.wrong2
-                            document.getElementById('edit-quiz-correct-option').value = itemData.correct
+                    if (itemType == "identification") {
 
-                            closeItems()
-                            document.getElementById('edit-quiz').style.display = 'block'
-                            document.getElementById('edit-quiz-MultChoice').style.display = 'block'
-                        }
-                        else{
-                            document.getElementById('edit-quiz-question').value = itemData.question
-                            if (itemData.truefalse === 'True') {
-                                document.getElementById('edit-quiz-true').checked = true;
-                                document.getElementById('edit-quiz-false').checked = false; 
-                            } else {
-                                document.getElementById('edit-quiz-false').checked = true;
-                                document.getElementById('edit-quiz-true').checked = false; 
-                            }
-
-                            closeItems()
-                            document.getElementById('edit-quiz').style.display = 'block'
-                            document.getElementById('edit-quiz-TrueFalse').style.display = 'block'
-                        }
-
-                    } else {
-                        console.log('No quiz data found');
+                        document.getElementById('edit-quiz-question').value = itemData.question
+                        document.getElementById('edit-quiz-answer').value = itemData.answer
+                        closeItems()
+                        document.getElementById('edit-quiz').style.display = 'block'
+                        document.getElementById('edit-quiz-identification').style.display = 'block'
                     }
+                    else if (itemType == "multchoice") {
+                        document.getElementById('edit-quiz-question').value = itemData.question
+                        document.getElementById('edit-quiz-wrong-option1').value = itemData.wrong1
+                        document.getElementById('edit-quiz-wrong-option2').value = itemData.wrong2
+                        document.getElementById('edit-quiz-correct-option').value = itemData.correct
+
+                        closeItems()
+                        document.getElementById('edit-quiz').style.display = 'block'
+                        document.getElementById('edit-quiz-MultChoice').style.display = 'block'
+                    }
+                    else {
+                        document.getElementById('edit-quiz-question').value = itemData.question
+                        if (itemData.truefalse === 'True') {
+                            document.getElementById('edit-quiz-true').checked = true;
+                            document.getElementById('edit-quiz-false').checked = false;
+                        } else {
+                            document.getElementById('edit-quiz-false').checked = true;
+                            document.getElementById('edit-quiz-true').checked = false;
+                        }
+
+                        closeItems()
+                        document.getElementById('edit-quiz').style.display = 'block'
+                        document.getElementById('edit-quiz-TrueFalse').style.display = 'block'
+                    }
+
+                } else {
+                    console.log('No quiz data found');
+                }
             }).catch((error) => {
                 console.error('Error fetching quiz data:', error);
-            });      
+            });
         }
 
-        window.closeEditItem = function (){
+        window.closeEditItem = function () {
             closeAllEditItem()
             showItems(currentQuizId)
         }
 
-        window.closeAllEditItem = function(){
+        window.closeAllEditItem = function () {
             document.getElementById('edit-quiz').style.display = 'none'
             document.getElementById('edit-quiz-TrueFalse').style.display = 'none'
             document.getElementById('edit-quiz-MultChoice').style.display = 'none'
-            document.getElementById('edit-quiz-identification').style.display = 'none' 
+            document.getElementById('edit-quiz-identification').style.display = 'none'
         }
 
-        window.saveItemEdit = async function (){
+        window.saveItemEdit = async function () {
             console.log(`type: ${currentItemType}`)
             const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${currentItemId}`);
-            if(currentItemType == 'identification'){
+            if (currentItemType == 'identification') {
                 var question = document.getElementById('edit-quiz-question').value
                 var answer = document.getElementById('edit-quiz-answer').value
 
-                if(!question || !answer){
-                    alert ("Fields should not be left empty.")
+                if (!question || !answer) {
+                    alert("Fields should not be left empty.")
                     return
                 }
 
                 try {
-                await update(quizRef, {
-                    question: question,
-                    answer: answer
-                });
-                alert('Item updated successfully!');
-                closeEditItem()
+                    await update(quizRef, {
+                        question: question,
+                        answer: answer
+                    });
+                    alert('Item updated successfully!');
+                    closeEditItem()
 
                 } catch (error) {
                     console.error('Error updating quiz:', error);
                     alert('Failed to update quiz. Please try again.');
                 }
 
-            } else if (currentItemType == 'multchoice'){
+            } else if (currentItemType == 'multchoice') {
                 var question = document.getElementById('edit-quiz-question').value
                 var wrong1 = document.getElementById('edit-quiz-wrong-option1').value
                 var wrong2 = document.getElementById('edit-quiz-wrong-option2').value
                 var correct = document.getElementById('edit-quiz-correct-option').value
 
-                if(!question || !wrong1 || !wrong2 || !correct){
-                    alert ("Fields should not be left empty.")
+                if (!question || !wrong1 || !wrong2 || !correct) {
+                    alert("Fields should not be left empty.")
                     return
                 }
 
                 try {
-                await update(quizRef, {
-                    question: question,
-                    wrong1: wrong1,
-                    wrong2 : wrong2,
-                    correct: correct
-                });
-                alert('Item updated successfully!');
-                closeEditItem()
+                    await update(quizRef, {
+                        question: question,
+                        wrong1: wrong1,
+                        wrong2: wrong2,
+                        correct: correct
+                    });
+                    alert('Item updated successfully!');
+                    closeEditItem()
 
                 } catch (error) {
                     console.error('Error updating quiz:', error);
@@ -2306,19 +2109,19 @@
                 var question = document.getElementById('edit-quiz-question').value
                 var truefalse = document.querySelector('input[name="edit-quiz-truefalse"]:checked').value;
 
-                if(!question){
-                    alert ("Fields should not be left empty.")
+                if (!question) {
+                    alert("Fields should not be left empty.")
                     return;
                 }
 
                 try {
-                await update(quizRef, {
-                    question: question,
-                    truefalse: truefalse
-                });
+                    await update(quizRef, {
+                        question: question,
+                        truefalse: truefalse
+                    });
 
-                alert('Item updated successfully!');
-                closeEditItem()
+                    alert('Item updated successfully!');
+                    closeEditItem()
 
                 } catch (error) {
                     console.error('Error updating quiz:', error);
@@ -2327,9 +2130,13 @@
 
             }
 
+
+
+            
         }
-       
->>>>>>> origin/hannahsheen
+
+        
     </script>
-</body> 
+</body>
+
 </html>

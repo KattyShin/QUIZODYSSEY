@@ -1,75 +1,40 @@
-class Chatbot {
-    constructor() {
-        this.dialogOverlay = document.getElementById("npcHome1Bot");
-        this.messagesContainer = document.getElementById("messagesContainer");
-        this.chatInput = this.dialogOverlay.querySelector(".chat-input");
-        this.sendButton = this.dialogOverlay.querySelector(".send-button");
-        this.setupEventListeners();
+$(document).ready(function() {
+    const welcomeMessage = "🎮 Welcome to Quiz Odyssey🎉<br><br>" +
+        "Ready to begin your quest for knowledge? Here's your adventure toolkit:<br><br>" +
+        "🤔 Need help? Type 'help' for game mechanics<br><br>" +
+        "🎁 Type 'chest' to learn about treasure chests<br>" +
+        "📖 Type 'houses' to learn about the different houses<br>" +
+        "🎯 Type 'status' to see your current progress<br><br>" +
+        "You can interact with me by typing your messages below. I'm here to guide you through your journey!<br><br>" +
+        "What would you like to explore first?";
+    
+    $("#chatBox").append("<div class='message botResponse'>" + welcomeMessage + "</div>");
 
-        // Initial chatbot message
-        this.appendMessage("Good morning! Enter 'start' to begin.", "bot");
-    }
-
-    setupEventListeners() {
-        this.sendButton.addEventListener("click", () => this.sendMessage());
-        this.chatInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") this.sendMessage();
-        });
-    }
-
-    async sendMessage() {
-        const message = this.chatInput.value.trim();
-        if (!message) return;
-
-        this.appendMessage(message, "user");
-        this.chatInput.value = "";
-        this.sendButton.disabled = true;
-
-        try {
-            const response = await fetch("http://127.0.0.1:5000/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({ message }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            this.appendMessage(data.response, "bot");
-        } catch (error) {
-            console.error("Error:", error);
-            this.appendMessage("Sorry, there was an error connecting to the server. Please try again later.", "bot");
-        } finally {
-            this.sendButton.disabled = false;
+    $("#sendButton").click(sendMessage);
+    $("#userInput").keypress(function(e) {
+        if (e.which == 13) {
+            sendMessage();
         }
-    }
+    });
 
-    appendMessage(text, sender) {
-        const messageDiv = document.createElement("div");
-        messageDiv.classList.add("message", `${sender}-message`);
-        
-        // Split the text by newlines and create paragraph elements
-        const paragraphs = text.split('\n').filter(line => line.trim() !== '');
-        
-        paragraphs.forEach(paragraph => {
-            const p = document.createElement("p");
-            p.textContent = paragraph;
-            p.style.margin = "0.5em 0"; // Add some spacing between paragraphs
-            messageDiv.appendChild(p);
+    function sendMessage() {
+        const userMessage = $("#userInput").val().trim();
+        if (!userMessage) return;
+
+        $.ajax({
+            url: "http://127.0.0.1:5000/get",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ msg: userMessage }),
+            success: function(response) {
+                $("#chatBox").append("<div class='message userMessage'>" + userMessage.replace(/\n/g, "<br>") + "</div>");
+                $("#chatBox").append("<div class='message botResponse'>" + response.response.replace(/\n/g, "<br>") + "</div>");
+                $("#userInput").val("");
+                $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
+            },
+            error: function(xhr, status, error) {
+                $("#chatBox").append("<div class='message botResponse'>Sorry, there was an error. Please try again.</div>");
+            }
         });
-
-        this.messagesContainer.appendChild(messageDiv);
-        this.scrollToBottom();
     }
-
-    scrollToBottom() {
-        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
-    }
-}
-
-document.addEventListener("DOMContentLoaded", () => new Chatbot());
+});
