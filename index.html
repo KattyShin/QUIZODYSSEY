@@ -141,7 +141,7 @@
             color : white; 
             text-decoration: none; 
             position: absolute; 
-            left: 44.5rem; 
+            left: 29rem; 
         }
     </style>
 </head>
@@ -206,14 +206,13 @@
                         <input id = "lastname" type="text" placeholder="Enter Lastname">
                     </div>
                 </div>
-
-                <div class="input-con">
-                    <label>Email</label>
-                    <input id = "email" type="text" placeholder="Enter Email">
-                </div>
                 <div class="input-con">
                     <label>Username</label>
                     <input id = "username" type="text" placeholder="Enter Username">
+                </div>
+                <div class="input-con">
+                    <label>Security Code</label>
+                    <input id = "security" type="password" placeholder="Set Security Code">
                 </div>
                 <div class="input-con">
                     <label>Password</label>
@@ -238,10 +237,10 @@
 
             <div class="input-main-con"  style = "padding-top: 2rem; font-size: 15px;">
                 <div class="input-con">
-                    <label>Email</label>
-                    <input type="text" placeholder="Enter Email">
+                    <label>Username</label>
+                    <input type="text" placeholder="Enter Username" id = "user-username">
                 </div>
-                <button onclick = "showForgotPass2()">Enter</button>
+                <button onclick ="checkUsername()">Enter</button>
             </div>
         </div>
 
@@ -256,10 +255,10 @@
 
             <div class="input-main-con"  style = "padding-top: 2rem; font-size: 15px;">
                 <div class="input-con">
-                    <label>Verification Code</label>
-                    <input type="text" placeholder="Enter Code">
+                    <label>Security Code</label>
+                    <input type="password" placeholder="Enter Security Code" id = "code">
                 </div>
-                <button onclick="showForgotpass3()">Submit</button>
+                <button onclick="checkSecurityCode()">Submit</button>
             </div>
         </div>
 
@@ -272,21 +271,22 @@
             <div class="input-main-con"  style = "padding-top: 2rem; font-size: 15px;">
                 <div class="input-con">
                     <label>New Password</label>
-                    <input type="password" placeholder="Enter New Password">
+                    <input type="password" placeholder="Enter New Password" id="new-pass">
                 </div>
                 <div class="input-con">
                     <label>Confirm Password</label>
-                    <input type="password" placeholder="Confirm New Password">
+                    <input type="password" placeholder="Confirm New Password" id="conf-pass">
                 </div>
-                <button>Save</button>
+                <button onclick = "saveNewPass()" >Save</button>
             </div>
         </div>
 
 
-    <script type="module">
+        <script src="https://smtpjs.com/v3/smtp.js"></script>    
+        <script type="module">
             // firebase connection
             import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-            import { getDatabase, ref, set, get, child, onValue} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+            import { getDatabase, ref, set, get, child, onValue, update} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
             
 
             // Your web app's Firebase configuration
@@ -307,45 +307,59 @@
 
 
             // Sign Up
-            document.getElementById('submit').addEventListener('click', function(e){
-                e.preventDefault()
+            document.getElementById('submit').addEventListener('click', function(e) {
+            e.preventDefault();
 
-                const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
                 var firstname = document.getElementById('firstname').value;
                 var lastname = document.getElementById('lastname').value;
-                var email = document.getElementById('email').value;
+                var security = document.getElementById('security').value;
                 var username = document.getElementById('username').value;
                 var password = document.getElementById('password').value;
                 var confpass = document.getElementById('confpass').value;
+                let usernameFound = false;
 
+                const userRef = ref(db, 'user/');
+                get(userRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const users = snapshot.val();
 
-                if(!firstname || !lastname || !email || !username || !password){
-                    alert("Please fill in all the fields.");
-                    return;
-                }
-                else if(!emailRegex.test(email)){
-                    alert("Please enter a valid email.")
-                    return;
-                }
-                else if(confpass != password){
-                    alert("Passwords don't match, please try again.")
-                    return
-                }
-                else{
-                    set(ref(db, 'user/' + document.getElementById('username').value),
-                    {
+                        for (const existingUsername in users) {
+                            if (existingUsername === username) {
+                                usernameFound = true; 
+                                break; 
+                            }
+                        }
+                    }
+
+                    if (!firstname || !lastname || !security || !username || !password) {
+                        alert("Please fill in all the fields.");
+                        return;
+                    }else if (usernameFound) {
+                        alert("Username is unavailable, please use another one.");
+                        return;
+                    } else if (confpass !== password) {
+                        alert("Passwords don't match, please try again.");
+                        return;
+                    }else{
+                        set(ref(db, 'user/' + username), {
                         firstname: firstname,
                         lastname: lastname,
-                        email: email,
+                        security: security,
                         password: password
-                        
-                    });
-                    alert('Account Created!')
-                    showLogin()
-                    
-                }
-            })
-    
+                        }).then(() => {
+                            alert('Account Created!');
+                            showLogin(); // Function to show the login form
+                        }).catch((error) => {
+                            console.error("Error writing to the database: ", error);
+                            alert("There was an error creating your account. Please try again later.");
+                        });
+                    }                
+                }).catch((error) => {
+                    console.error("Error fetching data: ", error);
+                    alert("Error retrieving user data. Please try again.");
+                });
+            });
+
 
         // functions for navigation
     
@@ -377,16 +391,96 @@
             document.getElementById('forgotpass3').style.display = 'none';
         }
 
+        
+        //username Searching 
+        let user = null
+        let currentusername = null
+        window.checkUsername = function () {
+            var user_username = document.getElementById('user-username').value;
+
+            if (!user_username) {
+                alert("Please enter your username.");
+                return;
+            }
+
+            const userRef = ref(db, 'user/');
+            get(userRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const users = snapshot.val();
+                    let usernameFound = false;
+
+                    // Loop through users to check for the username
+                    for (const username in users) {
+                        if (username === user_username) {
+                            usernameFound = true;
+                            user = users[username]; // Save the found user object
+                            currentusername = username
+                            break;
+                        }
+                    }
+
+                    if (usernameFound) {
+                        alert("Username found! Proceeding...");
+                        hideAllModals();
+                        document.getElementById('forgotpass2').style.display = 'block';
+                        
+                    } else {
+                        alert("Username not found. Please try again.");
+                        return;
+                    }
+                } else {
+                    alert("No users found in the database.");
+                }
+            }).catch((error) => {
+                console.error("Error retrieving users:", error);
+                alert("An error occurred. Please try again later.");
+            });
+        };
+
+
+        window.checkSecurityCode = function (){
+            var code = document.getElementById('code').value;
+
+            if(!code){
+                alert("Please enter your security code.")
+                return;
+            }
+            else if (code == user.security){
+                showForgotPass2()
+            }
+            else{
+                alert("Security code does not match, please try again.")
+                return;
+            }
+
+        }
+
+        //Email Searching
         window.showForgotPass2 = function (){
             hideAllModals();
-            document.getElementById('forgotpass2').style.display = 'block';
-        }
-
-        window.showForgotpass3 = function (){
-            hideAllModals();
             document.getElementById('forgotpass3').style.display = 'block';
+           
         }
 
+        window.saveNewPass = function (){
+            var newpass = document.getElementById('new-pass').value;
+            var confpass = document.getElementById('conf-pass').value;
+
+            if(newpass == confpass){
+                const userRef = ref(db, 'user/'+ currentusername); // Adjust `user.username` to match your structure
+                // Update the password in the database
+                update(ref(db, 'user/' + currentusername), {
+                password: newpass
+                });
+                alert("Password updated successfully!");
+                hideAllModals();
+                showLogin();
+
+            }else{
+                alert("Passwords don't match. Please try again.")
+                return;
+            }
+        }
 
         // Login to Account
         document.getElementById('start-adventure').addEventListener('click', function(e){
@@ -400,7 +494,7 @@
             }
             
             const userRef = ref(db, 'user/' + username);
-            onValue(userRef, (snapshot) => {
+            onValue(userRef, (snapshot) => { 
                 const data = snapshot.val();
                 
 
@@ -418,6 +512,7 @@
                     sessionStorage.setItem('lastname', data.lastname);
                     //connect to home page
                     window.location.href = 'home.html';
+                    
                 }
             });
         })
