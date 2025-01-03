@@ -544,21 +544,15 @@
 
         .all-items {
             display: none;
-            /* Initially hidden */
             position: fixed;
-            /* Make it fixed to the viewport */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
-            /* Add a semi-transparent black background */
             z-index: 1000;
-            /* Make sure it appears above everything else */
             justify-content: center;
-            /* Center content horizontally */
             align-items: center;
-            /* Center content vertically */
             overflow-y: auto;
 
         }
@@ -1088,16 +1082,16 @@
 
 
         fetch('http://127.0.0.1:5000/api/username', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        username: username,
-        firstname: firstname,
-        lastname: lastname,
-    }),
-})
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: username,
+            firstname: firstname,
+            lastname: lastname,
+        }),
+    })
     .then(response => response.json())
     .then(data => {
         console.log('Response from backend:', data);
@@ -1147,7 +1141,7 @@
                             Best Score: <span class="score-value" style="color:#2130B6;">${quiz.bestscore || 0}</span><span class="score-max">/${maxScore}</span>
                         </div>
                         <div class="button-group">
-            <button class="play-btn" onclick="window.location.href='game.html?quizId=${quiz.quizId}'">Play</button>
+                <button class="play-btn" onclick="playGame(${quiz.quizId}, ${quiz.bestscore})">Play</button>
                             <button class="summary-btn" onclick = showItems(${quiz.quizId})>View Items</button>
                         </div>
                     </div>
@@ -2127,13 +2121,12 @@
                 }
 
             }
-
-
-
-
         }
 
-
+        window.playGame = function (quiz_id, bestscore){
+            sessionStorage.setItem('quiz_id', quiz_id)
+            window.location.href='game.html'
+        }
     </script>
 </body>
 
