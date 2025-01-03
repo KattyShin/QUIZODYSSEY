@@ -5,10 +5,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz App</title>
+    <style>
+
+         .all-items {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+
+        }
+
+        .item-cards {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* Align items at the top */
+            align-items: center;
+            /* Prevent collapsing */
+            width: 100%;
+            /* Prevent overflow */
+            gap: 1rem;
+            /* Add spacing between items */
+            z-index: 10;
+            margin-top: 6rem;
+            margin-bottom: 5rem;
+        }
+
+        .item-title-card {
+            font-family: 'Outfit', sans-serif;
+            background-color: #D4854C;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            border: 5px solid #F7C396;
+            width: 1206px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            margin: auto;
+            box-sizing: border-box;
+            z-index: 10;
+            position: relative;
+            /* Add this */
+        }
+
+
+        .item-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 5;
+            overflow-y: auto;
+            height: 100vh;
+
+        }
+    </style>
 </head>
 
 <body>
     <h1>Quiz App</h1>
+
+
+    <div id="all-items" class="all-items" style="display: none;">
+        <div class="item-cards" id="item-cards">
+            <a href="#" class="close-btn" onclick="closeItems()">&times;</a>
+            <div class="item-title-card" id="item-title-card">
+                <p style="font-family: 'Outfit'; font-size: 20px; color: white;">Question Identfication</p>
+                <div class="card-content">
+                    <div class="">
+                        <p style="font-family: 'Outfit'; font-size: 18px; color: #006600;">Answer: </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="item-overlay" id="item-overlay"></div>
+    </div>
 
 
 
@@ -34,422 +115,16 @@
 
         // for home display
         const username = sessionStorage.getItem('username');
-        const firstname = sessionStorage.getItem('firstname');
-        const lastname = sessionStorage.getItem('lastname');
+        const quiz_id = sessionStorage.getItem('quiz_id')
 
+        console.log(`${username}`)
+        console.log(`${quiz_id}`)
 
-        window.getUserQuizzes = async function () {
-            const dbRef = ref(getDatabase());
 
-            try {
-                // Access the "user/{username}/quizzes" node
-                const snapshot = await get(child(dbRef, `user/${username}/quizzes`));
 
-                if (snapshot.exists()) {
-                    // Return the quizzes data
-                    const quizzes = snapshot.val();
-                    const quizContainer = document.getElementById('title-cards');
-
-                    // Clear the existing quiz cards in case any exist
-                    quizContainer.innerHTML = '';
-
-                    // Loop through each quiz and generate a quiz card
-                    Object.keys(quizzes).forEach(quizId => {
-                        const quiz = quizzes[quizId];
-
-                        const maxScore = quiz.quizItems ? quiz.quizItems.length : '-'; // Default to 0 if no items exist
-                        // Create a new div for the quiz card
-                        const quizCard = document.createElement('div');
-                        quizCard.classList.add('quiz-title-card');
-                        quizCard.setAttribute('data-title', quiz.title);
-                        quizCard.setAttribute('data-description', quiz.description);
-
-                        // Set the inner HTML for the quiz card
-                        quizCard.innerHTML = `
-                <div class="action-buttons">
-                    <button class="edit-btn" onclick  ="editQuiz(${quiz.quizId})"><i class="fa fa-pencil"></i> </button>
-                    <button class="delete-btn" onclick = "deleteQuiz(${quiz.quizId})"><i class="fa fa-times"></i></button>
-                </div>
-                    <h2>${quiz.title}</h2>
-                    <p style = "font-family: 'Outfit'; font-size: 16px; color: white;">Description: ${quiz.description}</p>
-                    <div class="card-content">
-                        <div class="score">
-                            Best Score: <span class="score-value" style="color:#2130B6;">${quiz.bestscore || 0}</span><span class="score-max">/${maxScore}</span>
-                        </div>
-                        <div class="button-group">
-            <button class="play-btn" onclick="window.location.href='game.html?quizId=${quiz.quizId}'">Play</button>
-                            <button class="summary-btn" onclick = showItems(${quiz.quizId})>View Items</button>
-                        </div>
-                    </div>
-
-                    
-                
-                `;
-
-                        quizContainer.appendChild(quizCard);
-                    });
-                } else {
-                    console.log(`No quizzes found for username: ${username}`);
-                    document.getElementById('title-cards').textContent = 'No quizzes yet.'
-                    document.getElementById('title-cards').style.color = 'white';
-
-                }
-            } catch (error) {
-                console.error("Error fetching quizzes:", error);
-                throw error;
-            }
-        }
-
-        getUserQuizzes()
-
-
-        //gathers question details
-        window.getQuestionDetails = function () {
-            let question = document.getElementById('question').value;
-            let type = document.querySelector('input[name="question-type"]:checked');
-            let answer
-            let wrong1, wrong2
-            let correct
-            let truefalse
-
-            if (type.value === "identification") {
-                answer = document.getElementById('answer').value;
-
-                if (!answer) {
-                    alert("Please provide an answer for your identification-type question before proceeding.")
-                    return false;
-                }
-                // Create a temporary item object
-                let quizItem = {
-                    question: question,
-                    answer: answer,
-                    type: type.value
-                };
-
-                quizItems.push(quizItem);
-
-                document.getElementById('question').value = '';
-                document.getElementById('answer').value = '';
-                document.querySelector('input[name="question-type"]:checked').checked = false;
-            }
-
-            else if (type.value === "multchoice") {
-                wrong1 = document.getElementById('wrong-option1').value;
-                wrong2 = document.getElementById('wrong-option2').value;
-                correct = document.getElementById('correct-option').value;
-
-                if (!wrong1 || !wrong2 || !correct) {
-                    alert("Please answer options for your multiple choice-type question before proceeding.")
-                    return false;
-                }
-
-                let quizItem = {
-                    question: question,
-                    wrong1: wrong1,
-                    wrong2: wrong2,
-                    correct: correct,
-                    type: type.value
-                };
-
-                quizItems.push(quizItem);
-
-                document.getElementById('question').value = '';
-                document.getElementById('wrong-option1').value = '';
-                document.getElementById('wrong-option2').value = '';
-                document.getElementById('correct-option').value = '';
-                document.querySelector('input[name="question-type"]:checked').checked = false;
-            }
-
-            else {
-                truefalse = document.querySelector('input[name="truefalse"]:checked');
-
-                if (!truefalse) {
-                    alert("Please select the answer for your true or false-type question before proceeding.")
-                    return false;
-                }
-
-                let quizItem = {
-                    question: question,
-                    truefalse: truefalse.value,
-                    type: type.value
-                };
-
-                quizItems.push(quizItem);
-
-                document.getElementById('question').value = '';
-                document.querySelector('input[name="truefalse"]:checked').checked = false;
-                document.querySelector('input[name="question-type"]:checked').checked = false;
-
-            }
-            return true;
-        }
-
-
-        document.getElementById('add-new-item').addEventListener('click', function (e) {
-            e.preventDefault()
-            let question = document.getElementById('question').value;
-            let type = document.querySelector('input[name="question-type"]:checked');
-
-            if (!question) {
-                alert("Please add a question.");
-                return;
-            }
-            else if (!type) {
-                alert("Please select a question type.")
-                return;
-            }
-            else {
-                const success = getQuestionDetails()
-                if (success) {
-                    hideQuestionModals()
-                }
-            }
-
-        })
-
-
-        // inserts data in the database
-        document.getElementById('save-quiz').addEventListener('click', async function (e) {
-            e.preventDefault()
-            let question = document.getElementById('question').value;
-            let type = document.querySelector('input[name="question-type"]:checked');
-
-            if (!question) {
-                alert("Please add a question.");
-                return;
-            }
-            else if (!type) {
-                alert("Please select a question type.")
-                return;
-            }
-            else {
-
-                const success = getQuestionDetails()
-
-                if (success) {
-                    try {
-                        // Save quiz data along with questions in Firebase
-                        const quizRef = ref(db, `user/${username}/quizzes/${quizdetails.nextQuizId}`);
-                        await set(quizRef, {
-                            quizId: quizdetails.nextQuizId,
-                            title: quizdetails.title,
-                            description: quizdetails.description,
-                            bestscore: bestscore,
-                            quizItems: quizItems
-                        });
-
-                        alert('Quiz and questions saved successfully!');
-                        location.reload()
-                        console.log('Quiz data saved:', quizItems);
-
-                        // Reset everything
-                        resetFields()
-                        document.getElementById('add-item').style.display = 'none';
-
-                    } catch (error) {
-                        console.error('Error saving quiz:', error);
-                        alert('Failed to save quiz. Please try again.');
-                    }
-                }
-            }
-        })
-
-        window.resetFields = function () {
-            quizItems = [];
-            quizdetails = {};
-            bestscore = 0;
-            document.getElementById('title').value = '';
-            document.getElementById('description').value = '';
-            document.getElementById('question').value = '';
-            document.getElementById('answer').value = '';
-            document.getElementById('wrong-option1').value = '';
-            document.getElementById('wrong-option2').value = '';
-            document.getElementById('correct-option').value = '';
-            document.querySelector('input[name="truefalse"]:checked')?.checked ? document.querySelector('input[name="truefalse"]:checked').checked = false : null;
-            document.querySelector('input[name="question-type"]:checked')?.checked ? document.querySelector('input[name="question-type"]:checked').checked = false : null;
-        }
-
-
-
-        window.addOneItem = function (quiz_id) {
-            closeItems()
-            currentQuizId = quiz_id
-            document.getElementById('add-one-item').style.display = 'block';
-
-        }
-
-        window.closeAddOne = function () {
-            document.getElementById('add-one-item').style.display = 'none';
-            showItems(currentQuizId)
-        }
-
-        window.truefalseAddOne = function () {
-            hideAddOneModals()
-            document.getElementById('addOneTrueFalse').style.display = 'block';
-        }
-
-        window.multchoiceAddOne = function () {
-            hideAddOneModals()
-            document.getElementById('addOneMultChoice').style.display = 'block';
-        }
-
-        window.identificationAddOne = function () {
-            hideAddOneModals()
-            document.getElementById('addOneIdentification').style.display = 'block';
-        }
-
-        window.hideAddOneModals = function () {
-            document.getElementById('addOneTrueFalse').style.display = 'none';
-            document.getElementById('addOneMultChoice').style.display = 'none';
-            document.getElementById('addOneIdentification').style.display = 'none';
-        }
-
-        document.getElementById('saveItem').addEventListener('click', async function (e) {
-            e.preventDefault
-            let question = document.getElementById('add-one-question').value;
-            let type = document.querySelector('input[name="add-one-question-type"]:checked');
-            let answer
-            let wrong1, wrong2
-            let correct
-            let truefalse
-
-            if (!question) {
-                alert("Please add a question.");
-                return;
-            }
-            else {
-                if (!type) {
-                    alert("Please select a question type.")
-                    return;
-                }
-                else if (type.value === "identification") {
-                    answer = document.getElementById('add-one-answer').value;
-
-                    if (!answer) {
-                        alert("Please provide an answer for your identification-type question before proceeding.")
-                        return;
-                    }
-
-                    try {
-                        const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems`);
-                        const snapshot = await get(quizRef);
-                        const currentQuizItems = snapshot.val() || {};
-
-                        const nextItemKey = Object.keys(currentQuizItems).length;
-
-                        const newItemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${nextItemKey}`);
-
-                        // Set the data at the new key
-                        await set(newItemRef, {
-                            question: question,
-                            type: type.value,
-                            answer: answer
-                        });
-                        showItems(currentQuizId)
-                        alert('Item added!');
-                        closeAddOne()
-                        getUserQuizzes()
-
-                    } catch (error) {
-                        console.error('Error saving quiz:', error);
-                        alert('Failed to save quiz. Please try again.');
-                    }
-
-                    document.getElementById('add-one-question').value = '';
-                    document.getElementById('add-one-answer').value = '';
-                }
-
-                else if (type.value === "multchoice") {
-                    wrong1 = document.getElementById('add-one-wrong-option1').value;
-                    wrong2 = document.getElementById('add-one-wrong-option2').value;
-                    correct = document.getElementById('add-one-correct-option').value;
-
-                    if (!wrong1 || !wrong2 || !correct) {
-                        alert("Please answer options for your multiple choice-type question before proceeding.")
-                        return;
-                    }
-
-                    try {
-                        const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems`);
-                        const snapshot = await get(quizRef);
-                        const currentQuizItems = snapshot.val() || {};
-
-                        const nextItemKey = Object.keys(currentQuizItems).length;
-
-                        const newItemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${nextItemKey}`);
-
-                        // Set the data at the new key
-                        await set(newItemRef, {
-                            question: question,
-                            type: type.value,
-                            wrong1: wrong1,
-                            wrong2: wrong2,
-                            correct: correct
-                        });
-                        showItems(currentQuizId)
-                        alert('Item added!');
-                        closeAddOne()
-                        getUserQuizzes()
-
-                    } catch (error) {
-                        console.error('Error saving quiz:', error);
-                        alert('Failed to save quiz. Please try again.');
-                    }
-
-                    document.getElementById('add-one-question').value = '';
-                    document.getElementById('add-one-wrong-option1').value = '';
-                    document.getElementById('add-one-wrong-option2').value = '';
-                    document.getElementById('add-one-correct-option').value = '';
-
-                }
-
-                else {
-                    truefalse = document.querySelector('input[name="add-one-truefalse"]:checked');
-
-                    if (!truefalse) {
-                        alert("Please select the answer for your true or false-type question before proceeding.")
-                        return;
-                    }
-
-                    try {
-                        const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems`);
-                        const snapshot = await get(quizRef);
-                        const currentQuizItems = snapshot.val() || {};
-
-                        const nextItemKey = Object.keys(currentQuizItems).length;
-
-                        const newItemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${nextItemKey}`);
-
-                        // Set the data at the new key
-                        await set(newItemRef, {
-                            question: question,
-                            type: type.value,
-                            truefalse: truefalse.value
-                        });
-                        showItems(currentQuizId)
-                        alert('Item added!');
-                        closeAddOne()
-                        getUserQuizzes()
-
-                    } catch (error) {
-                        console.error('Error saving quiz:', error);
-                        alert('Failed to save quiz. Please try again.');
-                    }
-
-                    document.getElementById('add-one-question').value = '';
-                    document.querySelector('input[name="add-one-truefalse"]:checked')?.checked ? document.querySelector('input[name="add-one-truefalse"]:checked').checked = false : null;
-
-                }
-
-                document.querySelector('input[name="add-one-question-type"]:checked')?.checked ? document.querySelector('input[name="add-one-question-type"]:checked').checked = false : null;
-                hideAddOneModals()
-            }
-
-
-        })
-
+        // Display Quiz Items
         window.showItems = async function (quiz_id) {
-            currentQuizId = quiz_id;
+            console.log(`Inside: ${quiz_id}`)
             document.getElementById('all-items').style.display = 'block';
             document.getElementById('item-overlay').style.display = 'block';
             document.getElementById('item-cards').style.display = 'flex';
@@ -475,29 +150,29 @@
                 noItemsMessage.textContent = 'No items found for this quiz.';
 
                 // Close button
-                const closeButton = document.createElement('a');
-                closeButton.href = "#";
-                closeButton.className = "close-btn";
-                closeButton.innerHTML = "&times;";
-                closeButton.onclick = closeItems;
-                closeButton.style.right = "1rem";
-                itemContainer.appendChild(closeButton);
+                // const closeButton = document.createElement('a');
+                // closeButton.href = "#";
+                // closeButton.className = "close-btn";
+                // closeButton.innerHTML = "&times;";
+                // closeButton.onclick = closeItems;
+                // closeButton.style.right = "1rem";
+                // itemContainer.appendChild(closeButton);
 
                 // Add button
-                const addButton = document.createElement('button');
-                addButton.className = "add-btn";
-                addButton.innerHTML = `<i class="fas fa-plus" style="margin-right: 0.5rem;"></i> Add`;
-                addButton.style.position = "absolute";
-                addButton.style.right = "16rem";
-                addButton.style.top = "3rem";
-                addButton.style.backgroundColor = "#26C236";
-                addButton.style.color = "white";
-                addButton.style.border = "none";
-                addButton.style.padding = "0.5rem 1rem";
-                addButton.style.cursor = "pointer";
-                addButton.style.borderRadius = "4px";
-                addButton.onclick = () => addOneItem(quiz_id);
-                itemContainer.appendChild(addButton);
+                // const addButton = document.createElement('button');
+                // addButton.className = "add-btn";
+                // addButton.innerHTML = `<i class="fas fa-plus" style="margin-right: 0.5rem;"></i> Add`;
+                // addButton.style.position = "absolute";
+                // addButton.style.right = "16rem";
+                // addButton.style.top = "3rem";
+                // addButton.style.backgroundColor = "#26C236";
+                // addButton.style.color = "white";
+                // addButton.style.border = "none";
+                // addButton.style.padding = "0.5rem 1rem";
+                // addButton.style.cursor = "pointer";
+                // addButton.style.borderRadius = "4px";
+                // addButton.onclick = () => addOneItem(quiz_id);
+                // itemContainer.appendChild(addButton);
 
                 // Fetch items from snapshot
                 if (snapshot.exists()) {
@@ -518,11 +193,7 @@
                                 <div class="card-content">
                                     <div class="">
                                         <p style = "font-family: 'Outfit'; font-size: 18px; color: #006600;">Answer: ${item.answer}</p>
-                                    </div>
-                                    <div class="item-button-group">
-                                        <button class="play-btn" style = "background-color: #0080FF;" onclick = "editItem(${itemId}, '${item.type}')">Edit</button>
-                                        <button class="summary-btn" style = "background-color: red;" onclick = "deleteItem(${itemId})">Delete</button>
-                                    </div>  
+                                    </div> 
                                 </div>
                             `;
                         } else if (item.type === 'truefalse') {
@@ -538,10 +209,6 @@
                                             <input type="radio" id="false-${itemId}" name="truefalse-${itemId}" value="False">
                                             <label for="false-${itemId}">False</label>
                                         </div>
-                                    </div>
-                                    <div class="item-button-group">
-                                        <button class="play-btn" style = "background-color: #0080FF;" onclick = "editItem(${itemId}, '${item.type}')">Edit</button>
-                                        <button class="summary-btn" style = "background-color: red;" onclick = "deleteItem(${itemId})">Delete</button>
                                     </div>
                                 </div>
                             `;
@@ -567,10 +234,6 @@
                                             <input type="text" id="correct-option-${itemId}" placeholder="Correct Option" style = "padding-left: 5px; color:green;  border: 2px solid green;">
                                         </div>
                                     </div>
-                                    <div class="item-button-group">
-                                        <button class="play-btn" style = "background-color: #0080FF;" onclick = "editItem(${itemId}, '${item.type}')">Edit</button>
-                                        <button class="summary-btn" style = "background-color: red;" onclick = "deleteItem(${itemId})">Delete</button>
-                                    </div>
                                 </div>
                             `;
 
@@ -592,239 +255,797 @@
             }
         };
 
+        //call function to retrieve quiz items
+        showItems(quiz_id)
 
-        window.closeItems = function () {
-            document.getElementById('all-items').style.display = 'none';
-            document.getElementById('item-overlay').style.display = 'none'
-            document.getElementById('item-cards').style.display = 'none';
-        }
 
-        window.confLogout = function () {
-            window.location.href = 'index.html';
-        }
+        // window.getUserQuizzes = async function () {
+        //     const dbRef = ref(getDatabase());
 
-        window.deleteItem = async function (itemId) {
-            const confDelete = window.confirm("Are you sure you want to delete this item?")
-            if (confDelete) {
-                try {
-                    const itemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${itemId}`);
-                    await remove(itemRef);
-                    console.log(`Item ${itemId} deleted successfully`);
+        //     try {
+        //         // Access the "user/{username}/quizzes" node
+        //         const snapshot = await get(child(dbRef, `user/${username}/quizzes`));
 
-                    // Optionally, refresh the list of items after deletion
-                    showItems(currentQuizId);
+        //         if (snapshot.exists()) {
+        //             // Return the quizzes data
+        //             const quizzes = snapshot.val();
+        //             const quizContainer = document.getElementById('title-cards');
 
-                    // Show a success alert
-                    alert('Item deleted successfully!');
-                    location.reload()
-                    showItems(currentQuizId)
-                } catch (error) {
-                    console.error('Error deleting item:', error);
-                    alert('Failed to delete item. Please try again.');
-                }
-            }
-        }
+        //             // Clear the existing quiz cards in case any exist
+        //             quizContainer.innerHTML = '';
 
-        window.deleteQuiz = async function (quiz_id) {
-            const confDelete = window.confirm("Are you sure you want to delete this quiz?")
-            if (confDelete) {
-                try {
-                    const quizref = ref(db, `user/${username}/quizzes/${quiz_id}`);
-                    await remove(quizref);
-                    alert('Quiz deleted successfully!');
-                    location.reload()
-                } catch (error) {
-                    console.error('Error deleting quiz:', error);
-                    alert('Failed to delete quiz. Please try again.');
-                }
-            }
-        }
+        //             // Loop through each quiz and generate a quiz card
+        //             Object.keys(quizzes).forEach(quizId => {
+        //                 const quiz = quizzes[quizId];
 
-        window.editQuiz = function (quiz_id) {
-            currentQuizId = quiz_id
-            const quizRef = ref(db, `user/${username}/quizzes/${quiz_id}`);
-            get(quizRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const quizData = snapshot.val();
-                    document.getElementById('edit-title').value = quizData.title;
-                    document.getElementById('edit-description').value = quizData.description;
-                    document.getElementById('edit-quiz-modal').style.display = 'block';
-                } else {
-                    console.log('No quiz data found');
-                }
-            }).catch((error) => {
-                console.error('Error fetching quiz data:', error);
-            });
-        }
+        //                 const maxScore = quiz.quizItems ? quiz.quizItems.length : '-'; // Default to 0 if no items exist
+        //                 // Create a new div for the quiz card
+        //                 const quizCard = document.createElement('div');
+        //                 quizCard.classList.add('quiz-title-card');
+        //                 quizCard.setAttribute('data-title', quiz.title);
+        //                 quizCard.setAttribute('data-description', quiz.description);
 
-        window.closeEditQuiz = function () {
-            document.getElementById('edit-quiz-modal').style.display = 'none';
-        }
+        //                 // Set the inner HTML for the quiz card
+        //                 quizCard.innerHTML = `
+        //         <div class="action-buttons">
+        //             <button class="edit-btn" onclick  ="editQuiz(${quiz.quizId})"><i class="fa fa-pencil"></i> </button>
+        //             <button class="delete-btn" onclick = "deleteQuiz(${quiz.quizId})"><i class="fa fa-times"></i></button>
+        //         </div>
+        //             <h2>${quiz.title}</h2>
+        //             <p style = "font-family: 'Outfit'; font-size: 16px; color: white;">Description: ${quiz.description}</p>
+        //             <div class="card-content">
+        //                 <div class="score">
+        //                     Best Score: <span class="score-value" style="color:#2130B6;">${quiz.bestscore || 0}</span><span class="score-max">/${maxScore}</span>
+        //                 </div>
+        //                 <div class="button-group">
+        //     <button class="play-btn" onclick="window.location.href='game.html?quizId=${quiz.quizId}'">Play</button>
+        //                     <button class="summary-btn" onclick = showItems(${quiz.quizId})>View Items</button>
+        //                 </div>
+        //             </div>
 
-        window.saveQuizUpdate = async function () {
-            var title = document.getElementById('edit-title').value
-            var description = document.getElementById('edit-description').value
+                    
+                
+        //         `;
 
-            if (!title) {
-                alert("Please add a title.")
-                return;
-            }
+        //                 quizContainer.appendChild(quizCard);
+        //             });
+        //         } else {
+        //             console.log(`No quizzes found for username: ${username}`);
+        //             document.getElementById('title-cards').textContent = 'No quizzes yet.'
+        //             document.getElementById('title-cards').style.color = 'white';
 
-            try {
-                const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}`);
-                await update(quizRef, {
-                    title: title,
-                    description: description
-                });
-                alert('Quiz updated successfully!');
-                closeEditQuiz();
-                getUserQuizzes();
+        //         }
+        //     } catch (error) {
+        //         console.error("Error fetching quizzes:", error);
+        //         throw error;
+        //     }
+        // }
 
-            } catch (error) {
-                console.error('Error updating quiz:', error);
-                alert('Failed to update quiz. Please try again.');
-            }
-        }
+        // getUserQuizzes()
 
-        window.editItem = function (itemId, itemType) {
-            currentItemId = itemId
-            currentItemType = itemType
 
-            const itemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${itemId}`);
-            get(itemRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const itemData = snapshot.val();
+        //gathers question details
+        // window.getQuestionDetails = function () {
+        //     let question = document.getElementById('question').value;
+        //     let type = document.querySelector('input[name="question-type"]:checked');
+        //     let answer
+        //     let wrong1, wrong2
+        //     let correct
+        //     let truefalse
 
-                    if (itemType == "identification") {
+        //     if (type.value === "identification") {
+        //         answer = document.getElementById('answer').value;
 
-                        document.getElementById('edit-quiz-question').value = itemData.question
-                        document.getElementById('edit-quiz-answer').value = itemData.answer
-                        closeItems()
-                        document.getElementById('edit-quiz').style.display = 'block'
-                        document.getElementById('edit-quiz-identification').style.display = 'block'
-                    }
-                    else if (itemType == "multchoice") {
-                        document.getElementById('edit-quiz-question').value = itemData.question
-                        document.getElementById('edit-quiz-wrong-option1').value = itemData.wrong1
-                        document.getElementById('edit-quiz-wrong-option2').value = itemData.wrong2
-                        document.getElementById('edit-quiz-correct-option').value = itemData.correct
+        //         if (!answer) {
+        //             alert("Please provide an answer for your identification-type question before proceeding.")
+        //             return false;
+        //         }
+        //         // Create a temporary item object
+        //         let quizItem = {
+        //             question: question,
+        //             answer: answer,
+        //             type: type.value
+        //         };
 
-                        closeItems()
-                        document.getElementById('edit-quiz').style.display = 'block'
-                        document.getElementById('edit-quiz-MultChoice').style.display = 'block'
-                    }
-                    else {
-                        document.getElementById('edit-quiz-question').value = itemData.question
-                        if (itemData.truefalse === 'True') {
-                            document.getElementById('edit-quiz-true').checked = true;
-                            document.getElementById('edit-quiz-false').checked = false;
-                        } else {
-                            document.getElementById('edit-quiz-false').checked = true;
-                            document.getElementById('edit-quiz-true').checked = false;
-                        }
+        //         quizItems.push(quizItem);
 
-                        closeItems()
-                        document.getElementById('edit-quiz').style.display = 'block'
-                        document.getElementById('edit-quiz-TrueFalse').style.display = 'block'
-                    }
+        //         document.getElementById('question').value = '';
+        //         document.getElementById('answer').value = '';
+        //         document.querySelector('input[name="question-type"]:checked').checked = false;
+        //     }
 
-                } else {
-                    console.log('No quiz data found');
-                }
-            }).catch((error) => {
-                console.error('Error fetching quiz data:', error);
-            });
-        }
+        //     else if (type.value === "multchoice") {
+        //         wrong1 = document.getElementById('wrong-option1').value;
+        //         wrong2 = document.getElementById('wrong-option2').value;
+        //         correct = document.getElementById('correct-option').value;
 
-        window.closeEditItem = function () {
-            closeAllEditItem()
-            showItems(currentQuizId)
-        }
+        //         if (!wrong1 || !wrong2 || !correct) {
+        //             alert("Please answer options for your multiple choice-type question before proceeding.")
+        //             return false;
+        //         }
 
-        window.closeAllEditItem = function () {
-            document.getElementById('edit-quiz').style.display = 'none'
-            document.getElementById('edit-quiz-TrueFalse').style.display = 'none'
-            document.getElementById('edit-quiz-MultChoice').style.display = 'none'
-            document.getElementById('edit-quiz-identification').style.display = 'none'
-        }
+        //         let quizItem = {
+        //             question: question,
+        //             wrong1: wrong1,
+        //             wrong2: wrong2,
+        //             correct: correct,
+        //             type: type.value
+        //         };
 
-        window.saveItemEdit = async function () {
-            console.log(`type: ${currentItemType}`)
-            const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${currentItemId}`);
-            if (currentItemType == 'identification') {
-                var question = document.getElementById('edit-quiz-question').value
-                var answer = document.getElementById('edit-quiz-answer').value
+        //         quizItems.push(quizItem);
 
-                if (!question || !answer) {
-                    alert("Fields should not be left empty.")
-                    return
-                }
+        //         document.getElementById('question').value = '';
+        //         document.getElementById('wrong-option1').value = '';
+        //         document.getElementById('wrong-option2').value = '';
+        //         document.getElementById('correct-option').value = '';
+        //         document.querySelector('input[name="question-type"]:checked').checked = false;
+        //     }
 
-                try {
-                    await update(quizRef, {
-                        question: question,
-                        answer: answer
-                    });
-                    alert('Item updated successfully!');
-                    closeEditItem()
+        //     else {
+        //         truefalse = document.querySelector('input[name="truefalse"]:checked');
 
-                } catch (error) {
-                    console.error('Error updating quiz:', error);
-                    alert('Failed to update quiz. Please try again.');
-                }
+        //         if (!truefalse) {
+        //             alert("Please select the answer for your true or false-type question before proceeding.")
+        //             return false;
+        //         }
 
-            } else if (currentItemType == 'multchoice') {
-                var question = document.getElementById('edit-quiz-question').value
-                var wrong1 = document.getElementById('edit-quiz-wrong-option1').value
-                var wrong2 = document.getElementById('edit-quiz-wrong-option2').value
-                var correct = document.getElementById('edit-quiz-correct-option').value
+        //         let quizItem = {
+        //             question: question,
+        //             truefalse: truefalse.value,
+        //             type: type.value
+        //         };
 
-                if (!question || !wrong1 || !wrong2 || !correct) {
-                    alert("Fields should not be left empty.")
-                    return
-                }
+        //         quizItems.push(quizItem);
 
-                try {
-                    await update(quizRef, {
-                        question: question,
-                        wrong1: wrong1,
-                        wrong2: wrong2,
-                        correct: correct
-                    });
-                    alert('Item updated successfully!');
-                    closeEditItem()
+        //         document.getElementById('question').value = '';
+        //         document.querySelector('input[name="truefalse"]:checked').checked = false;
+        //         document.querySelector('input[name="question-type"]:checked').checked = false;
 
-                } catch (error) {
-                    console.error('Error updating quiz:', error);
-                    alert('Failed to update quiz. Please try again.');
-                }
+        //     }
+        //     return true;
+        // }
 
-            } else {
-                var question = document.getElementById('edit-quiz-question').value
-                var truefalse = document.querySelector('input[name="edit-quiz-truefalse"]:checked').value;
 
-                if (!question) {
-                    alert("Fields should not be left empty.")
-                    return;
-                }
+        // document.getElementById('add-new-item').addEventListener('click', function (e) {
+        //     e.preventDefault()
+        //     let question = document.getElementById('question').value;
+        //     let type = document.querySelector('input[name="question-type"]:checked');
 
-                try {
-                    await update(quizRef, {
-                        question: question,
-                        truefalse: truefalse
-                    });
+        //     if (!question) {
+        //         alert("Please add a question.");
+        //         return;
+        //     }
+        //     else if (!type) {
+        //         alert("Please select a question type.")
+        //         return;
+        //     }
+        //     else {
+        //         const success = getQuestionDetails()
+        //         if (success) {
+        //             hideQuestionModals()
+        //         }
+        //     }
 
-                    alert('Item updated successfully!');
-                    closeEditItem()
+        // })
 
-                } catch (error) {
-                    console.error('Error updating quiz:', error);
-                    alert('Failed to update quiz. Please try again.');
-                }
 
-            }
+        // inserts data in the database
+//         document.getElementById('save-quiz').addEventListener('click', async function (e) {
+//             e.preventDefault()
+//             let question = document.getElementById('question').value;
+//             let type = document.querySelector('input[name="question-type"]:checked');
 
-        }
+//             if (!question) {
+//                 alert("Please add a question.");
+//                 return;
+//             }
+//             else if (!type) {
+//                 alert("Please select a question type.")
+//                 return;
+//             }
+//             else {
+
+//                 const success = getQuestionDetails()
+
+//                 if (success) {
+//                     try {
+//                         // Save quiz data along with questions in Firebase
+//                         const quizRef = ref(db, `user/${username}/quizzes/${quizdetails.nextQuizId}`);
+//                         await set(quizRef, {
+//                             quizId: quizdetails.nextQuizId,
+//                             title: quizdetails.title,
+//                             description: quizdetails.description,
+//                             bestscore: bestscore,
+//                             quizItems: quizItems
+//                         });
+
+//                         alert('Quiz and questions saved successfully!');
+//                         location.reload()
+//                         console.log('Quiz data saved:', quizItems);
+
+//                         // Reset everything
+//                         resetFields()
+//                         document.getElementById('add-item').style.display = 'none';
+
+//                     } catch (error) {
+//                         console.error('Error saving quiz:', error);
+//                         alert('Failed to save quiz. Please try again.');
+//                     }
+//                 }
+//             }
+//         })
+
+//         window.resetFields = function () {
+//             quizItems = [];
+//             quizdetails = {};
+//             bestscore = 0;
+//             document.getElementById('title').value = '';
+//             document.getElementById('description').value = '';
+//             document.getElementById('question').value = '';
+//             document.getElementById('answer').value = '';
+//             document.getElementById('wrong-option1').value = '';
+//             document.getElementById('wrong-option2').value = '';
+//             document.getElementById('correct-option').value = '';
+//             document.querySelector('input[name="truefalse"]:checked')?.checked ? document.querySelector('input[name="truefalse"]:checked').checked = false : null;
+//             document.querySelector('input[name="question-type"]:checked')?.checked ? document.querySelector('input[name="question-type"]:checked').checked = false : null;
+//         }
+
+
+
+//         window.addOneItem = function (quiz_id) {
+//             closeItems()
+//             currentQuizId = quiz_id
+//             document.getElementById('add-one-item').style.display = 'block';
+
+//         }
+
+//         window.closeAddOne = function () {
+//             document.getElementById('add-one-item').style.display = 'none';
+//             showItems(currentQuizId)
+//         }
+
+//         window.truefalseAddOne = function () {
+//             hideAddOneModals()
+//             document.getElementById('addOneTrueFalse').style.display = 'block';
+//         }
+
+//         window.multchoiceAddOne = function () {
+//             hideAddOneModals()
+//             document.getElementById('addOneMultChoice').style.display = 'block';
+//         }
+
+//         window.identificationAddOne = function () {
+//             hideAddOneModals()
+//             document.getElementById('addOneIdentification').style.display = 'block';
+//         }
+
+//         window.hideAddOneModals = function () {
+//             document.getElementById('addOneTrueFalse').style.display = 'none';
+//             document.getElementById('addOneMultChoice').style.display = 'none';
+//             document.getElementById('addOneIdentification').style.display = 'none';
+//         }
+
+//         document.getElementById('saveItem').addEventListener('click', async function (e) {
+//             e.preventDefault
+//             let question = document.getElementById('add-one-question').value;
+//             let type = document.querySelector('input[name="add-one-question-type"]:checked');
+//             let answer
+//             let wrong1, wrong2
+//             let correct
+//             let truefalse
+
+//             if (!question) {
+//                 alert("Please add a question.");
+//                 return;
+//             }
+//             else {
+//                 if (!type) {
+//                     alert("Please select a question type.")
+//                     return;
+//                 }
+//                 else if (type.value === "identification") {
+//                     answer = document.getElementById('add-one-answer').value;
+
+//                     if (!answer) {
+//                         alert("Please provide an answer for your identification-type question before proceeding.")
+//                         return;
+//                     }
+
+//                     try {
+//                         const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems`);
+//                         const snapshot = await get(quizRef);
+//                         const currentQuizItems = snapshot.val() || {};
+
+//                         const nextItemKey = Object.keys(currentQuizItems).length;
+
+//                         const newItemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${nextItemKey}`);
+
+//                         // Set the data at the new key
+//                         await set(newItemRef, {
+//                             question: question,
+//                             type: type.value,
+//                             answer: answer
+//                         });
+//                         showItems(currentQuizId)
+//                         alert('Item added!');
+//                         closeAddOne()
+//                         getUserQuizzes()
+
+//                     } catch (error) {
+//                         console.error('Error saving quiz:', error);
+//                         alert('Failed to save quiz. Please try again.');
+//                     }
+
+//                     document.getElementById('add-one-question').value = '';
+//                     document.getElementById('add-one-answer').value = '';
+//                 }
+
+//                 else if (type.value === "multchoice") {
+//                     wrong1 = document.getElementById('add-one-wrong-option1').value;
+//                     wrong2 = document.getElementById('add-one-wrong-option2').value;
+//                     correct = document.getElementById('add-one-correct-option').value;
+
+//                     if (!wrong1 || !wrong2 || !correct) {
+//                         alert("Please answer options for your multiple choice-type question before proceeding.")
+//                         return;
+//                     }
+
+//                     try {
+//                         const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems`);
+//                         const snapshot = await get(quizRef);
+//                         const currentQuizItems = snapshot.val() || {};
+
+//                         const nextItemKey = Object.keys(currentQuizItems).length;
+
+//                         const newItemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${nextItemKey}`);
+
+//                         // Set the data at the new key
+//                         await set(newItemRef, {
+//                             question: question,
+//                             type: type.value,
+//                             wrong1: wrong1,
+//                             wrong2: wrong2,
+//                             correct: correct
+//                         });
+//                         showItems(currentQuizId)
+//                         alert('Item added!');
+//                         closeAddOne()
+//                         getUserQuizzes()
+
+//                     } catch (error) {
+//                         console.error('Error saving quiz:', error);
+//                         alert('Failed to save quiz. Please try again.');
+//                     }
+
+//                     document.getElementById('add-one-question').value = '';
+//                     document.getElementById('add-one-wrong-option1').value = '';
+//                     document.getElementById('add-one-wrong-option2').value = '';
+//                     document.getElementById('add-one-correct-option').value = '';
+
+//                 }
+
+//                 else {
+//                     truefalse = document.querySelector('input[name="add-one-truefalse"]:checked');
+
+//                     if (!truefalse) {
+//                         alert("Please select the answer for your true or false-type question before proceeding.")
+//                         return;
+//                     }
+
+//                     try {
+//                         const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems`);
+//                         const snapshot = await get(quizRef);
+//                         const currentQuizItems = snapshot.val() || {};
+
+//                         const nextItemKey = Object.keys(currentQuizItems).length;
+
+//                         const newItemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${nextItemKey}`);
+
+//                         // Set the data at the new key
+//                         await set(newItemRef, {
+//                             question: question,
+//                             type: type.value,
+//                             truefalse: truefalse.value
+//                         });
+//                         showItems(currentQuizId)
+//                         alert('Item added!');
+//                         closeAddOne()
+//                         getUserQuizzes()
+
+//                     } catch (error) {
+//                         console.error('Error saving quiz:', error);
+//                         alert('Failed to save quiz. Please try again.');
+//                     }
+
+//                     document.getElementById('add-one-question').value = '';
+//                     document.querySelector('input[name="add-one-truefalse"]:checked')?.checked ? document.querySelector('input[name="add-one-truefalse"]:checked').checked = false : null;
+
+//                 }
+
+//                 document.querySelector('input[name="add-one-question-type"]:checked')?.checked ? document.querySelector('input[name="add-one-question-type"]:checked').checked = false : null;
+//                 hideAddOneModals()
+//             }
+
+
+//         })
+
+//         window.showItems = async function (quiz_id) {
+//             currentQuizId = quiz_id;
+//             document.getElementById('all-items').style.display = 'block';
+//             document.getElementById('item-overlay').style.display = 'block';
+//             document.getElementById('item-cards').style.display = 'flex';
+//             document.getElementById('item-cards').scrollTop = 0;
+//             const dbRef = ref(getDatabase());
+
+//             try {
+//                 // Fetch quiz items using quiz_id
+//                 const snapshot = await get(child(dbRef, `user/${username}/quizzes/${quiz_id}/quizItems`));
+
+//                 const itemContainer = document.getElementById('item-cards');
+
+//                 // Clear the overlay content before updating
+//                 itemContainer.innerHTML = '';
+
+//                 // Create and append "No items found" message if there are no items
+//                 const noItemsMessage = document.createElement('div');
+//                 noItemsMessage.id = 'no-items-message';
+//                 noItemsMessage.style.fontSize = '18px';
+//                 noItemsMessage.style.color = '#fff';
+//                 noItemsMessage.style.textAlign = 'center';
+//                 noItemsMessage.style.marginTop = '2rem';
+//                 noItemsMessage.textContent = 'No items found for this quiz.';
+
+//                 // Close button
+//                 const closeButton = document.createElement('a');
+//                 closeButton.href = "#";
+//                 closeButton.className = "close-btn";
+//                 closeButton.innerHTML = "&times;";
+//                 closeButton.onclick = closeItems;
+//                 closeButton.style.right = "1rem";
+//                 itemContainer.appendChild(closeButton);
+
+//                 // Add button
+//                 const addButton = document.createElement('button');
+//                 addButton.className = "add-btn";
+//                 addButton.innerHTML = `<i class="fas fa-plus" style="margin-right: 0.5rem;"></i> Add`;
+//                 addButton.style.position = "absolute";
+//                 addButton.style.right = "16rem";
+//                 addButton.style.top = "3rem";
+//                 addButton.style.backgroundColor = "#26C236";
+//                 addButton.style.color = "white";
+//                 addButton.style.border = "none";
+//                 addButton.style.padding = "0.5rem 1rem";
+//                 addButton.style.cursor = "pointer";
+//                 addButton.style.borderRadius = "4px";
+//                 addButton.onclick = () => addOneItem(quiz_id);
+//                 itemContainer.appendChild(addButton);
+
+//                 // Fetch items from snapshot
+//                 if (snapshot.exists()) {
+//                     const items = snapshot.val();
+
+//                     // Loop through each item and generate a card
+//                     Object.keys(items).forEach(itemId => {
+//                         const item = items[itemId];
+
+//                         // Create a new div for the item card
+//                         const itemCard = document.createElement('div');
+//                         itemCard.classList.add('item-title-card');
+
+//                         // Populate the card based on item type
+//                         if (item.type === 'identification') {
+//                             itemCard.innerHTML = `
+//                                 <p style = "font-family: 'Outfit'; font-size: 20px; color: white;">${item.question}</p>
+//                                 <div class="card-content">
+//                                     <div class="">
+//                                         <p style = "font-family: 'Outfit'; font-size: 18px; color: #006600;">Answer: ${item.answer}</p>
+//                                     </div>
+//                                     <div class="item-button-group">
+//                                         <button class="play-btn" style = "background-color: #0080FF;" onclick = "editItem(${itemId}, '${item.type}')">Edit</button>
+//                                         <button class="summary-btn" style = "background-color: red;" onclick = "deleteItem(${itemId})">Delete</button>
+//                                     </div>  
+//                                 </div>
+//                             `;
+//                         } else if (item.type === 'truefalse') {
+//                             itemCard.innerHTML = `
+//                                 <p style="font-size: 20px; font-family: 'Outfit'; color: white;">${item.question}</p>
+//                                 <div class="card-content">
+//                                     <div class="radio-group" style="border: 0px;">
+//                                         <div class="radio-option">
+//                                             <input type="radio" id="true-${itemId}" name="truefalse-${itemId}" value="True">
+//                                             <label for="true-${itemId}">True</label>
+//                                         </div>
+//                                         <div class="radio-option">
+//                                             <input type="radio" id="false-${itemId}" name="truefalse-${itemId}" value="False">
+//                                             <label for="false-${itemId}">False</label>
+//                                         </div>
+//                                     </div>
+//                                     <div class="item-button-group">
+//                                         <button class="play-btn" style = "background-color: #0080FF;" onclick = "editItem(${itemId}, '${item.type}')">Edit</button>
+//                                         <button class="summary-btn" style = "background-color: red;" onclick = "deleteItem(${itemId})">Delete</button>
+//                                     </div>
+//                                 </div>
+//                             `;
+
+//                             // Set the checked property based on item.truefalse
+//                             if (item.truefalse === "True") {
+//                                 itemCard.querySelector(`#true-${itemId}`).checked = true;
+//                             } else if (item.truefalse === "False") {
+//                                 itemCard.querySelector(`#false-${itemId}`).checked = true;
+//                             }
+//                         } else {
+//                             itemCard.innerHTML = `
+//                                 <p style="font-size: 20px; font-family: 'Outfit'; color: white;">${item.question}</p>
+//                                 <div class="card-content">
+//                                     <div class="radio-group" style="border: 0px;">
+//                                         <div class="mult-option">
+//                                             <input type="text" id="wrong-option1-${itemId}" placeholder="Wrong Option" style = "padding-left: 5px;">
+//                                         </div>
+//                                         <div class="mult-option">
+//                                             <input type="text" id="wrong-option2-${itemId}" placeholder="Wrong Option" style = "padding-left: 5px;">
+//                                         </div>
+//                                         <div class="mult-option">
+//                                             <input type="text" id="correct-option-${itemId}" placeholder="Correct Option" style = "padding-left: 5px; color:green;  border: 2px solid green;">
+//                                         </div>
+//                                     </div>
+//                                     <div class="item-button-group">
+//                                         <button class="play-btn" style = "background-color: #0080FF;" onclick = "editItem(${itemId}, '${item.type}')">Edit</button>
+//                                         <button class="summary-btn" style = "background-color: red;" onclick = "deleteItem(${itemId})">Delete</button>
+//                                     </div>
+//                                 </div>
+//                             `;
+
+//                             // Set the value of the input fields dynamically
+//                             itemCard.querySelector(`#wrong-option1-${itemId}`).value = item.wrong1;
+//                             itemCard.querySelector(`#wrong-option2-${itemId}`).value = item.wrong2;
+//                             itemCard.querySelector(`#correct-option-${itemId}`).value = item.correct;
+//                         }
+
+//                         // Append the item card to the overlay
+//                         itemContainer.appendChild(itemCard);
+//                     });
+//                 } else {
+//                     // If no items exist, show the "No items found" message
+//                     itemContainer.appendChild(noItemsMessage);
+//                 }
+//             } catch (error) {
+//                 console.error("Error fetching quiz items:", error);
+//             }
+//         };
+
+
+//         window.closeItems = function () {
+//             document.getElementById('all-items').style.display = 'none';
+//             document.getElementById('item-overlay').style.display = 'none'
+//             document.getElementById('item-cards').style.display = 'none';
+//         }
+
+//         window.confLogout = function () {
+//             window.location.href = 'index.html';
+//         }
+
+//         window.deleteItem = async function (itemId) {
+//             const confDelete = window.confirm("Are you sure you want to delete this item?")
+//             if (confDelete) {
+//                 try {
+//                     const itemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${itemId}`);
+//                     await remove(itemRef);
+//                     console.log(`Item ${itemId} deleted successfully`);
+
+//                     // Optionally, refresh the list of items after deletion
+//                     showItems(currentQuizId);
+
+//                     // Show a success alert
+//                     alert('Item deleted successfully!');
+//                     location.reload()
+//                     showItems(currentQuizId)
+//                 } catch (error) {
+//                     console.error('Error deleting item:', error);
+//                     alert('Failed to delete item. Please try again.');
+//                 }
+//             }
+//         }
+
+//         window.deleteQuiz = async function (quiz_id) {
+//             const confDelete = window.confirm("Are you sure you want to delete this quiz?")
+//             if (confDelete) {
+//                 try {
+//                     const quizref = ref(db, `user/${username}/quizzes/${quiz_id}`);
+//                     await remove(quizref);
+//                     alert('Quiz deleted successfully!');
+//                     location.reload()
+//                 } catch (error) {
+//                     console.error('Error deleting quiz:', error);
+//                     alert('Failed to delete quiz. Please try again.');
+//                 }
+//             }
+//         }
+
+//         window.editQuiz = function (quiz_id) {
+//             currentQuizId = quiz_id
+//             const quizRef = ref(db, `user/${username}/quizzes/${quiz_id}`);
+//             get(quizRef).then((snapshot) => {
+//                 if (snapshot.exists()) {
+//                     const quizData = snapshot.val();
+//                     document.getElementById('edit-title').value = quizData.title;
+//                     document.getElementById('edit-description').value = quizData.description;
+//                     document.getElementById('edit-quiz-modal').style.display = 'block';
+//                 } else {
+//                     console.log('No quiz data found');
+//                 }
+//             }).catch((error) => {
+//                 console.error('Error fetching quiz data:', error);
+//             });
+//         }
+
+//         window.closeEditQuiz = function () {
+//             document.getElementById('edit-quiz-modal').style.display = 'none';
+//         }
+
+//         window.saveQuizUpdate = async function () {
+//             var title = document.getElementById('edit-title').value
+//             var description = document.getElementById('edit-description').value
+
+//             if (!title) {
+//                 alert("Please add a title.")
+//                 return;
+//             }
+
+//             try {
+//                 const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}`);
+//                 await update(quizRef, {
+//                     title: title,
+//                     description: description
+//                 });
+//                 alert('Quiz updated successfully!');
+//                 closeEditQuiz();
+//                 getUserQuizzes();
+
+//             } catch (error) {
+//                 console.error('Error updating quiz:', error);
+//                 alert('Failed to update quiz. Please try again.');
+//             }
+//         }
+
+//         window.editItem = function (itemId, itemType) {
+//             currentItemId = itemId
+//             currentItemType = itemType
+
+//             const itemRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${itemId}`);
+//             get(itemRef).then((snapshot) => {
+//                 if (snapshot.exists()) {
+//                     const itemData = snapshot.val();
+
+//                     if (itemType == "identification") {
+
+//                         document.getElementById('edit-quiz-question').value = itemData.question
+//                         document.getElementById('edit-quiz-answer').value = itemData.answer
+//                         closeItems()
+//                         document.getElementById('edit-quiz').style.display = 'block'
+//                         document.getElementById('edit-quiz-identification').style.display = 'block'
+//                     }
+//                     else if (itemType == "multchoice") {
+//                         document.getElementById('edit-quiz-question').value = itemData.question
+//                         document.getElementById('edit-quiz-wrong-option1').value = itemData.wrong1
+//                         document.getElementById('edit-quiz-wrong-option2').value = itemData.wrong2
+//                         document.getElementById('edit-quiz-correct-option').value = itemData.correct
+
+//                         closeItems()
+//                         document.getElementById('edit-quiz').style.display = 'block'
+//                         document.getElementById('edit-quiz-MultChoice').style.display = 'block'
+//                     }
+//                     else {
+//                         document.getElementById('edit-quiz-question').value = itemData.question
+//                         if (itemData.truefalse === 'True') {
+//                             document.getElementById('edit-quiz-true').checked = true;
+//                             document.getElementById('edit-quiz-false').checked = false;
+//                         } else {
+//                             document.getElementById('edit-quiz-false').checked = true;
+//                             document.getElementById('edit-quiz-true').checked = false;
+//                         }
+
+//                         closeItems()
+//                         document.getElementById('edit-quiz').style.display = 'block'
+//                         document.getElementById('edit-quiz-TrueFalse').style.display = 'block'
+//                     }
+
+//                 } else {
+//                     console.log('No quiz data found');
+//                 }
+//             }).catch((error) => {
+//                 console.error('Error fetching quiz data:', error);
+//             });
+//         }
+
+//         window.closeEditItem = function () {
+//             closeAllEditItem()
+//             showItems(currentQuizId)
+//         }
+
+//         window.closeAllEditItem = function () {
+//             document.getElementById('edit-quiz').style.display = 'none'
+//             document.getElementById('edit-quiz-TrueFalse').style.display = 'none'
+//             document.getElementById('edit-quiz-MultChoice').style.display = 'none'
+//             document.getElementById('edit-quiz-identification').style.display = 'none'
+//         }
+
+//         window.saveItemEdit = async function () {
+//             console.log(`type: ${currentItemType}`)
+//             const quizRef = ref(db, `user/${username}/quizzes/${currentQuizId}/quizItems/${currentItemId}`);
+//             if (currentItemType == 'identification') {
+//                 var question = document.getElementById('edit-quiz-question').value
+//                 var answer = document.getElementById('edit-quiz-answer').value
+
+//                 if (!question || !answer) {
+//                     alert("Fields should not be left empty.")
+//                     return
+//                 }
+
+//                 try {
+//                     await update(quizRef, {
+//                         question: question,
+//                         answer: answer
+//                     });
+//                     alert('Item updated successfully!');
+//                     closeEditItem()
+
+//                 } catch (error) {
+//                     console.error('Error updating quiz:', error);
+//                     alert('Failed to update quiz. Please try again.');
+//                 }
+
+//             } else if (currentItemType == 'multchoice') {
+//                 var question = document.getElementById('edit-quiz-question').value
+//                 var wrong1 = document.getElementById('edit-quiz-wrong-option1').value
+//                 var wrong2 = document.getElementById('edit-quiz-wrong-option2').value
+//                 var correct = document.getElementById('edit-quiz-correct-option').value
+
+//                 if (!question || !wrong1 || !wrong2 || !correct) {
+//                     alert("Fields should not be left empty.")
+//                     return
+//                 }
+
+//                 try {
+//                     await update(quizRef, {
+//                         question: question,
+//                         wrong1: wrong1,
+//                         wrong2: wrong2,
+//                         correct: correct
+//                     });
+//                     alert('Item updated successfully!');
+//                     closeEditItem()
+
+//                 } catch (error) {
+//                     console.error('Error updating quiz:', error);
+//                     alert('Failed to update quiz. Please try again.');
+//                 }
+
+//             } else {
+//                 var question = document.getElementById('edit-quiz-question').value
+//                 var truefalse = document.querySelector('input[name="edit-quiz-truefalse"]:checked').value;
+
+//                 if (!question) {
+//                     alert("Fields should not be left empty.")
+//                     return;
+//                 }
+
+//                 try {
+//                     await update(quizRef, {
+//                         question: question,
+//                         truefalse: truefalse
+//                     });
+
+//                     alert('Item updated successfully!');
+//                     closeEditItem()
+
+//                 } catch (error) {
+//                     console.error('Error updating quiz:', error);
+//                     alert('Failed to update quiz. Please try again.');
+//                 }
+
+//             }
+
+//         }
     </script>
 </body>
 
