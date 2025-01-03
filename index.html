@@ -29,7 +29,8 @@
             width: 100%;
             max-width: 400px;
             padding: 20px;
-            
+            text-align: center;
+            margin-right: 10rem;
         }
 
         .mainlog-con {
@@ -95,7 +96,7 @@
             border-radius: 4px;
             font-size: 1rem;
             cursor: pointer;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.7rem;
             transition: background-color 0.2s;
         }
 
@@ -141,8 +142,9 @@
             color : white; 
             text-decoration: none; 
             position: absolute; 
-            left: 29rem; 
+            left: 39rem; 
         }
+        
     </style>
 </head>
 <body>
@@ -187,8 +189,8 @@
 
 
         <!-- Create Account -->
-        <div class="mainlog-con"  tabindex="-1" style = "height: 630px; display: none;" id = "signup">
-            <a href="#" class="back-btn" style ="top: 7.5rem;" onclick="closeForgotPass()" >&#8592;</a>
+        <div class="mainlog-con"  tabindex="-1" style = "height: 640px; display: none;" id = "signup">
+            <a href="#" class="back-btn" style ="top: 7.5rem;" onclick="showLogin()" >&#8592;</a>
 
             <h1>Sign Up</h1>
 
@@ -368,7 +370,8 @@
         document.getElementById('signup').style.display = 'block';
         }
 
-        window.showLogin = function () {
+        window.showLogin = function () { 
+            clearAllFields()   
             hideAllModals();
             document.getElementById('login').style.display = 'block';
         }
@@ -378,17 +381,24 @@
             document.getElementById('forgotpass').style.display = 'block';
         }
 
-        window.closeForgotPass = function () {
-            hideAllModals();
-            document.getElementById('login').style.display = 'block';
-        }
-
         window.hideAllModals = function () {
             document.getElementById('login').style.display = 'none';
             document.getElementById('signup').style.display = 'none';
             document.getElementById('forgotpass').style.display = 'none';
             document.getElementById('forgotpass2').style.display = 'none';
             document.getElementById('forgotpass3').style.display = 'none';
+        }
+
+        window.clearAllFields = function (){
+            document.getElementById('firstname').value = ''
+            document.getElementById('lastname').value = ''
+            document.getElementById('username').value = ''
+            document.getElementById('password').value = ''
+            document.getElementById('confpass').value = ''
+            document.getElementById('user-username').value = ''
+            document.getElementById('code').value = ''
+            document.getElementById('new-pass').value = ''
+            document.getElementById('conf-pass').value = ''
         }
 
         
